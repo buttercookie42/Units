@@ -178,7 +178,7 @@ public class Units extends FragmentActivity implements OnClickListener, OnEditor
 
 		unitUsageDBHelper = new UnitUsageDBHelper(this);
 
-		final Object instance = getLastNonConfigurationInstance();
+		final Object instance = getLastCustomNonConfigurationInstance();
 		if (instance instanceof LoadInitialUnitUsageTask){
 			mLoadInitialUnitUsageTask = (LoadInitialUnitUsageTask) instance;
 			mLoadInitialUnitUsageTask.setActivity(this);
@@ -256,7 +256,7 @@ public class Units extends FragmentActivity implements OnClickListener, OnEditor
     }
 
     @Override
-    public Object onRetainNonConfigurationInstance() {
+    public Object onRetainCustomNonConfigurationInstance() {
     	return mLoadInitialUnitUsageTask;
     }
 
