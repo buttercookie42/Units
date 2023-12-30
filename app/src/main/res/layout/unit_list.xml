@@ -15,7 +15,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/empty"
+            android:id="@+id/empty_text"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/search_no_results"
