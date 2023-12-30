@@ -47,10 +47,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.text.ClipboardManager;
 import android.text.Editable;
 import android.text.InputType;
@@ -97,7 +93,7 @@ import android.widget.Toast;
 // TODO med: show keyboard icon for 2nd tap (can't do this easily, as one can't detect if soft keyboard is shown or not). May need to scrap this idea.
 // TODO low: longpress on unit for description (look in unit addition error message for hints)
 // TODO low: Auto-scale text for display (square)
-public class Units extends FragmentActivity implements OnClickListener, OnEditorActionListener, OnTouchListener, OnLongClickListener, LoaderCallbacks<Cursor> {
+public class Units extends Activity implements OnClickListener, OnEditorActionListener, OnTouchListener, OnLongClickListener {
 	@SuppressWarnings("unused")
 	private final static String TAG = Units.class.getSimpleName();
 
@@ -126,10 +122,6 @@ public class Units extends FragmentActivity implements OnClickListener, OnEditor
 
     private static final int REQUEST_PICK_UNIT = 0;
 
-    private static final int
-    	LOADER_HISTORY = 100,
-    	LOADER_USAGE = 101;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -149,7 +141,7 @@ public class Units extends FragmentActivity implements OnClickListener, OnEditor
         //workspace.setTouchSlop(); // XXX scale
         //workspace.setShowTabIndicator(false);
 
-        mHistoryAdapter = new HistoryAdapter(this, null);
+        mHistoryAdapter = new HistoryAdapter(this, managedQuery(HistoryEntry.CONTENT_URI, HistoryAdapter.PROJECTION, null, null, HistoryEntry.SORT_DEFAULT));
         history.setAdapter(mHistoryAdapter);
 		// TODO consolidate listeners
 		history.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -207,9 +199,6 @@ public class Units extends FragmentActivity implements OnClickListener, OnEditor
 		final Intent intent = getIntent();
 		handleIntent(intent);
 
-		getSupportLoaderManager().initLoader(LOADER_HISTORY, null, this);
-		getSupportLoaderManager().initLoader(LOADER_USAGE, null, this);
-
     }
 
     private void handleIntent(Intent intent){
@@ -232,19 +221,21 @@ public class Units extends FragmentActivity implements OnClickListener, OnEditor
     	handleIntent(intent);
     }
 
-    private UnitUsageDBHelper.UnitCursorAdapter mHaveUsageAdapter;
-    private UnitUsageDBHelper.UnitCursorAdapter mWantUsageAdapter;
-
     @Override
     protected void onStart() {
     	super.onStart();
-    	mHaveUsageAdapter = new UnitUsageDBHelper.UnitCursorAdapter(this,
-				null, wantEditText);
-		haveEditText.setAdapter(mHaveUsageAdapter);
+		haveEditText.setAdapter(new UnitUsageDBHelper.UnitCursorAdapter(this,
+				managedQuery(UsageEntry.CONTENT_URI, null, null, null, UnitUsageDBHelper.USAGE_SORT),
+				wantEditText));
+		wantEditText.setAdapter(new UnitUsageDBHelper.UnitCursorAdapter(this,
+				managedQuery(UsageEntry.CONTENT_URI, null, null, null, UnitUsageDBHelper.USAGE_SORT),
+				haveEditText));
+    }
 
-		mWantUsageAdapter = new UnitUsageDBHelper.UnitCursorAdapter(this,
-				null, haveEditText);
-		wantEditText.setAdapter(mWantUsageAdapter);
+    @Override
+    protected void onResume() {
+    	super.onResume();
+
     }
 
     @Override
@@ -271,36 +262,6 @@ public class Units extends FragmentActivity implements OnClickListener, OnEditor
 	    	}break;
     	}
     }
-
-	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
-		switch (id){
-		case LOADER_HISTORY:
-			return new CursorLoader(this, HistoryEntry.CONTENT_URI, HistoryAdapter.PROJECTION, null, null, HistoryEntry.SORT_DEFAULT);
-		case LOADER_USAGE:
-			return new CursorLoader(this, UsageEntry.CONTENT_URI, null, null, null, UnitUsageDBHelper.USAGE_SORT);
-			default:
-				throw new IllegalArgumentException("unknown loader ID");
-		}
-	}
-
-	public void onLoadFinished(Loader<Cursor> loader, Cursor c) {
-		switch (loader.getId()){
-		case LOADER_HISTORY:
-			mHistoryAdapter.swapCursor(c);
-			break;
-
-		case LOADER_USAGE:
-			mHaveUsageAdapter.swapCursor(c);
-			mWantUsageAdapter.swapCursor(c);
-		}
-
-	}
-
-	public void onLoaderReset(Loader<Cursor> loader) {
-		// TODO Auto-generated method stub
-
-	}
 
     /**
      * @param vg Given a view group with view groups inside it, set all children to have the same onClickListeners.

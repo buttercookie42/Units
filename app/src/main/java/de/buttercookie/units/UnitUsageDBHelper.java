@@ -57,7 +57,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
-import android.support.v4.widget.SimpleCursorAdapter;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import de.buttercookie.units.R;
@@ -370,6 +370,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 		private static final int MSG_REQUERY = 0;
 		private boolean runningQuery;
 		private final ContentResolver mContentResolver;
+		private final Activity mActivity;
 		private final TextView mOtherEntry;
 		private final Handler mHandler = new Handler(){
 			private int retryCount = 0;
@@ -397,13 +398,11 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 			super(context, android.R.layout.simple_dropdown_item_1line,
 					dbCursor,
 					new String[] {UsageEntry._UNIT},
-					new int[] {android.R.id.text1}, 0);
+					new int[] {android.R.id.text1});
 
+			mActivity = context;
 			mContentResolver = context.getContentResolver();
-			
-			if (dbCursor != null){
-				initColumns(dbCursor);
-			}
+			setStringConversionColumn(dbCursor.getColumnIndex(UsageEntry._UNIT));
 
 			final TextUpdateWatcher tuw = new TextUpdateWatcher(this);
 			otherEntry.addTextChangedListener(tuw);
@@ -417,15 +416,13 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 				mHandler.sendEmptyMessage(MSG_REQUERY);
 			}
 		}
-		
-		private void initColumns(Cursor c){
-			setStringConversionColumn(c.getColumnIndex(UsageEntry._UNIT));
-		}
 
 		@Override
-		public Cursor swapCursor(Cursor c) {
-			initColumns(c);
-			return super.swapCursor(c);
+		public void changeCursor(Cursor c) {
+			mActivity.stopManagingCursor(getCursor());
+
+			super.changeCursor(c);
+			mActivity.startManagingCursor(c);
 		}
 
 		@Override
