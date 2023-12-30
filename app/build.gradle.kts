@@ -11,7 +11,7 @@ externalProperties {
 
 android {
     namespace = "de.buttercookie.units"
-    compileSdk = 17
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "de.buttercookie.units"
