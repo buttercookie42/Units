@@ -1,4 +1,24 @@
+/*
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.buttercookie.units;
+
+import android.util.Log;
+
+import net.sourceforge.unitsinjava.Env;
+import net.sourceforge.unitsinjava.Tables;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,17 +27,13 @@ import java.io.InputStreamReader;
 import java.util.Locale;
 import java.util.Vector;
 
-import net.sourceforge.unitsinjava.Env;
-import net.sourceforge.unitsinjava.Tables;
-import android.util.Log;
-
 public class Application extends android.app.Application {
-	private final static String TAG = "units";
-	public final static boolean DEBUG = false;
+    private final static String TAG = "units";
+    public final static boolean DEBUG = false;
 
-	@Override
-	@SuppressWarnings("all")
-	public void onCreate() {
+    @Override
+    @SuppressWarnings("all")
+    public void onCreate() {
 //		  if (DEBUG && Build.VERSION.SDK_INT >= 9) {
 //		         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
 //		                 .detectDiskReads()
@@ -32,11 +48,11 @@ public class Application extends android.app.Application {
 //		                 .build());
 //		     }
 
-		super.onCreate();
-		initUnits();
-	}
+        super.onCreate();
+        initUnits();
+    }
 
-    private void initUnits(){
+    private void initUnits() {
         Env.filenames = new Vector<String>();
         Env.filenames.add("units.dat");
 
@@ -45,51 +61,51 @@ public class Application extends android.app.Application {
         Env.oneline = true;
 
 
-        Env.out = new Env.Writer(){
-        	@Override
-        	public void print(String s) {
-        		Log.i(TAG, s);
+        Env.out = new Env.Writer() {
+            @Override
+            public void print(String s) {
+                Log.i(TAG, s);
 
-        	}
+            }
 
-        	@Override
-        	public void println(String s) {
-        		Log.i(TAG, s);
+            @Override
+            public void println(String s) {
+                Log.i(TAG, s);
 
-        	}
+            }
         };
 
         Env.err = new Env.Writer() {
 
-			@Override
-			public void println(String s) {
-				Log.e(TAG, s);
+            @Override
+            public void println(String s) {
+                Log.e(TAG, s);
 
-			}
+            }
 
-			@Override
-			public void print(String s) {
-				Log.e(TAG, s);
+            @Override
+            public void print(String s) {
+                Log.e(TAG, s);
 
-			}
-		};
+            }
+        };
 
         Env.files = new Env.FileAcc() {
 
-			@Override
-			public BufferedReader open(String name) {
-				try {
-					Log.d("Units", "reading definitions from "+name);
-					final InputStream is = getAssets().open(name);
+            @Override
+            public BufferedReader open(String name) {
+                try {
+                    Log.d("Units", "reading definitions from " + name);
+                    final InputStream is = getAssets().open(name);
 
 
-					return new BufferedReader(new InputStreamReader(is, "8859_1"), 16000);
-				}catch (final IOException ioe){
-					ioe.printStackTrace();
-				}
-				return null;
-			}
-		};
+                    return new BufferedReader(new InputStreamReader(is, "8859_1"), 16000);
+                } catch (final IOException ioe) {
+                    ioe.printStackTrace();
+                }
+                return null;
+            }
+        };
 
         Tables.build();
     }

@@ -1,71 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:tools="http://schemas.android.com/tools">
-      
-    <supports-screens android:largeScreens="true" android:smallScreens="true" android:anyDensity="true" />
-      
-    <application android:name=".Application"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <supports-screens
+        android:largeScreens="true"
+        android:smallScreens="true"
+        android:anyDensity="true" />
+
+    <application
+        android:name=".Application"
         android:icon="@drawable/icon"
         android:label="@string/app_name">
-        <activity android:name=".Units"
-        		android:theme="@android:style/Theme.Black.NoTitleBar"
-                android:label="@string/app_name" android:launchMode="singleTop">
+
+        <activity
+            android:name=".Units"
+            android:theme="@android:style/Theme.Black.NoTitleBar"
+            android:label="@string/app_name"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
             <intent-filter>
-            	<action android:name="android.intent.action.SEARCH"/>
+                <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
-            
-            <intent-filter>
-            	<action android:name="de.buttercookie.units.ACTION_USE_UNIT" />
-            	<data android:mimeType="vnd.android.cursor.item/vnd.de.buttercookie.units.unit_usage" />
-            	<category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        	
-            <meta-data android:name="android.app.searchable"
-   		  	 	android:resource="@xml/searchable" />
-
-        </activity>
-        
-        <activity android:name=".UnitList"
-        	android:theme="@android:style/Theme.Dialog"
-        	android:label="@string/app_name" android:launchMode="singleTop">
-        	
-        	<intent-filter>
-        		<data android:mimeType="vnd.android.cursor.dir/vnd.de.buttercookie.units.unit_usage" />
-        		<action android:name="android.intent.action.VIEW" />
-       			<action android:name="android.intent.action.PICK" />
-        		<category android:name="android.intent.category.DEFAULT" />
-        	</intent-filter>
 
             <intent-filter>
-            	<action android:name="android.intent.action.SEARCH"/>
+                <action android:name="de.buttercookie.units.ACTION_USE_UNIT" />
+                <data android:mimeType="vnd.android.cursor.item/vnd.de.buttercookie.units.unit_usage" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-            
-            <meta-data android:name="android.app.searchable"
-   		  	 	android:resource="@xml/searchable" />
-        </activity>
-                	
-        <activity android:name=".UnitDetails"
-        	android:label="@string/app_name">
-        	
-        	<intent-filter>
-        		<data android:mimeType="vnd.android.cursor.item/vnd.de.buttercookie.units.unit_usage" />
-        		<action android:name="android.intent.action.VIEW" />
-        		<category android:name="android.intent.category.DEFAULT" />
-        	</intent-filter>
-        	
-        	</activity>
 
-        <provider android:name=".UnitsContentProvider"
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+
+        </activity>
+
+        <activity
+            android:name=".UnitList"
+            android:theme="@android:style/Theme.Dialog"
+            android:label="@string/app_name"
+            android:launchMode="singleTop">
+
+            <intent-filter>
+                <data android:mimeType="vnd.android.cursor.dir/vnd.de.buttercookie.units.unit_usage" />
+
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.PICK" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+
+        </activity>
+
+        <activity
+            android:name=".UnitDetails"
+            android:label="@string/app_name">
+
+            <intent-filter>
+                <data android:mimeType="vnd.android.cursor.item/vnd.de.buttercookie.units.unit_usage" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+        </activity>
+
+        <provider
+            android:name=".UnitsContentProvider"
             android:authorities="de.buttercookie.units" />
 
     </application>
 
-<!-- Uncomment the below permission to trigger generation of the fingerprints.json file.
-     Check logcat for the name of the generated file. -->
-<!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/> -->
+    <!-- Uncomment the below permission to trigger generation of the fingerprints.json file.
+         Check logcat for the name of the generated file. -->
+    <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/> -->
 </manifest> 
