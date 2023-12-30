@@ -993,6 +993,9 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
                     }
                     return true;
                 }
+				case R.id.equal:{
+					openOptionsMenu();
+				}
             }
             return false;
         }

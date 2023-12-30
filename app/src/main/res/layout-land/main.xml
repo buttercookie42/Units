@@ -207,7 +207,8 @@
                     <com.android.calculator2.ColorButton
                         android:id="@+id/equal"
                         android:text="@string/equal"
-                        style="@style/equal_button_style" />
+                        style="@style/equal_button_style"
+                        buttercookie:longpressText="@string/menu_button" />
 
                     <com.android.calculator2.ColorButton
                         android:id="@+id/plus"
