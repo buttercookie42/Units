@@ -18,6 +18,7 @@ package com.android.calculator2;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
@@ -31,7 +32,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import de.buttercookie.units.R;
-import de.buttercookie.units.Units;
 
 /**
  * Button with click-animation effect.
@@ -55,12 +55,17 @@ class ColorButton extends Button implements OnClickListener {
         super(context, attrs);
 
         init();
-        if (attrs.getAttributeBooleanValue(Units.XMLNS, "longpressEllipsis", false)) {
-            final Resources res = getResources();
-            mEllipsis = res.getDrawable(R.drawable.button_ellipsis);
-        }
 
-        mLongpressText = attrs.getAttributeValue(Units.XMLNS, "longpressText");
+        final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ColorButton);
+        try {
+            if (a.getBoolean(R.styleable.ColorButton_longpressEllipsis, false)) {
+                final Resources res = getResources();
+                mEllipsis = res.getDrawable(R.drawable.button_ellipsis);
+            }
+            mLongpressText = a.getString(R.styleable.ColorButton_longpressText);
+        } finally {
+            a.recycle();
+        }
     }
 
     private void init() {
