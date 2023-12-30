@@ -17,8 +17,8 @@ android {
         applicationId = "de.buttercookie.units"
         minSdk = 4
         targetSdk = 10
-        versionCode = 9
-        versionName = "1.0"
+        versionCode = 10
+        versionName = "1.1a1"
     }
 
     buildTypes {
