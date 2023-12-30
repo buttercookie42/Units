@@ -57,7 +57,6 @@ android {
 }
 
 dependencies {
-    implementation(files("libs/android-support-v4.jar"))
     implementation(files("libs/andro-views.jar"))
 }
 
