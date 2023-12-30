@@ -16,9 +16,14 @@ android {
     defaultConfig {
         applicationId = "de.buttercookie.units"
         minSdk = 4
+        //noinspection ExpiredTargetSdkVersion
         targetSdk = 10
         versionCode = 10
         versionName = "1.1a1"
+    }
+
+    lint {
+        disable += "ExpiredTargetSdkVersion"
     }
 
     buildTypes {
