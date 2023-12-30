@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?><!-- English -->
 <resources>
+    <!-- Application name -->
     <string name="app_name">Units</string>
 
     <string name="have_hint">you have</string>

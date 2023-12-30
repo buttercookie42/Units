@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Application name -->
     <!-- If there is a syntax error in the user entered calculation, an error dialog will appear.  This is the title. -->
     <string name="error">Error</string>
     <!-- Displayed numbers for the digit buttons -->
