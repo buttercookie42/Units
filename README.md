@@ -130,7 +130,7 @@ Units is an ongoing project, with volunteers contributing freely to it. We would
 
 
 
-[0]: res/drawable-mdpi/icon.png
+[0]: app/src/main/res/drawable-mdpi/icon.png
 [1]: market://search?q=pname:info.staticfree.android.units
 [2]: Units.apk
 [3]: #changelog
