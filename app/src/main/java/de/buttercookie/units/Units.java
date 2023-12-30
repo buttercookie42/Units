@@ -31,6 +31,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.ClipboardManager;
@@ -677,6 +678,15 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         }
     }
 
+    @Override
+    public void onOptionsMenuClosed(Menu menu) {
+        super.onOptionsMenuClosed(menu);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Workaround for https://issuetracker.google.com/issues/315761686
+            invalidateOptionsMenu();
+        }
+    }
+
     /**
      * Read an InputStream into a String until it hits EOF.
      *
@@ -993,9 +1003,9 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
                     }
                     return true;
                 }
-				case R.id.equal:{
-					openOptionsMenu();
-				}
+                case R.id.equal: {
+                    openOptionsMenu();
+                }
             }
             return false;
         }
