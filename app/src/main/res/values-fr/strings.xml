@@ -28,12 +28,5 @@
     <string name="keypad_length">longitude…</string>
     <string name="keypad_mass">volume…</string>
     <string name="keypad_time">temps…</string>
-    <string name="keypad_square">x²</string>
-    <string name="keypad_cube">x³</string>
-    <string name="keypad_prefix_milli">milli-</string>
-    <string name="keypad_prefix_kilo">kilo-</string>
-    <string name="keypad_prefix_centi">centi-</string>
-    <string name="const_light">lumière</string>
-    <string name="const_energy">énergie</string>
     <string name="currency">$</string>
 </resources>
