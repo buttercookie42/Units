@@ -19,6 +19,7 @@
         android:id="@+id/history_close"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/history_button_close" />
+        android:text="@string/history_button_close"
+        android:textSize="24sp"/>
 
 </LinearLayout>
