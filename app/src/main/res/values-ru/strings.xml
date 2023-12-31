@@ -4,7 +4,7 @@
     <string name="have_hint">Вы </string>
     <string name="want_hint">Вы желаете</string>
     <string name="ctx_menu_send">Отправить</string>
-    <string name="ctx_menu_send_title">Отправить результат с...</string>
+    <string name="ctx_menu_send_title">Отправить результат с…</string>
     <string name="ctx_menu_reedit">Редактировать повторно</string>
     <string name="ctx_menu_use_result">Использовать результат</string>
     <string name="toast_copy">\"%1$s\" скопировано в буфер обмена.</string>
@@ -19,7 +19,7 @@
     <string name="search_hint">Искать единицы</string>
     <string name="search_no_results">Единицы не найдены.</string>
     <string name="search_title_unit">Единицы совпавшие с \"%1$s\"</string>
-    <string name="dialog_loading_units">Загрузка начальной базы данных использования единиц...</string>
+    <string name="dialog_loading_units">Загрузка начальной базы данных использования единиц…</string>
     <string name="err_have_empty">С чего Вы хотите конвертировать?</string>
     <string name="err_no_conform">Невозможно конвертировать в такую единицу.</string>
     <string name="err_no_load_about">Ошибка: невозможно загрузить страницу информации о программе.</string>

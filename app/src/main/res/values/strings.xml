@@ -7,7 +7,7 @@
     <string name="want_hint">you want</string>
 
     <string name="ctx_menu_send">Send</string>
-    <string name="ctx_menu_send_title">Send result with...</string>
+    <string name="ctx_menu_send_title">Send result with…</string>
     <string name="ctx_menu_reedit">Re-edit</string>
     <string name="ctx_menu_use_result">Use result</string>
 
@@ -29,7 +29,7 @@
     <string name="search_title_unit">Units matching \"%1$s\"</string>
 
     <!-- user-facing alerts -->
-    <string name="dialog_loading_units">Loading initial unit usage database...</string>
+    <string name="dialog_loading_units">Loading initial unit usage database…</string>
     <string name="err_have_empty">What do you want to convert from?</string>
     <string name="err_no_conform">Could not convert to this unit.</string>
     <string name="err_no_load_about">Error: could not load about page.</string>

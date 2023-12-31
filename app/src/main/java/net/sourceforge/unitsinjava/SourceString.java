@@ -51,7 +51,7 @@ public class SourceString implements Source
   public String where(int p)
     {
       if (p>15)
-        return "After '... " + text.substring(p-15,p) + "'";
+        return "After '… " + text.substring(p-15,p) + "'";
       else if (p>0)
         return "After '" + text.substring(0,p) + "'";
       else

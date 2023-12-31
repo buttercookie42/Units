@@ -6,7 +6,7 @@
     <string name="want_hint">vorrei</string>
 
     <string name="ctx_menu_send">Invia</string>
-    <string name="ctx_menu_send_title">Invia risultato con...</string>
+    <string name="ctx_menu_send_title">Invia risultato con…</string>
     <string name="ctx_menu_reedit">Ri-modificare</string>
     <string name="ctx_menu_use_result">Utilizzare il risultato</string>
 

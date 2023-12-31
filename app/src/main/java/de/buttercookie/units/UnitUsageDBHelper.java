@@ -193,14 +193,14 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         Log.d(TAG, "init all weights hash");
         final HashMap<String, Integer> allUnitWeights =
                 new HashMap<String, Integer>(Unit.table.keySet().size());
-        Log.d(TAG, "adding all known weights...");
+        Log.d(TAG, "adding all known weights…");
         for (final String unitName : Unit.table.keySet()) {
             // don't add all uppercase names
             if (!unitName.toUpperCase().equals(unitName)) {
                 allUnitWeights.put(unitName, 0);
             }
         }
-        Log.d(TAG, "adding all known functions...");
+        Log.d(TAG, "adding all known functions…");
         for (final String functionName : BuiltInFunction.table.keySet()) {
             allUnitWeights.put(functionName + "(", 0);
         }
@@ -221,9 +221,9 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         // This is so that things of common weight end up in non-random order
         // without having to do an SQL order-by.
         final ArrayList<String> sortedUnits = new ArrayList<String>(allUnitWeights.keySet());
-        Log.d(TAG, "Sorting units...");
+        Log.d(TAG, "Sorting units…");
         Collections.sort(sortedUnits);
-        Log.d(TAG, "Adding all sorted units...");
+        Log.d(TAG, "Adding all sorted units…");
 
         final HashMap<String, String> fingerprints = loadFingerprints();
 
