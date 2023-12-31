@@ -170,13 +170,13 @@
                         android:id="@+id/div"
                         android:text="@string/div"
                         style="@style/button_style"
-                        buttercookie:longpressText="|" />
+                        buttercookie:longpressText="@string/fraction" />
 
                     <com.android.calculator2.ColorButton
                         android:id="@+id/power"
                         android:text="@string/power"
                         style="@style/button_style"
-                        buttercookie:longpressText="E" />
+                        buttercookie:longpressText="@string/exponent" />
                 </LinearLayout>
 
                 <LinearLayout

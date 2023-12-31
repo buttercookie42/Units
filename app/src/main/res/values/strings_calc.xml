@@ -75,5 +75,9 @@
     <string name="advanced">Advanced panel</string>
     <!-- Menu item text to clear the calculation history. -->
     <string name="clear_history">Clear history</string>
+    <!-- Displayed on buttons on screen for entering the exponent in the E notation. -->
+    <string name="exponent">E</string>
+    <!-- Do not translate. Displayed on buttons on screen for entering a fraction. -->
+    <string name="fraction" translatable="false">|</string>
 
 </resources>
