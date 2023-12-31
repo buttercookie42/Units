@@ -37,12 +37,21 @@ import de.buttercookie.units.R;
  * Button with click-animation effect.
  */
 class ColorButton extends Button implements OnClickListener {
+
+    private static final int PADDING_DP = 10;
+
+    private static final int LONGPRESS_HINT_VERTICAL_MARGIN_DP = 4;
+
+    private static final int MAX_ALPHA = 64;
+
     private int CLICK_FEEDBACK_COLOR;
     private static final int CLICK_FEEDBACK_INTERVAL = 10;
     private static final int CLICK_FEEDBACK_DURATION = 350;
 
     private float mTextX;
     private float mTextY;
+    private int mPadding;
+    private int mLongpressHintVerticalMargin;
     private long mAnimStart;
     private OnClickListener mListener;
     private Paint mFeedbackPaint;
@@ -80,10 +89,12 @@ class ColorButton extends Button implements OnClickListener {
         mLongpressTextPaint = new Paint(textPaint);
         mLongpressTextPaint.setAlpha(127);
 
+        mPadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, PADDING_DP,
+                res.getDisplayMetrics());
+        mLongpressHintVerticalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                LONGPRESS_HINT_VERTICAL_MARGIN_DP, res.getDisplayMetrics());
+
         mAnimStart = -1;
-
-        //
-
     }
 
     /**
@@ -123,12 +134,13 @@ class ColorButton extends Button implements OnClickListener {
         mTextY = (getHeight() - paint.ascent() - paint.descent()) / 2;
 
         if (mLongpressText != null) {
-            final int availWidth = buttonWidth - 2 * PADDING;
+            final int availWidth = buttonWidth - 2 * mPadding;
             final float curTextSize = mLongpressTextPaint.getTextSize();
             final float curTextWidth = mLongpressTextPaint.measureText(mLongpressText);
             final float textSizeByWidth = curTextSize * availWidth / curTextWidth;
 
-            final float textSizeByHeight = (getHeight() - paint.getTextSize()) / 2 - 4;
+            final float textSizeByHeight =
+                    (getHeight() - paint.getTextSize()) / 2 - mLongpressHintVerticalMargin;
             mLongpressTextPaint.setTextAlign(Align.RIGHT);
 
             final float textSize = Math.min(textSizeByWidth, textSizeByHeight);
@@ -141,8 +153,6 @@ class ColorButton extends Button implements OnClickListener {
         measureText();
     }
 
-    private static final int MAX_ALPHA = 64;
-
     private void drawMagicFlame(int duration, Canvas canvas) {
         final int alpha = MAX_ALPHA - MAX_ALPHA * duration / CLICK_FEEDBACK_DURATION;
         final int color = CLICK_FEEDBACK_COLOR | (alpha << 24);
@@ -150,8 +160,6 @@ class ColorButton extends Button implements OnClickListener {
         mFeedbackPaint.setColor(color);
         canvas.drawRect(1, 1, getWidth() - 1, getHeight() - 1, mFeedbackPaint);
     }
-
-    private static final int PADDING = 10;
 
     @Override
     public void onDraw(Canvas canvas) {
@@ -179,7 +187,7 @@ class ColorButton extends Button implements OnClickListener {
 
         if (mLongpressText != null) {
 
-            canvas.drawText(mLongpressText, getWidth() - PADDING, -mLongpressTextPaint.ascent() + PADDING, mLongpressTextPaint);
+            canvas.drawText(mLongpressText, getWidth() - mPadding, -mLongpressTextPaint.ascent() + mPadding, mLongpressTextPaint);
         }
     }
 
