@@ -20,4 +20,6 @@
     <string name="basic" msgid="7691469861698059753">"Grundfunktionen"</string>
     <string name="advanced" msgid="7122495413742976492">"Erweiterte Funktionen"</string>
     <string name="clear_history" msgid="8458043980601165012">"Verlauf löschen"</string>
+    <string name="exponent">E</string>
+    <string name="menu_button">MENÜ</string>
 </resources>
