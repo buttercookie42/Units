@@ -23,6 +23,8 @@
     <string name="sin">sin</string>
     <string name="cos">cos</string>
     <string name="tan">tan</string>
+    <string name="atan">atan</string>
+    <string name="log">log</string>
     <string name="pi">\u03c0</string>
     <string name="e">e</string>
     <string name="ln">ln</string>

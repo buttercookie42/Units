@@ -36,6 +36,4 @@
     <string name="const_light">lumière</string>
     <string name="const_energy">énergie</string>
     <string name="currency">$</string>
-    <string name="log">log</string>
-    <string name="atan">atan</string>
 </resources>
