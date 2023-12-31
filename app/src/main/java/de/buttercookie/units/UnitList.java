@@ -146,7 +146,8 @@ public class UnitList extends ListActivity implements OnClickListener {
     }
 
     private void viewUnit(Uri unit, String unitName) {
-        final Intent viewUnit = new Intent(Intent.ACTION_VIEW, unit);
+        final Intent viewUnit = new Intent(this, UnitDetails.class)
+                .setAction(Intent.ACTION_VIEW).setData(unit);
 
         viewUnit.putExtra(Units.EXTRA_UNIT_NAME, unitName);
         startActivity(viewUnit);

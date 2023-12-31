@@ -65,15 +65,7 @@
 
         <activity
             android:name=".UnitDetails"
-            android:exported="true">
-
-            <intent-filter tools:ignore="AppLinkUrlError">
-                <data android:mimeType="vnd.android.cursor.item/vnd.de.buttercookie.units.unit_usage" />
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-
-        </activity>
+            android:exported="false" />
 
         <provider
             android:name=".UnitsContentProvider"

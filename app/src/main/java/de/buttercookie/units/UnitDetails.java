@@ -74,15 +74,15 @@ public class UnitDetails extends Activity {
 
         final String[] from = {UsageEntry._UNIT};
         final int[] to = {android.R.id.text1};
-        final ListView conformable = ((ListView) findViewById(R.id.conformable));
+        final ListView conformable = findViewById(R.id.conformable);
         conformable.setAdapter(new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, conforming, from, to));
         conformable.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
                                     long id) {
-                startActivity(new Intent(Intent.ACTION_VIEW, ContentUris.withAppendedId(UsageEntry.CONTENT_URI, id)));
-
+                startActivity(new Intent(UnitDetails.this, UnitDetails.class)
+                        .setAction(Intent.ACTION_VIEW).
+                        setData(ContentUris.withAppendedId(UsageEntry.CONTENT_URI, id)));
             }
         });
-        ;
     }
 }
