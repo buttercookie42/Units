@@ -20,6 +20,7 @@
 
     <string name="menu_pick_unit">Pick unit</string>
     <string name="menu_unit_details">Unit details</string>
+    <string name="menu_compatible_units">Other compatible units</string>
 
     <string name="dialog_about_title">About Units</string>
     <string name="dialog_all_units_title">All Units</string>
@@ -27,6 +28,8 @@
     <string name="search_hint">Search units</string>
     <string name="search_no_results">No units found.</string>
     <string name="search_title_unit">Units matching \"%1$s\"</string>
+
+    <string name="history_button_close" translatable="false">↑</string>
 
     <!-- user-facing alerts -->
     <string name="dialog_loading_units">Loading initial unit usage database…</string>
