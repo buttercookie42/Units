@@ -118,13 +118,20 @@ class ColorButton extends Button implements OnClickListener {
 
     private void measureText() {
         final Paint paint = getPaint();
-        mTextX = (getWidth() - paint.measureText(getText().toString())) / 2;
+        final int buttonWidth = getWidth();
+        mTextX = (buttonWidth - paint.measureText(getText().toString())) / 2;
         mTextY = (getHeight() - paint.ascent() - paint.descent()) / 2;
 
         if (mLongpressText != null) {
-            mLongpressTextPaint.measureText(mLongpressText);
-            final float textSize = (getHeight() - paint.getTextSize()) / 2 - 4;
+            final int availWidth = buttonWidth - 2 * PADDING;
+            final float curTextSize = mLongpressTextPaint.getTextSize();
+            final float curTextWidth = mLongpressTextPaint.measureText(mLongpressText);
+            final float textSizeByWidth = curTextSize * availWidth / curTextWidth;
+
+            final float textSizeByHeight = (getHeight() - paint.getTextSize()) / 2 - 4;
             mLongpressTextPaint.setTextAlign(Align.RIGHT);
+
+            final float textSize = Math.min(textSizeByWidth, textSizeByHeight);
             mLongpressTextPaint.setTextSize(textSize);
         }
     }
