@@ -77,7 +77,8 @@
 
         <provider
             android:name=".UnitsContentProvider"
-            android:authorities="de.buttercookie.units" />
+            android:authorities="de.buttercookie.units"
+            android:exported="false" />
 
     </application>
 
