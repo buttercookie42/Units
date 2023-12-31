@@ -404,8 +404,6 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     static {
         UNICODE_TRANS.put('÷', "/");
         UNICODE_TRANS.put('×', "*");
-        UNICODE_TRANS.put('÷', "/");
-        UNICODE_TRANS.put('×', "*");
         UNICODE_TRANS.put('²', "^2");
         UNICODE_TRANS.put('³', "^3");
         UNICODE_TRANS.put('⁴', "^4");
