@@ -28,5 +28,5 @@
     <string name="keypad_length">longitude…</string>
     <string name="keypad_mass">volume…</string>
     <string name="keypad_time">temps…</string>
-    <string name="currency">$</string>
+    <string name="currency">€</string>
 </resources>

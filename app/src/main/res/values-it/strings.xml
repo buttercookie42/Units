@@ -35,4 +35,5 @@
 
     <!-- calculator buttons -->
     <string name="unit_entry">unità</string>
+    <string name="currency">€</string>
 </resources>

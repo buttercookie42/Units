@@ -58,7 +58,7 @@
     <!-- constants -->
     <string name="const_light" translatable="false">light</string>
     <string name="const_energy" translatable="false">energy</string>
-    <!-- Default currency. This should be the default for the given locale. -->
+    <!-- Default currency. This should be the default unit for the given locale. -->
     <string name="currency">$</string>
 
 </resources>
