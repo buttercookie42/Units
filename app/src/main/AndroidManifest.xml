@@ -14,7 +14,7 @@
 
         <activity
             android:name=".Units"
-            android:theme="@android:style/Theme.Black.NoTitleBar"
+            android:theme="@style/AppTheme"
             android:exported="true"
             android:launchMode="singleTop">
             <intent-filter>
@@ -41,7 +41,7 @@
 
         <activity
             android:name=".UnitList"
-            android:theme="@android:style/Theme.Dialog"
+            android:theme="@style/UnitListTheme"
             android:exported="false"
             android:launchMode="singleTop">
 
@@ -57,7 +57,7 @@
 
         <activity
             android:name=".UnitDetails"
-            android:theme="@android:style/Theme.Black"
+            android:theme="@style/UnitDetailsTheme"
             android:exported="false" />
 
         <provider
