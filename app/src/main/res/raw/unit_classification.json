@@ -1,6 +1,6 @@
 {"-- This is a list of unit→classification mappings. Classification names should be in Title Case, preferably short.--": 0,
 
-"meter": "Length",
+ "meter": "Length",
  "hectare": "Area",
  "liter": "Volume",
  "gram": "Mass",
@@ -14,7 +14,7 @@
  "radian": "Angle",
  "watt": "Power",
  "joule": "Work",
- "volt": "Electro-motive Force",
+ "volt": "Electromotive Force",
  "newton": "Force",
  "gravity": "Acceleration",
  "energy": "Energy",

@@ -88,6 +88,7 @@ import de.buttercookie.units.ValueGui.ConversionException;
 import de.buttercookie.units.ValueGui.ReciprocalException;
 
 // TODO high: move category strings to a system that can handle runtime i18n changes. maybe put string refs in the DB?
+// TODO high: or at least reload category strings upon program launch in some way?
 // TODO high: fix mdpi app icon on Android 1.6
 // TODO high: ldpi smaller icon for about
 // TODO med: add implicit "last result" eg. "1+1=" then press "+1" to get "3"
