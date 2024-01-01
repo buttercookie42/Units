@@ -831,7 +831,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
             }
 
             case DIALOG_UNIT_CATEGORY: {
-                final Builder b = new Builder(new ContextThemeWrapper(this, android.R.style.Theme_Black));
+                final Builder b = new Builder(new ContextThemeWrapper(this, R.style.UnitCategoryDialogTheme));
                 final String[] from = {UsageEntry._UNIT};
                 final int[] to = {android.R.id.text1};
                 b.setTitle("all units");
