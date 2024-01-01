@@ -18,6 +18,9 @@
 
 package de.buttercookie.units;
 
+import static android.content.res.Configuration.SCREENLAYOUT_SIZE_LARGE;
+import static android.content.res.Configuration.SCREENLAYOUT_SIZE_MASK;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -28,6 +31,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -632,6 +636,29 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         }
 
         return super.onContextItemSelected(item);
+    }
+
+    @Override
+    public void openOptionsMenu() {
+        Configuration config = getResources().getConfiguration();
+        if (requireTabletMenuHack(config)) {
+            final int originalScreenSize = config.screenLayout & SCREENLAYOUT_SIZE_MASK;
+            config.screenLayout &= ~SCREENLAYOUT_SIZE_MASK;
+            config.screenLayout |= SCREENLAYOUT_SIZE_LARGE;
+
+            super.openOptionsMenu();
+
+            config.screenLayout &= ~SCREENLAYOUT_SIZE_MASK;
+            config.screenLayout |= originalScreenSize;
+        } else {
+            super.openOptionsMenu();
+        }
+    }
+
+    private boolean requireTabletMenuHack(Configuration config) {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB &&
+                (config.screenLayout & SCREENLAYOUT_SIZE_MASK)
+                        > SCREENLAYOUT_SIZE_LARGE;
     }
 
     @Override
