@@ -57,6 +57,7 @@
 
         <activity
             android:name=".UnitDetails"
+            android:theme="@android:style/Theme.Black"
             android:exported="false" />
 
         <provider

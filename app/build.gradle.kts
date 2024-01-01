@@ -17,7 +17,7 @@ android {
         applicationId = "de.buttercookie.units"
         minSdk = 4
         //noinspection ExpiredTargetSdkVersion
-        targetSdk = 10
+        targetSdk = 11
         versionCode = 10
         versionName = "1.1a1"
     }
