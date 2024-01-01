@@ -206,7 +206,8 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     private void handleIntent(Intent intent) {
         final String action = intent.getAction();
         if (Intent.ACTION_SEARCH.equals(action)) {
-            final Intent pickUnit = new Intent(Intent.ACTION_PICK, UsageEntry.CONTENT_URI);
+            final Intent pickUnit = new Intent(this, UnitList.class)
+                    .setAction(Intent.ACTION_PICK).setData(UsageEntry.CONTENT_URI);
             final String query = intent.getExtras().getString(SearchManager.QUERY);
             pickUnit.putExtra(UnitList.EXTRA_UNIT_QUERY, query);
 

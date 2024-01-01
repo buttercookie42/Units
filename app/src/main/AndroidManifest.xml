@@ -26,6 +26,7 @@
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
 
+            <!-- Used when picking a result from the search bar's autocomplete list. -->
             <intent-filter>
                 <action android:name="de.buttercookie.units.ACTION_USE_UNIT" />
                 <data android:mimeType="vnd.android.cursor.item/vnd.de.buttercookie.units.unit_usage" />
@@ -43,12 +44,6 @@
             android:theme="@android:style/Theme.Dialog"
             android:exported="false"
             android:launchMode="singleTop">
-
-            <intent-filter>
-                <data android:mimeType="vnd.android.cursor.dir/vnd.de.buttercookie.units.unit_usage" />
-                <action android:name="android.intent.action.PICK" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
