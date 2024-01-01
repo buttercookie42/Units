@@ -20,7 +20,7 @@
 
     <string name="menu_pick_unit">Pick unit</string>
     <string name="menu_unit_details">Unit details</string>
-    <string name="menu_compatible_units">Other compatible units</string>
+    <string name="menu_compatible_units">Other compatible units:</string>
 
     <string name="dialog_about_title">About Units</string>
     <string name="dialog_all_units_title">All Units</string>

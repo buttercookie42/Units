@@ -16,7 +16,7 @@
     <string name="menu_pick_unit">Einheit verwenden</string>
     <string name="menu_unit_details">Einheitendetails</string>
     <string name="currency">€</string>
-    <string name="menu_compatible_units">Andere kompatible Einheiten</string>
+    <string name="menu_compatible_units">Andere kompatible Einheiten:</string>
     <string name="dialog_all_units_title">Alle Einheiten</string>
     <string name="search_hint">Einheiten suchen</string>
     <string name="search_no_results">Keine Einheiten gefunden.</string>
