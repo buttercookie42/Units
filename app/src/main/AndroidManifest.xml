@@ -41,15 +41,12 @@
         <activity
             android:name=".UnitList"
             android:theme="@android:style/Theme.Dialog"
-            android:exported="true"
+            android:exported="false"
             android:launchMode="singleTop">
 
-            <intent-filter tools:ignore="AppLinkUrlError">
+            <intent-filter>
                 <data android:mimeType="vnd.android.cursor.dir/vnd.de.buttercookie.units.unit_usage" />
-
-                <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.PICK" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
