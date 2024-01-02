@@ -61,6 +61,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.LinearLayout;
@@ -87,8 +88,6 @@ import java.util.HashMap;
 import de.buttercookie.units.ValueGui.ConversionException;
 import de.buttercookie.units.ValueGui.ReciprocalException;
 
-// TODO high: move category strings to a system that can handle runtime i18n changes. maybe put string refs in the DB?
-// TODO high: or at least reload category strings upon program launch in some way?
 // TODO high: fix mdpi app icon on Android 1.6
 // TODO high: ldpi smaller icon for about
 // TODO med: add implicit "last result" eg. "1+1=" then press "+1" to get "3"
@@ -117,6 +116,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     private HistoryAdapter mHistoryAdapter;
 
     private boolean runInitialisationTask = false;
+    private boolean invalidateUnitsList = false;
 
     public final static String XMLNS = "http://staticfree.info/ns/android/units";
 
@@ -787,6 +787,8 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
             DIALOG_LOADING_UNITS = 2,
             DIALOG_UNIT_CATEGORY = 3;
 
+
+
     @Override
     protected Dialog onCreateDialog(int id) {
         switch (id) {
@@ -820,15 +822,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
                 b.setTitle(R.string.dialog_all_units_title);
                 final ExpandableListView unitExpandList = new ExpandableListView(Units.this);
                 unitExpandList.setId(android.R.id.list);
-                final String[] groupProjection = {UsageEntry._ID, UsageEntry._UNIT, UsageEntry._FACTOR_FPRINT};
-                // any selection below will select from the grouping description
-                final Cursor cursor = managedQuery(UsageEntry.CONTENT_URI_CONFORM_TOP, groupProjection, null, null, UnitUsageDBHelper.USAGE_SORT);
-
-                unitExpandList.setAdapter(new UnitsExpandableListAdapter(cursor, this,
-                        android.R.layout.simple_expandable_list_item_1, android.R.layout.simple_expandable_list_item_1,
-                        new String[]{UsageEntry._UNIT},
-                        new int[]{android.R.id.text1},
-                        new String[]{UsageEntry._UNIT}, new int[]{android.R.id.text1}));
+                unitExpandList.setAdapter(getAllUnits());
                 unitExpandList.setCacheColorHint(0);
                 unitExpandList.setOnChildClickListener(allUnitChildClickListener);
                 b.setView(unitExpandList);
@@ -861,6 +855,18 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         }
     }
 
+    private ExpandableListAdapter getAllUnits() {
+        final String[] groupProjection = {UsageEntry._ID, UsageEntry._UNIT, UsageEntry._FACTOR_FPRINT};
+        // any selection below will select from the grouping description
+        final Cursor cursor = managedQuery(UsageEntry.CONTENT_URI_CONFORM_TOP, groupProjection, null, null, UnitUsageDBHelper.USAGE_SORT);
+
+        return new UnitsExpandableListAdapter(cursor, this,
+                android.R.layout.simple_expandable_list_item_1, android.R.layout.simple_expandable_list_item_1,
+                new String[]{UsageEntry._UNIT},
+                new int[]{android.R.id.text1},
+                new String[]{UsageEntry._UNIT}, new int[]{android.R.id.text1});
+    }
+
     private String mDialogUnitCategoryUnit = "m";
     private SimpleCursorAdapter dialogUnitCategoryList;
 
@@ -879,6 +885,16 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
             }
             break;
+
+            case DIALOG_ALL_UNITS: {
+                if (invalidateUnitsList) {
+                    invalidateUnitsList = false;
+                    final ExpandableListView unitExpandList = dialog.findViewById(android.R.id.list);
+                    unitExpandList.setAdapter(getAllUnits());
+                }
+            }
+            break;
+
             default:
                 super.onPrepareDialog(id, dialog);
         }
@@ -1146,6 +1162,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
                 // it's alright if it was dismissed already.
             }
             mInitialisationTask = null;
+            invalidateUnitsList = true;
         }
     }
 }
