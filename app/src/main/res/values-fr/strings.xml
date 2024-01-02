@@ -20,7 +20,7 @@
     <string name="search_hint">Chercher des unités</string>
     <string name="search_no_results">Aucune unité trouvée.</string>
     <string name="search_title_unit">Les unités concordent \"%1$s\"</string>
-    <string name="dialog_loading_units">Chargement de base de données pour la première utilisation …</string>
+    <string name="dialog_loading_units">Chargement de base de données …</string>
     <string name="err_have_empty">Que désirez-vous convertir?</string>
     <string name="err_no_conform">Il est impossible de convertir ces données.</string>
     <string name="err_no_load_about">Error: il est impossible de charger la page "À propos de"</string>

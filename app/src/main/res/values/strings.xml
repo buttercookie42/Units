@@ -32,7 +32,7 @@
     <string name="history_button_close" translatable="false">↑</string>
 
     <!-- user-facing alerts -->
-    <string name="dialog_loading_units">Loading initial unit usage database…</string>
+    <string name="dialog_loading_units">Loading unit usage database…</string>
     <string name="err_have_empty">What do you want to convert from?</string>
     <string name="err_no_conform">Could not convert to this unit.</string>
     <string name="err_no_load_about">Error: could not load about page.</string>

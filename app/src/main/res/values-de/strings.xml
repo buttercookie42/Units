@@ -23,7 +23,7 @@
     <string name="search_title_unit">Ergebnisse für \"%1$s\"</string>
     <string name="err_have_empty">Was möchten Sie konvertieren?</string>
     <string name="err_no_load_about">Fehler: Konnte die „Über“-Seite nicht laden.</string>
-    <string name="dialog_loading_units">Lade Ausgangswert-Datenbank für Nutzungshäufigkeiten der Einheiten…</string>
+    <string name="dialog_loading_units">Lade Datenbank für Einheiten-Nutzungshäufigkeit…</string>
     <string name="err_no_conform">Diese Einheiten können nicht ineinander umgewandelt werden.</string>
     <string name="reciprocal_conversion">reziproke Konvertierung</string>
     <string name="unit_entry">Einheit</string>

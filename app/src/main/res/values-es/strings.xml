@@ -28,7 +28,7 @@
     <string name="search_title_unit">Unidades coincidentes \"%1$s\"</string>
 
     <!-- alertas de cara al usuario -->
-    <string name="dialog_loading_units">Cargando la base de datos de uso de la unidad inicial…</string>
+    <string name="dialog_loading_units">Cargando la base de datos de uso de la unidad…</string>
     <string name="err_have_empty">¿De qué quieres convertir??</string>
     <string name="err_no_conform">No convertir a esta unidad.</string>
     <string name="err_no_load_about">Error: no se pudo cargar la página Acerca de.</string>

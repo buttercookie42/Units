@@ -28,7 +28,7 @@
     <string name="search_title_unit">Unità di corrispondenza \"%1$s\"</string>
 
     <!-- user-facing alerts -->
-    <string name="dialog_loading_units">Caricamento iniziale del database di utilizzo unità…</string>
+    <string name="dialog_loading_units">Caricamento del database di utilizzo unità…</string>
     <string name="err_have_empty">Che cosa si desidera convertire da?</string>
     <string name="err_no_conform">Impossibile convertire a questa unità.</string>
     <string name="err_no_load_about">Errore: non è riuscito a caricare la pagina Informazioni su.</string>

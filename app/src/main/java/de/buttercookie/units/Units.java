@@ -178,15 +178,13 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         unitUsageDBHelper = new UnitUsageDBHelper(this);
 
         final Object instance = getLastNonConfigurationInstance();
-        if (instance instanceof LoadInitialUnitUsageTask) {
-            mLoadInitialUnitUsageTask = (LoadInitialUnitUsageTask) instance;
-            mLoadInitialUnitUsageTask.setActivity(this);
+        if (instance instanceof InitialisationTask) {
+            mInitialisationTask = (InitialisationTask) instance;
+            mInitialisationTask.setActivity(this);
         } else {
-            if (unitUsageDBHelper.getUnitUsageDbCount() == 0) {
-                mLoadInitialUnitUsageTask = new LoadInitialUnitUsageTask();
-                mLoadInitialUnitUsageTask.setActivity(this);
-                mLoadInitialUnitUsageTask.execute();
-            }
+            mInitialisationTask = new InitialisationTask();
+            mInitialisationTask.setActivity(this);
+            mInitialisationTask.execute();
         }
 
         wantEditText.setOnEditorActionListener(this);
@@ -256,7 +254,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
     @Override
     public Object onRetainNonConfigurationInstance() {
-        return mLoadInitialUnitUsageTask;
+        return mInitialisationTask;
     }
 
     @Override
@@ -1102,14 +1100,15 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         }
     }
 
-    private LoadInitialUnitUsageTask mLoadInitialUnitUsageTask;
+    private InitialisationTask mInitialisationTask;
 
     /**
-     * Load the initial usage data on the first run of the application.
+     * Prepare the usage data database, that is load the initial usage data on the first run of the
+     * application and update the unit classifications as necessary.
      *
      * @author steve
      */
-    private class LoadInitialUnitUsageTask extends AsyncTask<Void, Void, Void> {
+    private class InitialisationTask extends AsyncTask<Void, Void, Void> {
         private Activity mActivity;
 
         public void setActivity(Activity activity) {
@@ -1123,7 +1122,9 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
         @Override
         protected Void doInBackground(Void... params) {
-            unitUsageDBHelper.loadInitialUnitUsage();
+            if (unitUsageDBHelper.getUnitUsageDbCount() == 0) {
+                unitUsageDBHelper.loadInitialUnitUsage();
+            }
             unitUsageDBHelper.loadUnitClassifications();
 
             return null;
@@ -1138,7 +1139,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
             } catch (final IllegalArgumentException ie) {
                 // it's alright if it was dismissed already.
             }
-            mLoadInitialUnitUsageTask = null;
+            mInitialisationTask = null;
         }
     }
 }

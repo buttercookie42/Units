@@ -269,6 +269,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         final JSONObject jo = loadInitialWeights(R.raw.unit_classification);
 
         db.beginTransaction();
+        db.delete(DB_CLASSIFICATION_TABLE, null, null);
         final ContentValues cv = new ContentValues();
         for (final Iterator i = jo.keys(); i.hasNext(); ) {
             final String unit = (String) i.next();
