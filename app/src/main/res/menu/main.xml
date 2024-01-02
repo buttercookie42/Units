@@ -20,4 +20,9 @@
         android:id="@+id/about"
         android:title="@string/menu_about"
         android:icon="@android:drawable/ic_menu_info_details" />
+    <item
+        android:id="@+id/dump_fingerprints"
+        android:title="@string/menu_dump_fingerprints"
+        android:icon="@android:drawable/ic_menu_save"
+        android:visible="false" />
 </menu>

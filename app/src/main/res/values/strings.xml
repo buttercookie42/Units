@@ -12,11 +12,13 @@
     <string name="ctx_menu_use_result">Use result</string>
 
     <string name="toast_copy">\"%1$s\" copied to clipboard.</string>
+    <string name="toast_dump_fingerprints">Dumping unit fingerprints…</string>
 
     <string name="menu_swap_input">Swap inputs</string>
     <string name="menu_about">About</string>
     <string name="menu_show_history">Show history</string>
     <string name="menu_clear_history">Clear history</string>
+    <string name="menu_dump_fingerprints">Dump unit fingerprints</string>
 
     <string name="menu_pick_unit">Pick unit</string>
     <string name="menu_unit_details">Unit details</string>

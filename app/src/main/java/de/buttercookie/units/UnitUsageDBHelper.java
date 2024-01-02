@@ -22,7 +22,6 @@ import static de.buttercookie.units.Application.getCurrentLocale;
 import static de.buttercookie.units.SharedPrefs.PREF_LAST_CLASSIFICATION_LOCALE;
 import static de.buttercookie.units.SharedPrefs.PREF_LAST_CLASSIFICATION_VERSION_CODE;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -30,11 +29,10 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Environment;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
@@ -96,6 +94,8 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
     @SuppressWarnings("unused")
     private static final String UNITS_DAT_VERSION = "1.50";
     private static final int DB_VERSION = 5;
+
+    private HashMap<String, String> mDebugFingerprints;
 
     public UnitUsageDBHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -251,23 +251,40 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 
         context.getContentResolver().notifyChange(UsageEntry.CONTENT_URI, null);
 
-        // If we have the right permissons, save the fingerprints file to a JSON file
-        // which can then be imported into the app to speed up initial fingerpint loading.
-        if (context.checkCallingOrSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            final File externalStorage = Environment.getExternalStorageDirectory();
-            final File fprintsOutput = new File(externalStorage, "units_fingerprints.json");
-            final JSONObject jo = new JSONObject(fingerprints);
-            try {
-                final FileWriter fw = new FileWriter(fprintsOutput);
-                fw.write(jo.toString(1));
-                fw.close();
-                Log.i(TAG, "fingerprints written to: " + fprintsOutput.getCanonicalPath());
-
-            } catch (final Exception e) {
-                e.printStackTrace();
-            }
+        if (BuildConfig.DEBUG) {
+            mDebugFingerprints = fingerprints;
         }
         Log.d(TAG, "done!");
+    }
+
+    public boolean canDebugDumpFingerprints() {
+        return mDebugFingerprints != null;
+    }
+
+    public void debugDumpFingerprints() {
+        if (mDebugFingerprints != null) {
+            dumpFingerprints(mDebugFingerprints);
+        }
+    }
+
+    private void dumpFingerprints(HashMap<String, String> fingerprints) {
+        final File dumpFolder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            dumpFolder = context.getExternalFilesDir(null);
+        } else {
+            dumpFolder = context.getFilesDir();
+        }
+        final File fprintsOutput = new File(dumpFolder, "units_fingerprints.json");
+        final JSONObject jo = new JSONObject(fingerprints);
+        try {
+            final FileWriter fw = new FileWriter(fprintsOutput);
+            fw.write(jo.toString(1));
+            fw.close();
+            Log.i(TAG, "fingerprints written to: " + fprintsOutput.getCanonicalPath());
+
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @SuppressLint("ApplySharedPref")

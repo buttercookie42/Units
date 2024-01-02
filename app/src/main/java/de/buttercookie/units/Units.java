@@ -675,6 +675,14 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         return true;
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (BuildConfig.DEBUG) {
+            MenuItem item = menu.findItem(R.id.dump_fingerprints);
+            item.setVisible(unitUsageDBHelper.canDebugDumpFingerprints());
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -706,6 +714,19 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
             case R.id.search:
                 onSearchRequested();
                 return true;
+
+            case R.id.dump_fingerprints:
+                new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        unitUsageDBHelper.debugDumpFingerprints();
+                        return null;
+                    }
+                }.execute();
+                Toast.makeText(this, getString(R.string.toast_dump_fingerprints),
+                        Toast.LENGTH_SHORT).show();
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }

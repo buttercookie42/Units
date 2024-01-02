@@ -67,7 +67,4 @@
 
     </application>
 
-    <!-- Uncomment the below permission to trigger generation of the fingerprints.json file.
-         Check logcat for the name of the generated file. -->
-    <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/> -->
 </manifest> 
