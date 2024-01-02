@@ -116,6 +116,8 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
     private HistoryAdapter mHistoryAdapter;
 
+    private boolean runInitialisationTask = false;
+
     public final static String XMLNS = "http://staticfree.info/ns/android/units";
 
     public final static String
@@ -182,9 +184,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
             mInitialisationTask = (InitialisationTask) instance;
             mInitialisationTask.setActivity(this);
         } else {
-            mInitialisationTask = new InitialisationTask();
-            mInitialisationTask.setActivity(this);
-            mInitialisationTask.execute();
+            runInitialisationTask = true;
         }
 
         wantEditText.setOnEditorActionListener(this);
@@ -239,9 +239,15 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onPostCreate(Bundle savedInstanceState) {
+        if (runInitialisationTask) {
+            runInitialisationTask = false;
+            mInitialisationTask = new InitialisationTask();
+            mInitialisationTask.setActivity(this);
+            mInitialisationTask.execute();
+        }
 
+        super.onPostCreate(savedInstanceState);
     }
 
     @Override
