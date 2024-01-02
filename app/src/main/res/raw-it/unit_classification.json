@@ -43,7 +43,7 @@
  "diopter": "Lens Power",
 
  "mole": "Quantità di Sostanza",
-
+ "gsm": "Grammatura",
 
  "-- various others from units.dat under the Dimensions section": 0,
  "SOLID_ANGLE": "Solid Angle",
