@@ -15,6 +15,9 @@
 
 package de.buttercookie.units;
 
+import android.content.Context;
+import android.content.res.Configuration;
+import android.os.Build;
 import android.util.Log;
 
 import net.sourceforge.unitsinjava.Env;
@@ -108,5 +111,14 @@ public class Application extends android.app.Application {
         };
 
         Tables.build();
+    }
+
+    public static Locale getCurrentLocale(Context context) {
+        final Configuration config = context.getResources().getConfiguration();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return config.getLocales().get(0);
+        } else {
+            return config.locale;
+        }
     }
 }

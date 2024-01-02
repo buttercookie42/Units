@@ -18,12 +18,18 @@
 
 package de.buttercookie.units;
 
+import static de.buttercookie.units.Application.getCurrentLocale;
+import static de.buttercookie.units.SharedPrefs.PREF_LAST_CLASSIFICATION_LOCALE;
+import static de.buttercookie.units.SharedPrefs.PREF_LAST_CLASSIFICATION_VERSION_CODE;
+
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -61,6 +67,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -263,8 +270,20 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         Log.d(TAG, "done!");
     }
 
+    @SuppressLint("ApplySharedPref")
+    // apply() not available in old SDK, plus we're running in a AsyncTask anyway
     @SuppressWarnings("unchecked")
     public void loadUnitClassifications() {
+        final SharedPreferences prefs = SharedPrefs.getAppPrefs(context);
+        String storedLocale = prefs.getString(PREF_LAST_CLASSIFICATION_LOCALE, null);
+        int storedVersion = prefs.getInt(PREF_LAST_CLASSIFICATION_VERSION_CODE, 0);
+
+        if (getCurrentLocale(context).toString().equals(storedLocale) &&
+                BuildConfig.VERSION_CODE == storedVersion) {
+            Log.d(TAG, "Unit classifications still valid, skipping update.");
+            return;
+        }
+
         final SQLiteDatabase db = getWritableDatabase();
         final JSONObject jo = loadInitialWeights(R.raw.unit_classification);
 
@@ -283,6 +302,12 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         db.endTransaction();
         db.close();
         Log.d(TAG, "Successfully added " + jo.length() + " classification entries.");
+
+        final SharedPreferences.Editor editor = prefs.edit();
+        Locale curLocale = getCurrentLocale(context);
+        editor.putString(PREF_LAST_CLASSIFICATION_LOCALE, curLocale.toString());
+        editor.putInt(PREF_LAST_CLASSIFICATION_VERSION_CODE, BuildConfig.VERSION_CODE);
+        editor.commit();
     }
 
     @SuppressWarnings("unchecked")

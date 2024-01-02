@@ -22,6 +22,10 @@ android {
         versionName = "1.1a1"
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     lint {
         disable += "ExpiredTargetSdkVersion"
     }
