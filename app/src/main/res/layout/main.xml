@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:buttercookie="http://schemas.android.com/apk/res-auto">
+    xmlns:buttercookie="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
         android:orientation="vertical"
@@ -43,10 +44,12 @@
                 android:id="@+id/backspace"
                 android:hint="@string/del"
                 android:background="@drawable/backspace"
+                android:layerType="software"
                 style="@style/button_style"
                 android:layout_weight="3"
                 android:layout_width="fill_parent"
-                buttercookie:longpressEllipsis="true" />
+                buttercookie:longpressEllipsis="true"
+                tools:ignore="UnusedAttribute" />
         </LinearLayout>
 
         <org.jared.commons.ui.WorkspaceView
