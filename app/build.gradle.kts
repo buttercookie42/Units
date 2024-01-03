@@ -67,6 +67,7 @@ android {
 }
 
 dependencies {
+    compileOnly("androidx.annotation:annotation:1.7.1")
     implementation(files("libs/andro-views.jar"))
 }
 

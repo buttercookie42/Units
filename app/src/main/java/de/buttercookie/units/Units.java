@@ -74,6 +74,8 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import net.sourceforge.unitsinjava.DefinedFunction;
 import net.sourceforge.unitsinjava.EvalError;
 import net.sourceforge.unitsinjava.Function;
@@ -119,8 +121,6 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     private InitialisationTask mInitialisationTask;
     private boolean runInitialisationTask = false;
     private boolean invalidateUnitsList = false;
-
-    public final static String XMLNS = "http://staticfree.info/ns/android/units";
 
     public final static String
             ACTION_USE_UNIT = "de.buttercookie.units.ACTION_USE_UNIT",
@@ -252,7 +252,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putCharSequence(STATE_RESULT_TEXT, resultView.getText());
         outState.putBoolean(STATE_DRAWER_OPENED, isHistoryVisible());
@@ -540,11 +540,9 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
             addToHistory(haveStr, wantStr, resultVal, reciprocal);
 
         } catch (final ConversionException e) {
-
             resultView.setText(null);
             wantEditText.requestFocus();
             wantEditText.setError(getText(R.string.err_no_conform));
-            return;
         }
     }
 
@@ -733,7 +731,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         final int bufsize = 8196;
         final char[] cbuf = new char[bufsize];
 
-        final StringBuffer buf = new StringBuffer(bufsize);
+        final StringBuilder buf = new StringBuilder(bufsize);
 
         final InputStreamReader in_reader = new InputStreamReader(in);
 
@@ -1074,8 +1072,6 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         }
         return false;
     }
-
-    ;
 
     private int defaultInputType;
     // make sure to reset the input type when losing focus.
