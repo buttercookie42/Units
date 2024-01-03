@@ -1,4 +1,4 @@
-package info.staticfree.android.units;
+package de.buttercookie.units;
 
 import android.net.Uri;
 import android.provider.BaseColumns;

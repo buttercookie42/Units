@@ -1,4 +1,4 @@
-package info.staticfree.android.units;
+package de.buttercookie.units;
 
 import java.io.BufferedReader;
 import java.io.IOException;

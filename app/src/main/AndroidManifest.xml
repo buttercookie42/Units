@@ -20,8 +20,8 @@
             </intent-filter>
             
             <intent-filter>
-            	<action android:name="info.staticfree.android.units.ACTION_USE_UNIT" />
-            	<data android:mimeType="vnd.android.cursor.item/vnd.info.staticfree.android.units.unit_usage" />
+            	<action android:name="de.buttercookie.units.ACTION_USE_UNIT" />
+            	<data android:mimeType="vnd.android.cursor.item/vnd.de.buttercookie.units.unit_usage" />
             	<category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         	
@@ -35,7 +35,7 @@
         	android:label="@string/app_name" android:launchMode="singleTop">
         	
         	<intent-filter>
-        		<data android:mimeType="vnd.android.cursor.dir/vnd.info.staticfree.android.units.unit_usage" />
+        		<data android:mimeType="vnd.android.cursor.dir/vnd.de.buttercookie.units.unit_usage" />
         		<action android:name="android.intent.action.VIEW" />
        			<action android:name="android.intent.action.PICK" />
         		<category android:name="android.intent.category.DEFAULT" />
@@ -53,7 +53,7 @@
         	android:label="@string/app_name">
         	
         	<intent-filter>
-        		<data android:mimeType="vnd.android.cursor.item/vnd.info.staticfree.android.units.unit_usage" />
+        		<data android:mimeType="vnd.android.cursor.item/vnd.de.buttercookie.units.unit_usage" />
         		<action android:name="android.intent.action.VIEW" />
         		<category android:name="android.intent.category.DEFAULT" />
         	</intent-filter>
@@ -61,7 +61,7 @@
         	</activity>
 
         <provider android:name=".UnitsContentProvider"
-            android:authorities="info.staticfree.android.units" />
+            android:authorities="de.buttercookie.units" />
 
     </application>
 

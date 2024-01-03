@@ -1,4 +1,4 @@
-package info.staticfree.android.units;
+package de.buttercookie.units;
 
 import net.sourceforge.unitsinjava.Util;
 import android.database.Cursor;

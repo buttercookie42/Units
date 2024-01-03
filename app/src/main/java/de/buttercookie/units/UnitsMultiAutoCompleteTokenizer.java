@@ -1,4 +1,4 @@
-package info.staticfree.android.units;
+package de.buttercookie.units;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

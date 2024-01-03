@@ -1,4 +1,4 @@
-package info.staticfree.android.units;
+package de.buttercookie.units;
 /*
  * UnitUsageDBHelper.java
  * Copyright (C) 2010  Steve Pomeroy <steve@staticfree.info>
@@ -59,6 +59,8 @@ import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+
+import de.buttercookie.units.R;
 
 /**
  * In order to sort through all the possible units, a database of weights is used.

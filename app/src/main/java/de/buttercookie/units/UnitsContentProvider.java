@@ -1,4 +1,4 @@
-package info.staticfree.android.units;
+package de.buttercookie.units;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,14 +18,14 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
 public class UnitsContentProvider extends ContentProvider {
-	public final static String AUTHORITY = "info.staticfree.android.units";
+	public final static String AUTHORITY = "de.buttercookie.units";
 	public final static String
-    	TYPE_HISTORY_ENTRY_ITEM = "vnd.android.cursor.item/vnd.info.staticfree.android.units.history_entry",
-    	TYPE_HISTORY_ENTRY_DIR  = "vnd.android.cursor.dir/vnd.info.staticfree.android.units.history_entry",
-    	TYPE_UNIT_USAGE_ITEM    = "vnd.android.cursor.item/vnd.info.staticfree.android.units.unit_usage",
-    	TYPE_UNIT_USAGE_DIR     = "vnd.android.cursor.dir/vnd.info.staticfree.android.units.unit_usage",
-    	TYPE_CLASSIFICATION_ITEM = "vnd.android.cursor.item/vnd.info.staticfree.android.units.classification",
-    	TYPE_CLASSIFICATION_DIR  = "vnd.android.cursor.dir/vnd.info.staticfree.android.units.classification";
+    	TYPE_HISTORY_ENTRY_ITEM = "vnd.android.cursor.item/vnd.de.buttercookie.units.history_entry",
+    	TYPE_HISTORY_ENTRY_DIR  = "vnd.android.cursor.dir/vnd.de.buttercookie.units.history_entry",
+    	TYPE_UNIT_USAGE_ITEM    = "vnd.android.cursor.item/vnd.de.buttercookie.units.unit_usage",
+    	TYPE_UNIT_USAGE_DIR     = "vnd.android.cursor.dir/vnd.de.buttercookie.units.unit_usage",
+    	TYPE_CLASSIFICATION_ITEM = "vnd.android.cursor.item/vnd.de.buttercookie.units.classification",
+    	TYPE_CLASSIFICATION_DIR  = "vnd.android.cursor.dir/vnd.de.buttercookie.units.classification";
 
 	private final static int
 		MATCHER_HISTORY_ENTRY_ITEM 				= 1,

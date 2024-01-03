@@ -16,8 +16,8 @@
 
 package com.android.calculator2;
 
-import info.staticfree.android.units.R;
-import info.staticfree.android.units.Units;
+import de.buttercookie.units.R;
+import de.buttercookie.units.Units;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;

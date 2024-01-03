@@ -1,4 +1,4 @@
-package info.staticfree.android.units;
+package de.buttercookie.units;
 /*
  * UnitList.java
  * Copyright (C) 2010  Steve Pomeroy <steve@staticfree.info>
@@ -36,6 +36,8 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
+import de.buttercookie.units.R;
+
 /**
  * Displays a list of units, with an optional search query to search a
  * substring of all unit names.
@@ -51,7 +53,7 @@ public class UnitList extends ListActivity implements OnClickListener {
 	 * Parameter is a string.
 	 */
 	public static final String
-		EXTRA_UNIT_QUERY = "info.staticfree.android.units.EXTRA_UNIT_QUERY";
+		EXTRA_UNIT_QUERY = "de.buttercookie.units.EXTRA_UNIT_QUERY";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

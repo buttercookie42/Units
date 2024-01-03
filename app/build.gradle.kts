@@ -10,11 +10,11 @@ externalProperties {
 }
 
 android {
-    namespace = "info.staticfree.android.units"
+    namespace = "de.buttercookie.units"
     compileSdk = 17
 
     defaultConfig {
-        applicationId = "info.staticfree.android.units"
+        applicationId = "de.buttercookie.units"
         minSdk = 4
         targetSdk = 10
         versionCode = 9

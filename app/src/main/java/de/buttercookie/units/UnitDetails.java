@@ -1,4 +1,4 @@
-package info.staticfree.android.units;
+package de.buttercookie.units;
 /*
  * UnitDetails.java
  * Copyright (C) 2010  Steve Pomeroy <steve@staticfree.info>
@@ -27,6 +27,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.AdapterView.OnItemClickListener;
+
+import de.buttercookie.units.R;
 
 public class UnitDetails extends Activity {
 	final String[] usageEntryProjection = {UsageEntry._ID, UsageEntry._UNIT, UsageEntry._FACTOR_FPRINT};

@@ -1,4 +1,4 @@
-package info.staticfree.android.units;
+package de.buttercookie.units;
 /*
  * Units.java
  * Copyright (C) 2010  Steve Pomeroy <steve@staticfree.info>
@@ -16,8 +16,9 @@ package info.staticfree.android.units;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import info.staticfree.android.units.ValueGui.ConversionException;
-import info.staticfree.android.units.ValueGui.ReciprocalException;
+import de.buttercookie.units.ValueGui.ConversionException;
+import de.buttercookie.units.ValueGui.ReciprocalException;
+import de.buttercookie.units.R;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,7 +40,6 @@ import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -116,13 +116,13 @@ public class Units extends FragmentActivity implements OnClickListener, OnEditor
     public final static String XMLNS="http://staticfree.info/ns/android/units";
 
     public final static String
-    	ACTION_USE_UNIT = "info.staticfree.android.units.ACTION_USE_UNIT",
-    	EXTRA_UNIT_NAME = "info.staticfree.android.units.EXTRA_UNIT_NAME";
+    	ACTION_USE_UNIT = "de.buttercookie.units.ACTION_USE_UNIT",
+    	EXTRA_UNIT_NAME = "de.buttercookie.units.EXTRA_UNIT_NAME";
 
     public final static String
-    	STATE_RESULT_TEXT = "info.staticfree.android.units.RESULT_TEXT",
-    	STATE_DRAWER_OPENED = "info.staticfree.android.units.DRAWER_OPENED",
-    	STATE_DIALOG_UNIT_CATEGORY = "info.staticfree.android.units.STATE_DIALOG_UNIT_CATEGORY";
+    	STATE_RESULT_TEXT = "de.buttercookie.units.RESULT_TEXT",
+    	STATE_DRAWER_OPENED = "de.buttercookie.units.DRAWER_OPENED",
+    	STATE_DIALOG_UNIT_CATEGORY = "de.buttercookie.units.STATE_DIALOG_UNIT_CATEGORY";
 
     private static final int REQUEST_PICK_UNIT = 0;
 
