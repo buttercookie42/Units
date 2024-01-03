@@ -116,6 +116,7 @@ public class UnitList extends ListActivity implements OnClickListener {
             adapter.setStringConversionColumn(c.getColumnIndex(UsageEntry._UNIT));
             setListAdapter(adapter);
         } else {
+            stopManagingCursor(adapter.getCursor());
             adapter.changeCursor(c);
         }
 

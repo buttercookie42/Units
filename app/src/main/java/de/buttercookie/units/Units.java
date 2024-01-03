@@ -902,6 +902,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
                 final String[] projection = {UsageEntry._ID, UsageEntry._UNIT, UsageEntry._FACTOR_FPRINT};
                 final Cursor c = managedQuery(UsageEntry.getEntriesMatchingFprint(UnitUsageDBHelper.getFingerprint(mDialogUnitCategoryUnit)),
                         projection, null, null, UnitUsageDBHelper.USAGE_SORT);
+                stopManagingCursor(dialogUnitCategoryList.getCursor());
                 dialogUnitCategoryList.changeCursor(c);
                 final ListView lv = ((AlertDialog) dialog).getListView();
                 lv.setSelectionFromTop(0, 0);
