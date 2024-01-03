@@ -576,7 +576,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
      * Increments the usage counter for the given unit.
      *
      * @param unit name of the unit
-     * @param db   the unit usage database
+     * @param cr   ContentResolver for the unit usage database
      */
     public static void logUnitUsed(String unit, ContentResolver cr) {
         final String[] selectionArgs = {unit};
