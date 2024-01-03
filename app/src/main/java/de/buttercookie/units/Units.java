@@ -91,8 +91,6 @@ import java.util.HashMap;
 import de.buttercookie.units.ValueGui.ConversionException;
 import de.buttercookie.units.ValueGui.ReciprocalException;
 
-// TODO high: fix mdpi app icon on Android 1.6
-// TODO high: ldpi smaller icon for about
 // TODO med: add implicit "last result" eg. "1+1=" then press "+1" to get "3"
 // TODO med: auto-ranging for metric units (auto add "kilo-" or "micro-")
 // TODO med: allow for returning composite Imperial and time units. eg. "3 hours + 12 minutes" instead of "3.2 hours"
@@ -819,7 +817,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
                 final Builder builder = new AlertDialog.Builder(this);
 
                 builder.setTitle(R.string.dialog_about_title);
-                builder.setIcon(R.drawable.icon);
+                builder.setIcon(R.mipmap.ic_launcher);
 
                 try {
                     final WebView wv = new WebView(this);
