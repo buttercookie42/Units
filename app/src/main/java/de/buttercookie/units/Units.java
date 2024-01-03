@@ -21,6 +21,7 @@ package de.buttercookie.units;
 import static android.content.res.Configuration.SCREENLAYOUT_SIZE_LARGE;
 import static android.content.res.Configuration.SCREENLAYOUT_SIZE_MASK;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -115,6 +116,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
     private HistoryAdapter mHistoryAdapter;
 
+    private InitialisationTask mInitialisationTask;
     private boolean runInitialisationTask = false;
     private boolean invalidateUnitsList = false;
 
@@ -182,7 +184,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         final Object instance = getLastNonConfigurationInstance();
         if (instance instanceof InitialisationTask) {
             mInitialisationTask = (InitialisationTask) instance;
-            mInitialisationTask.setActivity(this);
+            mInitialisationTask.attach(this);
         } else {
             runInitialisationTask = true;
         }
@@ -242,8 +244,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     protected void onPostCreate(Bundle savedInstanceState) {
         if (runInitialisationTask) {
             runInitialisationTask = false;
-            mInitialisationTask = new InitialisationTask();
-            mInitialisationTask.setActivity(this);
+            mInitialisationTask = new InitialisationTask(this);
             mInitialisationTask.execute();
         }
 
@@ -260,6 +261,9 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
     @Override
     public Object onRetainNonConfigurationInstance() {
+        if (mInitialisationTask != null) {
+            mInitialisationTask.detach();
+        }
         return mInitialisationTask;
     }
 
@@ -1122,32 +1126,39 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         }
     }
 
-    private InitialisationTask mInitialisationTask;
-
     /**
      * Prepare the usage data database, that is load the initial usage data on the first run of the
      * application and update the unit classifications as necessary.
      *
      * @author steve
      */
-    private class InitialisationTask extends AsyncTask<Void, Void, Void> {
-        private Activity mActivity;
+    static class InitialisationTask extends AsyncTask<Void, Void, Void> {
+        @SuppressLint("StaticFieldLeak")
+        private Units mActivity;
 
-        public void setActivity(Activity activity) {
+        InitialisationTask(Units activity) {
+            attach(activity);
+        }
+
+        public void attach(Units activity) {
             mActivity = activity;
+        }
+
+        public void detach() {
+            mActivity = null;
         }
 
         @Override
         protected void onPreExecute() {
-            showDialog(DIALOG_LOADING_UNITS);
+            mActivity.showDialog(DIALOG_LOADING_UNITS);
         }
 
         @Override
         protected Void doInBackground(Void... params) {
-            if (unitUsageDBHelper.getUnitUsageDbCount() == 0) {
-                unitUsageDBHelper.loadInitialUnitUsage();
+            if (mActivity.unitUsageDBHelper.getUnitUsageDbCount() == 0) {
+                mActivity.unitUsageDBHelper.loadInitialUnitUsage();
             }
-            unitUsageDBHelper.loadUnitClassifications();
+            mActivity.unitUsageDBHelper.loadUnitClassifications();
 
             return null;
         }
@@ -1156,13 +1167,13 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         protected void onPostExecute(Void result) {
             try {
                 if (mActivity != null) {
+                    mActivity.mInitialisationTask = null;
+                    mActivity.invalidateUnitsList = true;
                     mActivity.dismissDialog(DIALOG_LOADING_UNITS);
                 }
             } catch (final IllegalArgumentException ie) {
                 // it's alright if it was dismissed already.
             }
-            mInitialisationTask = null;
-            invalidateUnitsList = true;
         }
     }
 }
