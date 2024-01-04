@@ -1,5 +1,12 @@
+import com.android.build.api.dsl.ApkSigningConfig
+
 plugins {
     id("com.android.application")
+    id("com.sidneysimmons.gradle-plugin-external-properties")
+}
+
+externalProperties {
+    propertiesFileResolver(file("signing.properties"))
 }
 
 android {
@@ -31,9 +38,40 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
+    signingConfigs {
+        named("debug") {
+            if (checkExternalSigningConfig()) {
+                applyExternalSigningConfig()
+            } else {
+                defaultConfig.signingConfig
+            }
+        }
+        create("release") {
+            if (checkExternalSigningConfig()) {
+                applyExternalSigningConfig()
+                android.buildTypes.getByName("release").signingConfig = this
+            }
+        }
+    }
 }
 
 dependencies {
     implementation(files("libs/android-support-v4.jar"))
     implementation(files("libs/andro-views.jar"))
+}
+
+fun ApkSigningConfig.checkExternalSigningConfig(): Boolean {
+    return props.exists(name + ".keyStore") &&
+            file(props.get(name + ".keyStore")).exists() &&
+            props.exists(name + ".storePassword") &&
+            props.exists(name + ".keyAlias") &&
+            props.exists(name + ".keyPassword")
+}
+
+fun ApkSigningConfig.applyExternalSigningConfig() {
+    storeFile = file(props.get(name + ".keyStore"))
+    storePassword = props.get(name + ".storePassword")
+    keyAlias = props.get(name + ".keyAlias")
+    keyPassword = props.get(name + ".keyPassword")
 }
