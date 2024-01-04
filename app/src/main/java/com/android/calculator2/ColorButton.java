@@ -65,6 +65,7 @@ class ColorButton extends Button implements OnClickListener {
     private final String mLongpressText;
     private Paint mLongpressTextPaint;
 
+    // TODO: make longpress hints RTL-compatible
     public ColorButton(Context context, AttributeSet attrs) {
         super(context, attrs);
 
