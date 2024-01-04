@@ -18,6 +18,7 @@ package de.buttercookie.units;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
+import android.os.StrictMode;
 import android.util.Log;
 
 import net.sourceforge.unitsinjava.Env;
@@ -32,24 +33,21 @@ import java.util.Vector;
 
 public class Application extends android.app.Application {
     private final static String TAG = "units";
-    public final static boolean DEBUG = false;
 
     @Override
-    @SuppressWarnings("all")
     public void onCreate() {
-//		  if (DEBUG && Build.VERSION.SDK_INT >= 9) {
-//		         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-//		                 .detectDiskReads()
-//		                 .detectDiskWrites()
-//		                 .detectNetwork()   // or .detectAll() for all detectable problems
-//		                 .penaltyLog()
-//		                 .build());
-//		         StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-//		                 .detectLeakedSqlLiteObjects()
-//		                 .penaltyLog()
-//		                 .penaltyDeath()
-//		                 .build());
-//		     }
+        if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .penaltyDeath()
+                    .build());
+            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .penaltyDeath()
+                    .build());
+        }
 
         super.onCreate();
         initUnits();
