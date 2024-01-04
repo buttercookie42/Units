@@ -3,9 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <supports-screens
+        android:xlargeScreens="true"
         android:largeScreens="true"
         android:smallScreens="true"
-        android:anyDensity="true" />
+        android:anyDensity="true"
+        tools:targetApi="gingerbread" />
 
     <application
         android:name=".Application"
