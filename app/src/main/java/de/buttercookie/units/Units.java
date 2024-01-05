@@ -237,13 +237,14 @@ public class Units extends FragmentActivity implements OnClickListener, OnEditor
 
     @Override
     protected void onStart() {
-    	super.onStart();
-    	mHaveUsageAdapter = new UnitUsageDBHelper.UnitCursorAdapter(this,
-				null, wantEditText);
-		haveEditText.setAdapter(mHaveUsageAdapter);
+        mHaveUsageAdapter = new UnitUsageDBHelper.UnitCursorAdapter(this,
+                null, wantEditText);
+        mWantUsageAdapter = new UnitUsageDBHelper.UnitCursorAdapter(this,
+                null, haveEditText);
 
-		mWantUsageAdapter = new UnitUsageDBHelper.UnitCursorAdapter(this,
-				null, haveEditText);
+    	super.onStart();
+
+		haveEditText.setAdapter(mHaveUsageAdapter);
 		wantEditText.setAdapter(mWantUsageAdapter);
     }
 
