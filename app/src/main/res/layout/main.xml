@@ -28,7 +28,9 @@
                     android:layout_height="wrap_content"
                     android:layout_width="fill_parent"
                     android:hint="@string/have_hint"
-                    android:imeOptions="actionNext" />
+                    android:imeOptions="actionNext">
+                    <requestFocus/>
+                </MultiAutoCompleteTextView>
 
                 <MultiAutoCompleteTextView
                     android:id="@+id/want"

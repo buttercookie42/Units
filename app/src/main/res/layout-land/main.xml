@@ -41,7 +41,9 @@
                 android:layout_weight="2"
                 android:hint="@string/have_hint"
                 android:imeOptions="actionNext"
-                android:nextFocusDown="@+id/want" />
+                android:nextFocusDown="@+id/want">
+                <requestFocus/>
+            </MultiAutoCompleteTextView>
 
             <MultiAutoCompleteTextView
                 android:id="@+id/want"
