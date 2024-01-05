@@ -40,12 +40,12 @@ public class Application extends android.app.Application {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                     .detectAll()
                     .penaltyLog()
-                    .penaltyDeath()
+                    //.penaltyDeath()
                     .build());
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
                     .detectAll()
                     .penaltyLog()
-                    .penaltyDeath()
+                    //.penaltyDeath()
                     .build());
         }
 
