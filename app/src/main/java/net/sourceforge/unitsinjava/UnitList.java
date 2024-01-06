@@ -56,17 +56,17 @@ import java.util.Locale;
   //-------------------------------------------------------------------
   /** Number of unit expressions. */
   //-------------------------------------------------------------------
-  int n;
+  public int n;
 
   //-------------------------------------------------------------------
   /** The expressions, trimmed. */
   //-------------------------------------------------------------------
-  String[] unit;
+  public String[] unit;
 
   //-------------------------------------------------------------------
   /** Evaluated and reduced expressions, checked for compatibility. */
   //-------------------------------------------------------------------
-  Value[] value;
+  public Value[] value;
 
   //-------------------------------------------------------------------
   /** Indicates handling of the last expression:
@@ -88,7 +88,7 @@ import java.util.Locale;
    *
    *  @param unitlist a semicolon-separated list of unit expressions.
    */
-  UnitList(final String unitlist)
+  public UnitList(final String unitlist)
     {
       //---------------------------------------------------------------
       //  Decide handling of the last element.
@@ -197,7 +197,7 @@ import java.util.Locale;
    *  @return <code>true</code> if conversion was successful,
    *          <code>false</code> otherwise.
    */
-  boolean convert(final String fromExpr, final Value fromValue)
+  public boolean convert(final String fromExpr, final Value fromValue)
     {
       //---------------------------------------------------------------
       //  Check compatibility with the list.

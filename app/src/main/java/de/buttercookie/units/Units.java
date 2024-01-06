@@ -79,6 +79,7 @@ import androidx.annotation.NonNull;
 import net.sourceforge.unitsinjava.DefinedFunction;
 import net.sourceforge.unitsinjava.EvalError;
 import net.sourceforge.unitsinjava.Function;
+import net.sourceforge.unitsinjava.UnitList;
 import net.sourceforge.unitsinjava.Value;
 
 import org.jared.commons.ui.WorkspaceView;
@@ -478,59 +479,81 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
                 return;
             }
 
-            Value want = null;
-            Function func = null;
-            try {
-                func = DefinedFunction.table.get(wantStr);
-                if (func == null && wantStr.endsWith("(")) {
-                    func = DefinedFunction.table.get(wantStr.subSequence(0, wantStr.length() - 1));
-                }
-                if (func == null) {
-                    wantStr = ValueGui.closeParens(wantStr);
-                    want = ValueGui.fromUnicodeString(wantStr);
-                }
-
-            } catch (final EvalError e) {
-                wantEditText.requestFocus();
-                wantEditText.setError(e.getLocalizedMessage());
-                return;
-            }
-
             Double resultVal;
             boolean reciprocal = false;
 
-            try {
-                wantEditText.setError(null);
-
-                // if no want value is specified, provide a definition.
-                if (wantStr.length() > 0) {
-                    if (func != null) {
-                        // functions are a special case and don't have a reciprocal, so the result
-                        // is just stored in the wantStr.
-                        resultVal = null;
-                        wantStr = ValueGui.convertNonInteractive(ValueGui.fromUnicodeString(haveStr), func);
-                    } else {
-                        resultVal = ValueGui.convertNonInteractive(have, want);
-                    }
-
-                } else {
-                    resultVal = have.factor;
-                    final StringBuffer haveDef = new StringBuffer();
-
-                    haveDef.append(have.numerator.asString());
-
-                    if (have.denominator.size() > 0) {
-                        haveDef.append(" ÷").append(have.denominator.asString());
-                    }
-
-                    wantStr = haveDef.toString();
+            String uList = UnitList.isUnitList(wantStr);
+            if (uList != null) {
+                UnitList ul;
+                try {
+                    ul = new UnitList(uList);
+                } catch (final EvalError e) {
+                    wantEditText.requestFocus();
+                    wantEditText.setError(e.getLocalizedMessage());
+                    return;
                 }
 
+                if (!ul.convert(haveStr, have)) {
+                    throw new ConversionException();
+                } else {
+                    wantEditText.setError(null);
+                    // unit lists are a special case and don't have a reciprocal, so the result
+                    // is just stored in the wantStr.
+                    resultVal = null;
+                    wantStr = "Unit lists not yet implemented";
+                }
+            } else {
+                Value want = null;
+                Function func = null;
+                try {
+                    func = DefinedFunction.table.get(wantStr);
+                    if (func == null && wantStr.endsWith("(")) {
+                        func = DefinedFunction.table.get(wantStr.subSequence(0, wantStr.length() - 1));
+                    }
+                    if (func == null) {
+                        wantStr = ValueGui.closeParens(wantStr);
+                        want = ValueGui.fromUnicodeString(wantStr);
+                    }
 
-            } catch (final ReciprocalException re) {
-                reciprocal = true;
+                } catch (final EvalError e) {
+                    wantEditText.requestFocus();
+                    wantEditText.setError(e.getLocalizedMessage());
+                    return;
+                }
 
-                resultVal = ValueGui.convertNonInteractive(re.reciprocal, want);
+                try {
+                    wantEditText.setError(null);
+
+                    // if no want value is specified, provide a definition.
+                    if (wantStr.length() > 0) {
+                        if (func != null) {
+                            // functions are a special case and don't have a reciprocal, so the result
+                            // is just stored in the wantStr.
+                            resultVal = null;
+                            wantStr = ValueGui.convertNonInteractive(ValueGui.fromUnicodeString(haveStr), func);
+                        } else {
+                            resultVal = ValueGui.convertNonInteractive(have, want);
+                        }
+
+                    } else {
+                        resultVal = have.factor;
+                        final StringBuffer haveDef = new StringBuffer();
+
+                        haveDef.append(have.numerator.asString());
+
+                        if (have.denominator.size() > 0) {
+                            haveDef.append(" ÷").append(have.denominator.asString());
+                        }
+
+                        wantStr = haveDef.toString();
+                    }
+
+
+                } catch (final ReciprocalException re) {
+                    reciprocal = true;
+
+                    resultVal = ValueGui.convertNonInteractive(re.reciprocal, want);
+                }
             }
 
             allClear();
