@@ -25,15 +25,14 @@ import net.sourceforge.unitsinjava.Env;
 import net.sourceforge.unitsinjava.Tables;
 import net.sourceforge.unitsinjava.UnitsFile;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Locale;
 import java.util.Vector;
 
 public class Application extends android.app.Application {
-    private final static String TAG = "units";
+    private final static String TAG = "Units";
+    private final static String UIJ_TAG = "UnitsCore";
 
     @Override
     public void onCreate() {
@@ -66,13 +65,13 @@ public class Application extends android.app.Application {
         Env.out = new Env.Writer() {
             @Override
             public void print(String s) {
-                Log.i(TAG, s);
+                Log.i(UIJ_TAG, s);
 
             }
 
             @Override
             public void println(String s) {
-                Log.i(TAG, s);
+                Log.i(UIJ_TAG, s);
 
             }
         };
@@ -82,7 +81,7 @@ public class Application extends android.app.Application {
             @Override
             public InputStream open(String name) {
                 try {
-                    Log.d("Units", "reading definitions from " + name);
+                    Log.d(TAG, "reading definitions from " + name);
                     return getAssets().open(name);
                 } catch (final IOException ioe) {
                     ioe.printStackTrace();
