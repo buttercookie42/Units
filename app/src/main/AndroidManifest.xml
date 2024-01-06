@@ -43,7 +43,7 @@
         </activity>
 
         <activity
-            android:name=".UnitList"
+            android:name=".UnitListActivity"
             android:theme="@style/UnitListTheme"
             android:exported="false"
             android:launchMode="singleTop">

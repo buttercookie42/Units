@@ -38,15 +38,13 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-import de.buttercookie.units.R;
-
 /**
  * Displays a list of units, with an optional search query to search a
  * substring of all unit names.
  *
  * @author Steve Pomeroy
  */
-public class UnitList extends ListActivity implements OnClickListener {
+public class UnitListActivity extends ListActivity implements OnClickListener {
     private SearchHighlightAdapter adapter;
 
     /**
