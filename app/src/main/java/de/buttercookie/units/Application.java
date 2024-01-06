@@ -23,6 +23,7 @@ import android.util.Log;
 
 import net.sourceforge.unitsinjava.Env;
 import net.sourceforge.unitsinjava.Tables;
+import net.sourceforge.unitsinjava.UnitsFile;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -76,31 +77,13 @@ public class Application extends android.app.Application {
             }
         };
 
-        Env.err = new Env.Writer() {
+        UnitsFile.fileAcc = new UnitsFile.FileAcc() {
 
             @Override
-            public void println(String s) {
-                Log.e(TAG, s);
-
-            }
-
-            @Override
-            public void print(String s) {
-                Log.e(TAG, s);
-
-            }
-        };
-
-        Env.files = new Env.FileAcc() {
-
-            @Override
-            public BufferedReader open(String name) {
+            public InputStream open(String name) {
                 try {
                     Log.d("Units", "reading definitions from " + name);
-                    final InputStream is = getAssets().open(name);
-
-
-                    return new BufferedReader(new InputStreamReader(is, "8859_1"), 16000);
+                    return getAssets().open(name);
                 } catch (final IOException ioe) {
                     ioe.printStackTrace();
                 }

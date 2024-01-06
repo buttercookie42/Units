@@ -150,7 +150,7 @@ import java.util.Vector;
    *
    *  @return number of factors.
    */
-  int size()
+  public int size()
     { return factors.size(); }
 
 
@@ -163,7 +163,7 @@ import java.util.Vector;
    *  @param  i the index
    *  @return the i-th Factor of this Product.
    */
-  Factor factor(int i)
+  public Factor factor(int i)
     { return factors.elementAt(i); }
 
 
@@ -175,9 +175,12 @@ import java.util.Vector;
    *
    *  @param  i the index
    */
-  void delete(int i)
+  public void delete(int i)
     { factors.removeElementAt(i); }
 
+  public Vector<Factor> getFactors() {
+    return factors;
+  }
 
   //=====================================================================
   //  hasSameFactors
@@ -219,7 +222,7 @@ import java.util.Vector;
    *
    *  @return printable representation of this Product.
    */
-  String asString()
+  public String asString()
     {
       StringBuffer sb = new StringBuffer();
       int counter = 1;

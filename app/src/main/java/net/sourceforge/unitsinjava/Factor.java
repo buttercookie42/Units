@@ -60,12 +60,12 @@ package net.sourceforge.unitsinjava;
  *  a unit or a prefix.
  */
 
-abstract class Factor extends Entity
+abstract public class Factor extends Entity
 {
   //-------------------------------------------------------------------
   /**  Definition string. */
   //-------------------------------------------------------------------
-  String def;
+  public String def;
 
   //-------------------------------------------------------------------
   /** Is this a primitive unit? */

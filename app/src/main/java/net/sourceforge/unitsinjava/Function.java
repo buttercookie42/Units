@@ -48,7 +48,7 @@ package net.sourceforge.unitsinjava;
  *  A function. Base class for BuiltInFunction and DefinedFunction.
  */
 
-abstract class Function extends Entity
+public abstract class Function extends Entity
 {
   //=====================================================================
   //  Constructor
@@ -84,7 +84,7 @@ abstract class Function extends Entity
    *
    *  @param v the argument and result.
    */
-  abstract void applyInverseTo(Value v);
+  public abstract void applyInverseTo(Value v);
 
   //=====================================================================
   //  showdef

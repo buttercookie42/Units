@@ -62,7 +62,7 @@ package net.sourceforge.unitsinjava;
 abstract class Entity implements Comparable<Entity>
 {
   /** Name of this Entity. */
-  String name;
+  public String name;
 
   /** Where this Entity is defined. */
   Location location;

@@ -219,7 +219,7 @@ import java.util.Vector;
    *
    *  @param v the argument and result.
    */
-  void applyInverseTo(Value v)
+  public void applyInverseTo(Value v)
     {
       //---------------------------------------------------------------
       //  Parse resUnit to obtain a Value, 'dim'.
@@ -339,6 +339,10 @@ import java.util.Vector;
              Util.shownumber(x[i-1]) + ".");
           return;
         }
+    }
+
+    public Value getConformability() {
+        return resUnit != null ? Value.fromString(resUnit) : null;
     }
 
 

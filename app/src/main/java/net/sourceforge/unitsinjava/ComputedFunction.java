@@ -187,7 +187,7 @@ import java.util.Vector;
    *
    *  @param v the argument and result.
    */
-  void applyInverseTo(Value v)
+  public void applyInverseTo(Value v)
     { inverse.applyTo(v,"~"); }
 
   //=====================================================================
@@ -329,6 +329,10 @@ import java.util.Vector;
           (location.where() + ". Error in '~" + name + "(" +
            inverse.param + ")' defined as '" + inverse.def + "'.");
       }
+    }
+
+    public Value getConformability() {
+      return inverse.dimen != null ? Value.fromString(inverse.dimen) : null;
     }
 
 

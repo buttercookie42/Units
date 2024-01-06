@@ -93,9 +93,7 @@ package net.sourceforge.unitsinjava;
 import java.util.Vector;
 import java.util.Properties;
 
-import java.awt.Font;
 import java.io.File;
-import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
@@ -123,7 +121,6 @@ import java.io.FileNotFoundException;
   public static final String FILEVER = "Version 1.53 (17 November 2011)";
   public static final String PROPFILE = "units.opt";  // Properties file
   public static final String LOCALE = "en_US";        // Default locale
-  public static final String GUIFONT = "Monospaced";  // Default GUI font name
   public static final int    MAXFILES = 25;           // Max number of units files
   public static final int    MAXINCLUDE = 5;          // Max depth of include files
 
@@ -151,12 +148,6 @@ import java.io.FileNotFoundException;
   //-------------------------------------------------------------------
   public static String propfile = null;
 
-  //-------------------------------------------------------------------
-  /** GUI font if instantiated, else null.
-   *  Set and used by GUI and Browser. */
-  //-------------------------------------------------------------------
-  public static Font guiFont = null;
-
   //=====================================================================
   //  Options. Set by UnitsWindow, convert, and applet.
   //  They are first set to default values for each environment; then:
@@ -171,7 +162,6 @@ import java.io.FileNotFoundException;
   public static Vector<String> filenames;  // Unit definition files
   public static String  locale;            // Locale in effect
   public static String  encoding;          // Encoding name for System io
-  public static String  font;              // GUI font name
   public static int     verbose;           // 0=compact, 1=normal, 2=verbose
   public static boolean quiet;             // Suppress prompting and statistics
   public static boolean oneline;           // Only one line of output
@@ -199,8 +189,8 @@ import java.io.FileNotFoundException;
    */
   abstract public static class Writer
   {
-    abstract void print(final String s);
-    abstract void println(final String s);
+    public abstract void print(final String s);
+    public abstract void println(final String s);
   }
 
   //-------------------------------------------------------------------
@@ -296,12 +286,6 @@ import java.io.FileNotFoundException;
       //---------------------------------------------------------------
       prop = props.getProperty("ENCODING");
       if (prop!=null) Env.encoding = prop.trim();
-
-      //---------------------------------------------------------------
-      //  If GUIFONT defined, store it as Env.font.
-      //---------------------------------------------------------------
-      prop = props.getProperty("GUIFONT");
-      if (prop!=null) Env.font = prop.trim();
     }
 
 

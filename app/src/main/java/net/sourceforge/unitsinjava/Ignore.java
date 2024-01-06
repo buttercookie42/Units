@@ -47,4 +47,4 @@ package net.sourceforge.unitsinjava;
  *  and Values for compatibility.
  */
 
-enum Ignore {NONE, PRIMITIVE, DIMLESS};
+public enum Ignore {NONE, PRIMITIVE, DIMLESS};

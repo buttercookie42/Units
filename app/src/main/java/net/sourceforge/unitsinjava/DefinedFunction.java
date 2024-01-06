@@ -31,7 +31,7 @@
 //    050203 Do not initialize table.
 //
 //  Version 1.84.J07.
-//    050315 Changed package name to 'units'.¨
+//    050315 Changed package name to 'units'.
 //
 //  Version 1.87.J01.
 //    091024 Used generics for 'table'.
@@ -59,13 +59,14 @@ import java.util.Hashtable;
  *  Base class for ComputedFunction and TabularFunction.
  */
 
-abstract class DefinedFunction extends Function
+public abstract class DefinedFunction extends Function
 {
   //-------------------------------------------------------------------
   /**  Table of defined functions. */
   //-------------------------------------------------------------------
   public static Hashtable<String,DefinedFunction> table = null;
 
+  public abstract Value getConformability();
 
   //=====================================================================
   //  Constructor

@@ -19,6 +19,7 @@ import net.sourceforge.unitsinjava.Env;
 import net.sourceforge.unitsinjava.EvalError;
 import net.sourceforge.unitsinjava.Factor;
 import net.sourceforge.unitsinjava.Function;
+import net.sourceforge.unitsinjava.Ignore;
 import net.sourceforge.unitsinjava.Value;
 
 /**
@@ -123,14 +124,14 @@ public class ValueGui extends Value {
         //  If 'toValue' and 'fromValue' are not compatible,
         //  we may be doing reciprocal conversion.
         //---------------------------------------------------------------
-        if (!fromValue.isCompatibleWith(toValue, Factor.Ignore.DIMLESS)) {
+        if (!fromValue.isCompatibleWith(toValue, Ignore.DIMLESS)) {
             final Value invfrom = getReciprocal(fromValue);    // inverse of fromValue, if needed
 
             //-------------------------------------------------------------
             //  If reciprocal conversion not wanted, or inverse of 'fromValue'
             //  is not compatible with 'toValue', we have conformability error.
             //-------------------------------------------------------------
-            if (Env.strict || !toValue.isCompatibleWith(invfrom, Factor.Ignore.DIMLESS)) {
+            if (Env.strict || !toValue.isCompatibleWith(invfrom, Ignore.DIMLESS)) {
                 throw new ConversionException();
             }
 

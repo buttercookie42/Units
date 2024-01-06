@@ -95,9 +95,9 @@ package net.sourceforge.unitsinjava;
   //-------------------------------------------------------------------
   //  Components of a Value
   //-------------------------------------------------------------------
-  double factor;
-  Product numerator;
-  Product denominator;
+  public double factor;
+  public Product numerator;
+  public Product denominator;
 
   //=====================================================================
   //  Constructor
@@ -106,7 +106,7 @@ package net.sourceforge.unitsinjava;
    *  Constructs a Value representing number 1.
    *  <br>(Originally 'initializeunit'.)
    */
-  Value()
+  public Value()
     {
       factor = 1.0;
       numerator   = new Product();
@@ -122,7 +122,7 @@ package net.sourceforge.unitsinjava;
    *
    *  @param v the Value to be copied.
    */
-  Value(final Value v)
+  public Value(final Value v)
     {
       factor = v.factor;
       numerator   = new Product(v.numerator);
@@ -278,7 +278,7 @@ package net.sourceforge.unitsinjava;
    *
    *  @return this Value as printable string.
    */
-  String asString()
+  public String asString()
     {
       StringBuffer sb = new StringBuffer();
 
@@ -322,7 +322,7 @@ package net.sourceforge.unitsinjava;
    *  @return <code>true</code> if the Values are compatible, or
    *          <code>false</code> otherwise.
    */
-  boolean isCompatibleWith(final Value v, Ignore ignore)
+  public boolean isCompatibleWith(final Value v, Ignore ignore)
     {
       return numerator.hasSameFactorsAs(v.numerator,ignore)
            && denominator.hasSameFactorsAs(v.denominator,ignore);
@@ -642,7 +642,7 @@ package net.sourceforge.unitsinjava;
   //  completereduce
   //=====================================================================
   /** Reduces this Value as much as possible. */
-  void completereduce()
+  public void completereduce()
     {
       /* Keep calling reduceproduct until it doesn't do anything */
       while (true)
