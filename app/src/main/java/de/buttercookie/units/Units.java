@@ -1064,6 +1064,10 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
                     sendTextAsSoftKeyboard("|");
                     return true;
                 }
+                case R.id.dot: {
+                    sendTextAsSoftKeyboard(";");
+                    return true;
+                }
                 case R.id.backspace: {
                     final View currentFocus = getCurrentFocus();
                     if (currentFocus instanceof EditText) {

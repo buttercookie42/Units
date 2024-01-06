@@ -164,7 +164,8 @@
                     <com.android.calculator2.ColorButton
                         android:id="@+id/dot"
                         android:text="@string/dot"
-                        style="@style/digit_button_style" />
+                        style="@style/digit_button_style"
+                        buttercookie:longpressText="@string/semicolon" />
 
                     <com.android.calculator2.ColorButton
                         android:id="@+id/mul"
