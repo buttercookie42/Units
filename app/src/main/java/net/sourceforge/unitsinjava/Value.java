@@ -5,10 +5,10 @@
 //  Units is a program for unit conversion originally written in C
 //  by Adrian Mariano (adrian@cam.cornell.edu.).
 //  Copyright (C) 1996, 1997, 1999, 2000, 2001, 2002, 2003, 2004,
-//  2005, 2006, 2007 by Free Software Foundation, Inc.
+//  2005, 2006, 2007, 2009, 2011 by Free Software Foundation, Inc.
 //
 //  Java version Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008,
-//  2009 by Roman R Redziejowski (roman.redz@tele2.se).
+//  2009, 2011, 2012 by Roman R Redziejowski (www.romanredz.se).
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -27,15 +27,31 @@
 //
 //  Change log
 //
-//    050315 Version 1.84.J07. Changed package name to "units".
-//    061230 Version 1.86.J01.
-//           Modified 'convert' methods to apply new options.
-//    091025 Version 1.87.J01.
-//           Replaced 'Parser.Exception' by 'EvalError'.
+//  Version 1.84.J07.
+//    050315 Changed package name to 'units'.
+//
+//  Version 1.86.J01.
+//    061230 Modified 'convert' methods to apply new options.
+//
+//  Version 1.87.J01.
+//    091025 Replaced 'Parser.Exception' by 'EvalError'.
 //           Used the new Parser in 'parse'.
 //    091027 Corrected handling of non-integer power of negative
 //           numbers in 'power' and 'root' (Math.pow produces NaN).
 //    091031 Moved definition of Ignore to Factor.
+//
+//  Version 1.88.J02.
+//    110228 Corrected messages in 'root': 'xx is not a square'
+//           instead of 'xx is not a square root' etc.
+//    110317 In 'power': corrected 'new Error' to 'new EvalError'.
+//    110326 Removed unused variable 'unitSem'.
+//
+//  Version 1.89.J01.
+//    120209 Name of method 'isCompatibleWith' in Product was changed to
+//           'hasSameFactorsAs'; updated it in 'isCompatibleWith' here.
+//    120228 Replaced use of 'Env.err' by 'Env.out'.
+//    120302 Do not show factor 1 in 'as String'.
+//    120312 Moved method 'convert to Function' to DefinedFunction.
 //
 //=========================================================================
 
@@ -48,15 +64,17 @@ package net.sourceforge.unitsinjava;
 //
 //HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 /**
- *  A number multiplied by a dimension.
- *  <br>
+ *  Represents a number multiplied by a dimension.
+ *
+ *  <p>
  *  The number is called <i>factor</i>.
  *  The dimension is a combination of units, represented as a quotient
  *  of <i>numerator</i> and <i>denominator</i>:
  *
+ *  <p>
  *  <pre><code>   Value = factor * (numerator / denominator)</code></pre>
  *
- *  The numerator ane denominator are products of units.
+ *  The numerator and denominator are products of units.
  *  Each is represented by a Product object.
  *  <p>
  *  A Value is <i>reduced</i> if all units appearing in its
@@ -77,25 +95,18 @@ package net.sourceforge.unitsinjava;
   //-------------------------------------------------------------------
   //  Components of a Value
   //-------------------------------------------------------------------
-  public double factor;
-  public Product numerator;
-  public Product denominator;
-
-  //-------------------------------------------------------------------
-  /** Semantics of unit expressions.
-   *  A static object containing semantic procedures for parser
-   *  of unit expressions. It is used by the two 'parse' methods. */
-  //-------------------------------------------------------------------
-  private static Semantics unitSem = new Semantics();
-
+  double factor;
+  Product numerator;
+  Product denominator;
 
   //=====================================================================
-  //  Default constructor
+  //  Constructor
   //=====================================================================
-  /** Constructs a Value representing dimensionless number 1.
+  /**
+   *  Constructs a Value representing number 1.
    *  <br>(Originally 'initializeunit'.)
    */
-  public Value()
+  Value()
     {
       factor = 1.0;
       numerator   = new Product();
@@ -104,10 +115,14 @@ package net.sourceforge.unitsinjava;
 
 
   //=====================================================================
-  /** Constructs copy of a given Value.
-   *  @param  v a Value to be copied. */
+  //  Copy constructor
   //=====================================================================
-  public Value(final Value v)
+  /**
+   *  Constructs copy of a given Value.
+   *
+   *  @param v the Value to be copied.
+   */
+  Value(final Value v)
     {
       factor = v.factor;
       numerator   = new Product(v.numerator);
@@ -116,10 +131,14 @@ package net.sourceforge.unitsinjava;
 
 
   //=====================================================================
-  /** Makes this Value a copy of given Value.
-   *  @param  v the Value to be copied.
-   *  @return this Value - now a copy of 'v'. */
+  //  copyFrom
   //=====================================================================
+  /**
+   *  Makes this Value a copy of given Value.
+   *
+   *  @param  v the Value to be copied.
+   *  @return this Value - now a copy of 'v'.
+   */
   Value copyFrom(final Value v)
     {
       factor = v.factor;
@@ -130,16 +149,21 @@ package net.sourceforge.unitsinjava;
 
 
   //=====================================================================
-  /** Constructs a Value from unit expression;
+  //  parse
+  //=====================================================================
+  /**
+   *  Constructs a Value from unit expression;
    *  throws exception on error.
    *  <br>
-   *  EvalError is thrown if the Value cannot be constructed
-   *  because of incorrect syntax, unknown unit name, etc..
+   *  Throws EvalError if the Value cannot be constructed
+   *  because of incorrect syntax, unknown unit name,
+   *  computation errors, etc..
    *  The exception contains a complete error message.
    *  <br>(Originally 'parseunit'.)
+   *
    *  @param  s a unit expression.
-   *  @return Value represented by the expression. */
-  //=====================================================================
+   *  @return Value represented by the expression.
+   */
   public static Value parse(final String s)
     {
       Parser parser = new Parser();           // Instantiate Parser + Semantics
@@ -150,8 +174,11 @@ package net.sourceforge.unitsinjava;
     }
 
 
-  //=====================================================================
-  /** Constructs a Value from unit expression,
+ //=====================================================================
+ //  parse with parameter substitution
+ //=====================================================================
+  /**
+   *  Constructs a Value from unit expression,
    *  substituting given Value for a parameter;
    *  throws exception on error.
    *  <br>
@@ -160,14 +187,16 @@ package net.sourceforge.unitsinjava;
    *  This string is then treated as name of Value given as 'parmValue',
    *  rather than a unit name.
    *  <br>
-   *  EvalError is thrown if the Value cannot be constructed
-   *  because of incorrect syntax, unknown unit name, etc..
+   *  Throws EvalError if the Value cannot be constructed
+   *  because of incorrect syntax, unknown unit name,
+   *  computation errors, etc..
    *  The exception contains a complete error message.
+   *
    *  @param  s a unit expression.
    *  @param  parm parameter name.
    *  @param  parmValue Value to be substituted for 'parm'.
-   *  @return Value represented by the expression. */
-  //=====================================================================
+   *  @return Value represented by the expression.
+   */
   public static Value parse(final String s, final String parm, final Value parmValue)
     {
       Parser parser = new Parser();           // Instantiate Parser + Semantics
@@ -181,16 +210,20 @@ package net.sourceforge.unitsinjava;
 
 
   //=====================================================================
-  /** Constructs a completely reduced Value from unit expression;
+  //  fromString
+  //=====================================================================
+  /**
+   *  Constructs a completely reduced Value from unit expression;
    *  writes mesage on error.
    *  <br>
    *  If the Value cannot be constructed because of incorrect syntax,
    *  unknown unit name, etc., writes an error message and returns null.
    *  <br>(Originally 'processunit'.)
+   *
    *  @param  s a unit expression.
    *  @return Value represented by the expression,
-   *          or null if the Value could not be constructed. */
-  //=====================================================================
+   *          or null if the Value could not be constructed.
+   */
   public static Value fromString(final String s)
     {
       try
@@ -201,19 +234,24 @@ package net.sourceforge.unitsinjava;
       }
       catch (EvalError e)
       {
-        Env.err.println(e.getMessage());
+        Env.out.println(e.getMessage());
         return null;
       }
     }
 
 
   //=====================================================================
-  /** Constructs a Value from a string that may be name of a unit
-   *  or a prefix, or a prefixed unit name, possibly in plural from.
-   *  Throws exception if the string is none of them.
-   *  @param  s possible name of a unit, prefix, or prefixed unit.
-   *  @return Value represented by 's'. */
+  //  fromName
   //=====================================================================
+  /**
+   *  Constructs a Value from a string that may be name of a unit
+   *  or a prefix, or a prefixed unit name, possibly in plural from.
+   *  Throws EvalError if the string is none of them.
+   *  The exception contains a complete error message.
+   *
+   *  @param  s possible name of a unit, prefix, or prefixed unit.
+   *  @return Value represented by 's'.
+   */
   public static Value fromName(final String s)
     {
       Factor[] pu = Factor.split(s);
@@ -233,14 +271,25 @@ package net.sourceforge.unitsinjava;
 
 
   //=====================================================================
-  /** Constructs printable string representing this Value.
-   *  @return this Value as printable string. */
+  //  asString
   //=====================================================================
-  public String asString()
+  /**
+   *  Constructs printable string representing this Value.
+   *
+   *  @return this Value as printable string.
+   */
+  String asString()
     {
       StringBuffer sb = new StringBuffer();
 
-      sb.append(Util.shownumber(factor)).append(numerator.asString());
+      if (factor!=1)
+      {
+        sb.append(Util.shownumber(factor));
+        sb.append(numerator.asString());
+      }
+
+      else // skip factor and initial blank
+        sb.append(numerator.asString().substring(1));
 
       if (denominator.size()>0)
         sb.append(" /").append(denominator.asString());
@@ -250,38 +299,47 @@ package net.sourceforge.unitsinjava;
 
 
   //=====================================================================
-  /** Prints out this Value.
-   *  <br>(Originally 'showunit'.) */
+  //  show
   //=====================================================================
+  /**
+   *  Prints out this Value.
+   *  <br>(Originally 'showunit'.)
+   */
   void show()
     { Env.out.println(asString()); }
 
 
   //=====================================================================
+  //  isCompatibleWith
+  //=====================================================================
   /** Checks if this Value is compatible with another Value.
    *  <br>
-   *  Two Values are compatible if they have compatible
-   *  numerators and denominators.
+   *  The two Values must be reduced. They are compatible if they have
+   *  compatible numerators and denominators.
    *  <br>(Originally 'compareunits'.)
+   *
    *  @param  v Value to be checked against.
    *  @return <code>true</code> if the Values are compatible, or
-   *          <code>false</code> otherwise. */
-  //=====================================================================
-  public boolean isCompatibleWith(final Value v, Factor.Ignore ignore)
+   *          <code>false</code> otherwise.
+   */
+  boolean isCompatibleWith(final Value v, Ignore ignore)
     {
-      return numerator.isCompatibleWith(v.numerator,ignore)
-           && denominator.isCompatibleWith(v.denominator,ignore);
+      return numerator.hasSameFactorsAs(v.numerator,ignore)
+           && denominator.hasSameFactorsAs(v.denominator,ignore);
     }
 
 
+  //=====================================================================
+  //  isNumber
   //=====================================================================
   /** Reduces this Value and checks if it represents a number.
    *  <br>
    *  A Value represents a number if it is dimensionless, that is,
    *  its numerator and denominator are both empty.
+   *
    *  @return <code>true</code> if the Value represents a number, or
-   *          <code>false</code> otherwise. */
-  //=====================================================================
+   *          <code>false</code> otherwise.
+   */
   boolean isNumber()
     {
       completereduce();
@@ -290,15 +348,19 @@ package net.sourceforge.unitsinjava;
 
 
   //=====================================================================
-  /** Adds given Value to this Value.
-   *  <br>(Originally 'addunit'.)
-   *  @param  v Value to be added. */
+  //  add
   //=====================================================================
+  /**
+   *  Adds given Value to this Value.
+   *  <br>(Originally 'addunit'.)
+   *
+   *  @param  v Value to be added.
+   */
   void add(final Value v)
     {
       completereduce();
       v.completereduce();
-      if (!isCompatibleWith(v,Factor.Ignore.NONE))
+      if (!isCompatibleWith(v,Ignore.NONE))
         throw new EvalError("Sum of non-conformable values:\n\t"
                           + asString() + "\n\t" + v.asString() + ".");
       factor += v.factor;
@@ -306,10 +368,14 @@ package net.sourceforge.unitsinjava;
 
 
   //=====================================================================
-  /** Multiplies this Value by a given Value.
-   *  <br>(Originally 'multunit'.)
-   *  @param  v Value to multiply by. */
+  //  mult
   //=====================================================================
+  /**
+   *  Multiplies this Value by a given Value.
+   *  <br>(Originally 'multunit'.)
+   *
+   *  @param  v Value to multiply by.
+   */
   void mult(final Value v)
     {
       factor *= v.factor;
@@ -319,10 +385,14 @@ package net.sourceforge.unitsinjava;
 
 
   //=====================================================================
-  /** Divide this Value by a given Value.
-   *  <br>(Originally 'divunit'.)
-   *  @param  v Value to divide by. */
+  //  div
   //=====================================================================
+  /**
+   *  Divide this Value by a given Value.
+   *  <br>(Originally 'divunit'.)
+   *
+   *  @param  v Value to divide by.
+   */
   void div(final Value v)
     {
       if (v.factor==0)
@@ -335,9 +405,12 @@ package net.sourceforge.unitsinjava;
 
 
   //=====================================================================
-  /** Inverts this Value.
-   *  <br>(Originally 'invertunit'.) */
+  //  invert
   //=====================================================================
+  /**
+   *  Inverts this Value.
+   *  <br>(Originally 'invertunit'.)
+   */
   void invert()
     {
       if (factor==0)
@@ -350,13 +423,17 @@ package net.sourceforge.unitsinjava;
 
 
   //=====================================================================
-  /** Raises this Value to power specified by another Value.
-   *  The Value supplied as exponent must represent a number.
+  //  power (Value exponent)
+  //=====================================================================
+  /**
+   *  Raises this Value to power specified by another Value.
+   *  The exponent must represent a number.
    *  If that number is not an integer or a fraction 1/integer,
    *  this Value must represent a number.
    *  <br>(Originally 'unitpower'.)
-   *  @param  v the exponent. */
-  //=====================================================================
+   *
+   *  @param  v the exponent.
+   */
   void power(final Value v)
     {
       //---------------------------------------------------------------
@@ -403,14 +480,18 @@ package net.sourceforge.unitsinjava;
 
 
   //=====================================================================
-  /** Raises this Value to integer power n>=0.
-   *  <br>(Originally 'expunit').
-   *  @param  n the exponent. */
+  //  power (int exponent)
   //=====================================================================
+  /**
+   *  Raises this Value to integer power n>=0.
+   *  <br>(Originally 'expunit').
+   *
+   *  @param  n the exponent.
+   */
   void power(int n)
     {
       if (n<0)
-        throw new Error("Program error: exponent " + n + ".");
+        throw new EvalError("Program error: exponent " + n + ".");
 
       Product num = new Product();
       Product den = new Product();
@@ -430,12 +511,15 @@ package net.sourceforge.unitsinjava;
 
 
   //=====================================================================
+  //  root
+  //=====================================================================
   /** Computes the n-th root of this Value for an integer n.
    *  The integer n must not be 0.
    *  If n is even, this Value must be non-negative.
    *  <br>(Originally 'rootunit'.)
-   *  @param  n the exponent. */
-  //=====================================================================
+   *
+   *  @param  n the exponent.
+   */
   void root(int n)
     {
       if (n==0 || (n%2==0 && factor<0))
@@ -447,8 +531,8 @@ package net.sourceforge.unitsinjava;
       Product den = denominator.root(n);
       if (num==null || den==null)
         {
-          String nth = n==2? "square" : (n==3? "cube" : n + "-th");
-          throw new EvalError(asString() + " is not a " + nth + " root.");
+          String nth = n==2? "a square." : (n==3? "a cube." : "an " + n + "-th power.");
+          throw new EvalError(asString() + " is not " + nth);
         }
 
       numerator = num;
@@ -465,9 +549,12 @@ package net.sourceforge.unitsinjava;
 
 
   //=====================================================================
-  /** Removes factors that appear in both the numerator and denominator.
-   *  <br>(Originally 'cancelunit'.) */
+  //  cancel
   //=====================================================================
+  /**
+   *  Removes factors that appear in both the numerator and denominator.
+   *  <br>(Originally 'cancelunit'.)
+   */
   void cancel()
     {
       int den = 0;
@@ -492,13 +579,17 @@ package net.sourceforge.unitsinjava;
 
 
   //=====================================================================
-  /** Reduces numerator or denominator of this Value to primitive units.
+  //  reduceproduct
+  //=====================================================================
+  /**
+   *  Reduces numerator or denominator of this Value to primitive units.
+   *
    *  @param  flip indicates whether to reduce the numerator
    *          (<code>flip = false</code>) or denominator
    *          (<code>flip = true</code>).
    *  @return <code>true</code> if reduction was performed, or
-   *          <code>false</code> if there is nothing more to reduce. */
-  //=====================================================================
+   *          <code>false</code> if there is nothing more to reduce.
+   */
   boolean reduceproduct(boolean flip)
     {
       boolean didsomething = false;
@@ -548,9 +639,10 @@ package net.sourceforge.unitsinjava;
 
 
   //=====================================================================
-  /** Reduces this Value as much as possible. */
+  //  completereduce
   //=====================================================================
-  public void completereduce()
+  /** Reduces this Value as much as possible. */
+  void completereduce()
     {
       /* Keep calling reduceproduct until it doesn't do anything */
       while (true)
@@ -564,19 +656,21 @@ package net.sourceforge.unitsinjava;
 
 
   //=====================================================================
-  //  convert to Value
+  //  convert
   //=====================================================================
   /**
-   *  Shows result of conversion of unit expression to unit expression.
+   *  Prints result of conversion of unit expression to unit expression.
    *
    *  @param  fromExpr 'from' expression.
-   *  @param  fromValue 'from' expression converted to completely reduced Value.
+   *  @param  fromValue evaluated 'from' expression, completely reduced.
    *  @param  toExpr 'to' expression.
-   *  @param  toValue 'to' expression converted to completely reduced Value.
+   *  @param  toValue evaluated 'to' expression, completely reduced.
+   *  @return <code>true</code> if conversion was successful,
+   *          <code>false</code> otherwise.
    */
   public static boolean convert
     ( String fromExpr, Value fromValue,
-      String toExpr, Value toValue)
+      String toExpr,   Value toValue)
     {
       Value invfrom = new Value();    // inverse of fromValue, if needed
       boolean doingrec;               // reciprocal conversion?
@@ -589,7 +683,7 @@ package net.sourceforge.unitsinjava;
       //  If 'toValue' and 'fromValue' are not compatible,
       //  we may be doing reciprocal conversion.
       //---------------------------------------------------------------
-      if (!fromValue.isCompatibleWith(toValue,Factor.Ignore.DIMLESS))
+      if (!fromValue.isCompatibleWith(toValue,Ignore.DIMLESS))
       {
         //-------------------------------------------------------------
         //  Construct inverse of 'fromValue' in 'invfrom'.
@@ -602,12 +696,12 @@ package net.sourceforge.unitsinjava;
         //  If reciprocal conversion not wanted, or inverse of 'fromValue'
         //  is not compatible with 'toValue', we have conformability error.
         //-------------------------------------------------------------
-        if (Env.strict || !toValue.isCompatibleWith(invfrom,Factor.Ignore.DIMLESS))
+        if (Env.strict || !toValue.isCompatibleWith(invfrom,Ignore.DIMLESS))
         {
-          Env.err.println("conformability error");
-          Env.err.print(Env.verbose==2? "\t" + fromExpr + " = " : Env.verbose==1? "\t" : "");
+          Env.out.println("Conformability error");
+          Env.out.print(Env.verbose==2? "\t" + fromExpr + " = " : Env.verbose==1? "\t" : "");
           fromValue.show();
-          Env.err.print(Env.verbose==2? "\t" + toExpr   + " = " : Env.verbose==1? "\t" : "");
+          Env.out.print(Env.verbose==2? "\t" + toExpr   + " = " : Env.verbose==1? "\t" : "");
           toValue.show();
           return false;
         }
@@ -680,41 +774,4 @@ package net.sourceforge.unitsinjava;
       Env.out.println("");
       return true;
     }
-
-  //=====================================================================
-  //  convert to Function
-  //=====================================================================
-  /**
-   *  Shows result of conversion of unit expression to function.
-   *
-   *  @param  fromExpr 'from' expression.
-   *  @param  fromValue 'from' expression converted to completely reduced Value.
-   *  @param  fun 'to' function.
-   */
-  public static boolean convert
-    ( String fromExpr, Value fromValue, Function fun)
-    {
-      try
-      {
-        fun.applyInverseTo(fromValue);
-        fromValue.completereduce();
-      }
-      catch(EvalError e)
-      {
-        Env.out.println(e.getMessage());
-        return false;
-      }
-
-      if (Env.verbose==2)
-        Env.out.print("\t" + fromExpr + " = " + fun.name + "(");
-      else
-        if (Env.verbose==1) Env.out.print("\t");
-      Env.out.print(fromValue.asString());
-      if (Env.verbose==2)
-        Env.out.print(")");
-      Env.out.print("\n");
-      return true;
-    }
-
-
 }

@@ -5,10 +5,10 @@
 //  Units is a program for unit conversion originally written in C
 //  by Adrian Mariano (adrian@cam.cornell.edu.).
 //  Copyright (C) 1996, 1997, 1999, 2000, 2001, 2002, 2003, 2004,
-//  2005, 2006, 2007 by Free Software Foundation, Inc.
+//  2005, 2006, 2007, 2009, 2011 by Free Software Foundation, Inc.
 //
 //  Java version Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008,
-//  2009 by Roman R Redziejowski (roman.redz@tele2.se).
+//  2009, 2011, 2012 by Roman R Redziejowski (www.romanredz.se).
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -21,13 +21,27 @@
 //  GNU General Public License for more details.
 //
 //  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//  along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 //-------------------------------------------------------------------------
 //
 //  Change log
 //
-//    050315 Version 1.84.J07. Changed package name to "units".
+//  Version 1.84.J07
+//   050315 Changed package name to 'units'.
+//
+//  Version 1.88.J03
+//   110623 shownumber: ensured correct decimal rounding.
+//          (Java cast from double to float truncated binary
+//          representation and produced incorrect rounding.)
+//
+//  Version 1.88.J04
+//   110814 Corrected bug in shownumber: added 'Locale.US' argument
+//          in String.format. (Depending on locale, String.format
+//          produced decimal comma that was not recognized further on.)
+//
+//  Version 1.89.J01
+//   120202 Removed no longer used method 'strtod' and its 'NumberMatcher'.
 //
 //=========================================================================
 
@@ -36,9 +50,6 @@ package net.sourceforge.unitsinjava;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
-
-
-
 
 //HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 //
@@ -61,9 +72,9 @@ import java.util.Locale;
    * at or after index <code>start</code>,
    * of any of the characters contained in <code>chars</code>.
    *
+   * @param  chars characters to look for.
    * @param  s     String to search.
    * @param  start starting index for the search.
-   * @param  chars characters to look for.
    * @return       index of the found occurrence,
    *               or length of <code>s</code> if none found.
    */
@@ -75,16 +86,6 @@ import java.util.Locale;
       return s.length();
     }
 
-  
-  private static NumberFormat df = NumberFormat.getInstance(Locale.US);
-  private static NumberFormat df_exp = NumberFormat.getInstance(Locale.US);
-  
-  static {
-	  if (df instanceof DecimalFormat){
-		  ((DecimalFormat) df).applyPattern("#.############");
-		  ((DecimalFormat) df_exp).applyPattern("#.############E0");
-	  }
-  }
 
   //=====================================================================
   //  shownumber
@@ -93,163 +94,39 @@ import java.util.Locale;
    * Converts <code>double</code> number to a printable representation.
    *
    * @param  d number to be converted.
-   * @return   String representation of <code>d</code>.
+   * @return String representation of <code>d</code>.
    */
   public static String shownumber(double d)
     {
-	  if ((d > 0 && d < 1E-3) 
-		|| (d < 0 && d > -1E-3) 
-		|| d > 1E6 
-		|| d < -1E6){
-		return df_exp.format(d);  
-	  }else{
-		  return df.format(d);
-	  }
+      if (Double.isInfinite(d) || Double.isNaN(d))
+        return Double.toString(d);
+
+      if (d==(int)d)
+        return Integer.toString((int)d);
+
+      StringBuilder s = new StringBuilder(String.format(Locale.US,"%.8g",d));
+      int p = s.indexOf("."); // Position of decimal point
+      int e = s.indexOf("e"); // Positon of 'e' or -1 if none
+      if (e>0)                // If 'e' present remove '+' and leading '0'
+      {
+        if (s.charAt(e+1)=='+') s.deleteCharAt(e+1);
+        if (s.charAt(e+1)=='0') s.deleteCharAt(e+1);
+        if (s.charAt(e+1)=='-' && (s.charAt(e+2)=='0')) s.deleteCharAt(e+2);
+      }
+      else
+        e = s.length();
+
+      // e is now position of the end of mantissa + 1.
+      // Remove trailing zeros from mantissa.
+      while(e>p+1 && s.charAt(e-1)=='0')
+      {
+        s.deleteCharAt(e-1);
+        e--;
+      }
+
+      // If mantissa ends now with decimal point, remove the point.
+      if (e==p+1) s.deleteCharAt(p);
+
+      return s.toString();
     }
-
-  //=====================================================================
-  //  strtod
-  //=====================================================================
-  /**
-   * Emulates (part of) C/C++ library function <code>strtod</code>.
-   * <br>
-   * Finds the longest substring of <code>s</code> starting
-   * at index <code>i</code> that represents a <code>double</code> number
-   * in C/C++ format.
-   *
-   *  @param  s String to be scanned.
-   *  @param  i starting index for the scan.
-   *  @return   index of the last recognized character plus 1,
-   *            or <code>i</code> if nothing was recognized.
-   */
-  public static int strtod (final String s, int i)
-    {
-      NumberMatcher nm = new NumberMatcher(s,i);
-      return nm.match();
-    }
-
-
-
-  //HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-  //
-  //  class NumberMatcher
-  //
-  //HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-  /**
-   * Recognizer of numbers in C/C++ <code>double</code> format.
-   * <br>
-   * Auxiliary class used in the method <code>strtod</code>
-   * to match regular expression
-   *
-   * <pre>[ \t]*[+-]?((([0-9]+(.[0-9]*)?)|(.?[0-9]+))([Ee][+-]?[0-9]+)?)[ \t]*</pre>
-   *
-   * Can be replaced by classes from package java.util.regex
-   * on Java version 1.4 or later.
-   */
-
-  private static class NumberMatcher
-  {
-    private String s;
-    private int i;    // matched so far
-    private int j;    // currently look at
-    private int c;    // character at j
-
-    //===================================================================
-    //  Construct NumberMatcher to work on string 'str'
-    //  starting at position 'start'.
-    //===================================================================
-    NumberMatcher(final String str, int start)
-      {
-        s = str;
-        i = start;
-        j = i-1;
-        getNext();
-      }
-
-    //===================================================================
-    //  Advance to next character; simulate '\n' at the end of string.
-    //===================================================================
-    private void getNext()
-      {
-        j++;
-        c = j>=s.length()? '\n' : s.charAt(j);
-      }
-
-    //===================================================================
-    //  Match 'n'; return false if not matched.
-    //===================================================================
-    private boolean symbol(int n)
-      {
-        if (c!=n) return false;
-        getNext();
-        return true;
-      }
-
-    //===================================================================
-    //  Match any character from 's'; return false if not matched.
-    //===================================================================
-    private boolean oneOf(String s)
-      {
-        if (s.indexOf(c)<0) return false;
-        getNext();
-        return true;
-      }
-
-    //===================================================================
-    //  Match [0-9]; return false if not matched.
-    //===================================================================
-    private boolean digit()
-      { return oneOf("0123456789"); }
-
-    //===================================================================
-    //  Match [0-9]+(.[0-9]*)?; return false if not matched.
-    //===================================================================
-    private boolean mantissa1()
-      {
-        if (!digit()) return false;
-        while(digit());
-        if (!symbol('.')) return true;
-        while(digit());
-        return true;
-      }
-
-    //===================================================================
-    //  Match .[0-9]+; return false if not matched.
-    //===================================================================
-    private boolean mantissa2()
-      {
-        if (!symbol('.')) return false;
-        if (!digit()) return false;
-        while(digit());
-        return true;
-      }
-
-    //===================================================================
-    //  Match [Ee][+-]?[0-9]+)?; return false if not matched.
-    //===================================================================
-    private boolean exponent()
-      {
-        if (!oneOf("eE")) return true;
-        oneOf("+-");
-        if (!digit()) return false;
-        while(digit());
-        return true;
-      }
-
-    //===================================================================
-    //  Match number.
-    //===================================================================
-    int match()
-      {
-        while(oneOf(" \t"));
-        oneOf("+-");
-        if (!mantissa1()&&!mantissa2()) return i;
-        i = j;
-        if (!exponent()) return i;
-        i = j;
-        while(oneOf(" \t"));
-        return j;
-      }
-  }
-
 }

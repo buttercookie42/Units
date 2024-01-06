@@ -5,10 +5,10 @@
 //  Units is a program for unit conversion originally written in C
 //  by Adrian Mariano (adrian@cam.cornell.edu.).
 //  Copyright (C) 1996, 1997, 1999, 2000, 2001, 2002, 2003, 2004,
-//  2005, 2006, 2007 by Free Software Foundation, Inc.
+//  2005, 2006, 2007, 2009, 2011 by Free Software Foundation, Inc.
 //
 //  Java version Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008,
-//  2009 by Roman R Redziejowski (roman.redz@tele2.se).
+//  2009, 2011, 2012 by Roman R Redziejowski (www.romanredz.se).
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -27,8 +27,22 @@
 //
 //  Change log
 //
-//    050315 Version 1.84.J07. Changed package name to "units".
-//    091031 Version 1.97.J01. Moved here definition of Ignore
+//  Version 1.84.J07
+//    050315 Changed package name to 'units'.
+//
+//  Version 1.87.J01
+//    091031 Moved here definition of Ignore.
+//
+//  Version 1.88.J02
+//    110403 'showdef' modified to return String instead of printing.
+//
+//  Version 1.89.J01
+//    120202 Use a method from 'Double' instead of 'Util.strtod'
+//           to decide 'isNumber' attribute in the constructor.
+//    120209 Moved definition of Ignore back to separate file as enum.
+//           (No longer needs to be a set of constants in a class.)
+//    120303 Added check for a valid name to 'split'.
+//           Substantial rewrite of 'showdef'.
 //
 //=========================================================================
 
@@ -46,12 +60,12 @@ package net.sourceforge.unitsinjava;
  *  a unit or a prefix.
  */
 
-abstract public class Factor extends Entity
+abstract class Factor extends Entity
 {
   //-------------------------------------------------------------------
   /**  Definition string. */
   //-------------------------------------------------------------------
-  public String def;
+  String def;
 
   //-------------------------------------------------------------------
   /** Is this a primitive unit? */
@@ -78,39 +92,65 @@ abstract public class Factor extends Entity
       return false;
     }
 
-  public enum Ignore {NONE, PRIMITIVE, DIMLESS};
 
   //=====================================================================
-  //  Construct object for factor 'nam' appearing at 'loc'.
-  //  The factor is defined by string 'df'.
+  //  Constructor
   //=====================================================================
-  Factor(final String nam, Location loc, final String df)
+  /**
+   *  Constructs a Factor object.
+   *
+   *  @param name name of the Factor.
+   *  @param loc  location where defined.
+   *  @param def  definition.
+   */
+  Factor(final String name, Location loc, final String def)
     {
-      super(nam,loc);
-      def = df;
+      super(name,loc);
+      this.def = def;
 
-      if (df.equals("!"))
+      if (def.equals("!"))
         isPrimitive = true;
 
-      if (df.equals("!dimensionless"))
+      if (def.equals("!dimensionless"))
       {
         isPrimitive = true;
         isDimless = true;
       }
 
-      isNumber = Util.strtod(def,0)==def.length();
+      Double d;
+      try
+        { d = Double.valueOf(def); }
+      catch(NumberFormatException e)
+        { return; }
+
+      if (d.isInfinite() || d.isNaN())
+        return;
+
+      isNumber = true;
     }
 
   //=====================================================================
-  //  Find out if 'name' is the name of a unit or prefix, or is a prefixed
-  //  unit name. The unit name given as 'name' or its part may be in plural.
-  //  Return a two-element array where first element is the Prefix
-  //  (or null if none) and second is the Unit (or null if none).
-  //  Return null if 'name' is not recognized.
-  //  (Originally part of 'lookupunit'.)
+  //  split
   //=====================================================================
+  /**
+   *  Finds out if given string is the name of a unit or prefix,
+   *  or is a prefixed unit name. The unit name given as 'name'
+   *  or its part may be in plural.
+   *  (Originally part of 'lookupunit'.)
+   *
+   *  @param  name string to be investigated.
+   *  @return two-element array where first element is the Prefix
+   *          (or null if none) and second is the Unit (or null if none).
+   *          <br>
+   *          Null if the name is not recognized.
+   */
   public static Factor[] split(final String name)
     {
+      //---------------------------------------------------------------
+      //  Return null if 'name' is not a valid name.
+      //---------------------------------------------------------------
+      if (Entity.checkName(name)!=null) return null;
+
       //---------------------------------------------------------------
       //  If 'name' is a unit name, possibly in plural form,
       //  return its Unit object.
@@ -158,43 +198,105 @@ abstract public class Factor extends Entity
 
 
   //=====================================================================
-  //  If 'name' is the name of a unit or prefix, or is a prefixed
-  //  unit name, print its definition followed by equal sign.
-  //  Repeat this for the definition thus obtained.
-  //  (Originally part of 'showdefinition'.)
+  //  showdef
   //=====================================================================
-  public static void showdef(final String name)
+  /**
+   *  If given string is the name of a unit or prefix, or is a prefixed
+   *  unit name, return its definition. Otherwise return null.
+   *  (Modified part of 'showdefinition'.)
+   *
+   *  @param  name string to be investigated.
+   *  @return definition of 'name' or null.
+   */
+  public static String showdef(final String name)
     {
+      StringBuilder sb = new StringBuilder();
+
       String def = name;
 
+      //---------------------------------------------------------------
+      //  This loop produces possibly in 'sb' a chain of definitions
+      //  preceded by equal sign. It ends either by 'return' that
+      //  delivers the definition, or by 'break' that proceeds to add
+      //  the reduced form of the Value represented by 'name'.
+      //  These exits are commented below.
+      //---------------------------------------------------------------
       while(true)
       {
+        //-------------------------------------------------------------
+        //  Split 'def' into prefix and unit - if possible.
+        //-------------------------------------------------------------
         Factor[] pu = split(def);
 
-        if (pu==null) break; // Not a prefix-unit
+        //-------------------------------------------------------------
+        //  If 'def' is not a prefix, unit, or prefix-unit combination,
+        //  proceed to append the reduced form of 'name'.
+        //-------------------------------------------------------------
+        if (pu==null) break;
 
         Factor pref = pu[0];
         Factor unit = pu[1];
 
-        if (unit==null)      // Prefix only
+        //-------------------------------------------------------------
+        //  If 'def' is a stand-alone prefix defined as a number,
+        //  append this definition to 'sb' and return result.
+        //  If it is not defined as a number, append the definition
+        //  to 'sb', and repeat the process for that definition.
+        //-------------------------------------------------------------
+        if (unit==null)
         {
-          if (pref.isNumber) break;
           def = pref.def;
+          if (pref.isNumber)
+            return name + sb.toString() + " = " + def;
+
+          sb.append(" = " + def);
+          continue;
         }
 
-        else if (pref==null) // Unit only
+        //-------------------------------------------------------------
+        //  If 'def' is a unit defined as a number, append
+        //  this definition to 'sb' and return result.
+        //  If 'def' is a primitive unit return either a text stating
+        //  that, or the definition chain accumulated in 'sb'.
+        //  If 'def' is any other unit, append its definition to 'sb',
+        //  and repeat the process for that definition.
+        //-------------------------------------------------------------
+        if (pref==null)
         {
-          if (unit.isPrimitive || unit.isNumber) break;
           def = unit.def;
+          if (unit.isNumber)
+            return name + sb.toString() + " = " + def;
+          else if (unit.isPrimitive)
+          {
+            if (sb.length()==0) return "'" + name + "' is a primitive unit";
+            else return name + sb.toString();
+          }
+
+          sb.append(" = " + def);
+          continue;
         }
 
-        else                  // Prefix and unit
-        {
-          def = pref.def + " "
-                + (unit.isPrimitive? unit.name : unit.def);
-        }
-
-        Env.out.print(def + " = ");
+        //-------------------------------------------------------------
+        //  If 'def' is a prefix-unit combination, append combined
+        //  definition to 'sb', and proceed to append the reduced
+        //  form of 'name'.
+        //-------------------------------------------------------------
+        sb.append(" = " + pref.def + " " +
+              (unit.isPrimitive || unit.isNumber? unit.name : unit.def));
+        break;
       }
+
+      //---------------------------------------------------------------
+      //  Append and return the reduced form of name - or return null
+      //  if 'name' cannot be evaluated.
+      //---------------------------------------------------------------
+      Value v;
+      try
+      { v = Value.parse(name); }
+      catch(EvalError e)
+      {return null; }
+
+      v.completereduce();
+      return name + sb.toString() + " = " + v.asString();
     }
 }

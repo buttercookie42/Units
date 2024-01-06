@@ -2,7 +2,7 @@
 //
 //  Part of PEG parser generator Mouse.
 //
-//  Copyright (C) 2009 by Roman R. Redziejowski (www.romanredz.se).
+//  Copyright (C) 2009, 2010 by Roman R. Redziejowski (www.romanredz.se).
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -29,29 +29,70 @@
 package net.sourceforge.unitsinjava;
 
 
+//HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+//
+//  Wrapper for parser input in the form of a string.
+//
+//HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+
 public class SourceString implements Source
 {
+  //=====================================================================
+  //
+  //  Data.
+  //
+  //=====================================================================
+  //-------------------------------------------------------------------
+  //  The String.
+  //  Note: it is the string given to the constructor, not a copy.
+  //-------------------------------------------------------------------
   final String text;
 
+  //=====================================================================
+  //
+  //  Constructor. Wraps the string 's'.
+  //
+  //=====================================================================
   public SourceString(final String s)
     { text = s; }
 
+
+  //=====================================================================
+  //
+  //  Interface methods.
+  //
+  //=====================================================================
+  //-------------------------------------------------------------------
+  //  Is the wrapper correctly initialized?
+  //-------------------------------------------------------------------
   public boolean created()
     { return true; }
 
+  //-------------------------------------------------------------------
+  //  Returns end position.
+  //-------------------------------------------------------------------
   public int end()
     { return text.length(); }
 
+  //-------------------------------------------------------------------
+  //  Returns character at position p.
+  //-------------------------------------------------------------------
   public char at(int p)
     { return text.charAt(p); }
 
+  //-------------------------------------------------------------------
+  //  Returns characters at positions p through q-1.
+  //-------------------------------------------------------------------
   public String at(int p, int q)
     { return text.substring(p,q); }
 
+  //-------------------------------------------------------------------
+  //  Describes position p in terms of preceding text.
+  //-------------------------------------------------------------------
   public String where(int p)
     {
       if (p>15)
-        return "After '… " + text.substring(p-15,p) + "'";
+        return "After '... " + text.substring(p-15,p) + "'";
       else if (p>0)
         return "After '" + text.substring(0,p) + "'";
       else

@@ -2,7 +2,7 @@
 //
 //  Part of PEG parser generator Mouse.
 //
-//  Copyright (C) 2009 by Roman R. Redziejowski (www.romanredz.se).
+//  Copyright (C) 2009, 2011 by Roman R. Redziejowski (www.romanredz.se).
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -21,6 +21,10 @@
 //  Change log
 //    090701 License changed by the author to Apache v.2.
 //    090717 Removed unused import of java.util.Vector.
+//   Version 1.4
+//    111004 Added method 'where'.
+//   Version 1.5
+//    111104 Added methods 'rule' and 'isTerm'.
 //
 //=========================================================================
 
@@ -61,9 +65,19 @@ public interface Phrase
   boolean isEmpty();
 
   //-------------------------------------------------------------------
-  //  Is this s?
+  //  Get name of rule that created this Phrase.
   //-------------------------------------------------------------------
-  boolean isA(String s);
+  String rule();
+
+  //-------------------------------------------------------------------
+  //  Was this Phrase created by rule 'name'?
+  //-------------------------------------------------------------------
+  boolean isA(String name);
+
+  //-------------------------------------------------------------------
+  //  Was this Phrase created by a terminal?
+  //-------------------------------------------------------------------
+  boolean isTerm();
 
   //-------------------------------------------------------------------
   //  Get error message
@@ -74,5 +88,10 @@ public interface Phrase
   //  Clear error message
   //-------------------------------------------------------------------
   void errClear();
+
+  //-------------------------------------------------------------------
+  //  Describe position of i-th character of the Phrase in source text.
+  //-------------------------------------------------------------------
+  String where(int i);
 
 }

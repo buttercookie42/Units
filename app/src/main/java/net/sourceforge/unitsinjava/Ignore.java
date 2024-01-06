@@ -5,10 +5,10 @@
 //  Units is a program for unit conversion originally written in C
 //  by Adrian Mariano (adrian@cam.cornell.edu.).
 //  Copyright (C) 1996, 1997, 1999, 2000, 2001, 2002, 2003, 2004,
-//  2005, 2006, 2007, 2011 by Free Software Foundation, Inc.
+//  2005, 2006, 2007, 2009, 2011 by Free Software Foundation, Inc.
 //
 //  Java version Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008,
-//  2009 by Roman R Redziejowski (www.romanredz.se).
+//  2009, 2011, 2012 by Roman R Redziejowski (www.romanredz.se).
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -27,8 +27,9 @@
 //
 //  Change log
 //
-//  Version 1.87.J01
-//    091025 Created to replace Parser.Error.
+//  Version 1.89.J01
+//    120209 Created.
+//           Moved from Factor, as enum can be a separate class definition.
 //
 //=========================================================================
 
@@ -38,23 +39,12 @@ package net.sourceforge.unitsinjava;
 
 //HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 //
-//  class EvalError
+//  enum Ignore
 //
 //HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 /**
- *  Exception thrown by evaluation of unit expression.
+ *  Definition of keywords used in methods to checking Products
+ *  and Values for compatibility.
  */
 
- public class EvalError extends Error
-{
-  //-------------------------------------------------------------------
-  //  Constructor
-  //-------------------------------------------------------------------
-  EvalError(final String s)
-    { super(s); }
-
-  //-------------------------------------------------------------------
-  //  Serial version UID. Unused: defined to eliminate compiler warning
-  //-------------------------------------------------------------------
-  public static final long serialVersionUID = 4711L;
-}
+enum Ignore {NONE, PRIMITIVE, DIMLESS};

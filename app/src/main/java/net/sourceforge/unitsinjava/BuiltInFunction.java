@@ -5,10 +5,10 @@
 //  Units is a program for unit conversion originally written in C
 //  by Adrian Mariano (adrian@cam.cornell.edu.).
 //  Copyright (C) 1996, 1997, 1999, 2000, 2001, 2002, 2003, 2004,
-//  2005, 2006, 2007 by Free Software Foundation, Inc.
+//  2005, 2006, 2007, 2009, 2011 by Free Software Foundation, Inc.
 //
 //  Java version Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008,
-//  2009 by Roman R Redziejowski (roman.redz@tele2.se).
+//  2009, 2012 by Roman R Redziejowski (www.romanredz.se).
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -27,15 +27,25 @@
 //
 //  Change log
 //
-//    050203 Version 1.84.J05. Do not initialize table.
-//    050315 Version 1.84.J07. Changed package name to "units".
-//    091024 Version 1.87.J01
-//           Used generics for 'table'.
+//  Version 1.84.J05.
+//    050203 Do not initialize table.
+//
+//  Version 1.84.J07.
+//    050315 Changed package name to 'units'.
+//
+//  Version 1.87.J01
+//    091024 Used generics for 'table'.
 //    091025 Replaced 'Parser.Exception' by 'EvalError'.
 //    091027 Added 'sqrt' and 'cuberoot'.
 //           Used Enum.
 //           Added check for undefined result of math functions.
 //    091031 Replaced 'addtolist' by 'isCompatibleWith'.
+//
+//  Version 1.89.J01
+//    120208 Renamed one-argument method 'isCompatibleWith'
+//           to 'conformsTo' to avoid confusion with two-argument one
+//           defined in Product and Value.
+//    120209 Clarified error messages about undefined result.
 //
 //=========================================================================
 
@@ -63,10 +73,11 @@ import java.util.Vector;
   public static Hashtable<String,BuiltInFunction> table = null;
 
   //-------------------------------------------------------------------
-  //  Argument and result types
+  /**  Argument and result type. */
   //-------------------------------------------------------------------
   private type funcType;
 
+  /** Codes for argument and result types. */
   private enum type
     {
       DIMLESS,  // Argument and result are numbers
@@ -76,24 +87,31 @@ import java.util.Vector;
     } ;
 
   //-------------------------------------------------------------------
-  //  Because Java does not have pointers, the procedure invoked
-  //  to evaluate the function is identified by enumeration.
+  /** Procedure ID.
+   *  Because Java does not have pointers, the procedure invoked
+   *  to evaluate the function is identified by enumeration. */
   //-------------------------------------------------------------------
   private proc procID;
 
+  /** Procedure codes. */
   private enum proc {SIN,COS,TAN,LN,LOG,LOG2,EXP,ASIN,ACOS,ATAN,SQRT,CBRT};
 
   //-------------------------------------------------------------------
-  //  Radian (an angle is a unit reducible to radians)
+  /**  Radian (an angle is a unit reducible to radians). */
   //-------------------------------------------------------------------
-
   private static Unit radian;
 
 
   //=====================================================================
-  //  Construct object for built-in function 'name'
-  //  of type 'funcType' with procedure ID 'procID'.
+  //  Constructor
   //=====================================================================
+  /**
+   *  Constructs object for a built-in function.
+   *
+   *  @param name     function name.
+   *  @param funcType code for argument and result type.
+   *  @param procID   procedure code.
+   */
   BuiltInFunction(String name, type funcType, proc procID)
     {
       super(name,new Location());
@@ -102,16 +120,25 @@ import java.util.Vector;
     }
 
   //=====================================================================
-  //  Insert into the table a built-in function 'name'
-  //  of type 'funcType' with procedure ID 'procID'.
+  //  insert
   //=====================================================================
+  /**
+   *  Inserts into the table a built-in function.
+   *
+   *  @param name     function name.
+   *  @param funcType code for argument and result type.
+   *  @param procID   procedure code.
+   */
   private static void insert(String name, type funcType, proc procID)
     { table.put(name, new BuiltInFunction(name,funcType,procID)); }
 
 
   //=====================================================================
-  //  Fill table of built-in functions.
+  //  makeTable
   //=====================================================================
+  /**
+   *  Fills the table of built-in functions.
+   */
   public static void makeTable()
     {
       insert("sin",     type.ANGLEIN, proc.SIN);
@@ -137,8 +164,14 @@ import java.util.Vector;
 
 
   //=====================================================================
-  //  Apply the function to Value 'v' (with result in 'v').
+  //  applyTo
   //=====================================================================
+  /**
+   *  Applies this function to a given Value,
+   *  and changes the Value to the result.
+   *
+   *  @param v the argument and result.
+   */
   void applyTo(Value v)
     {
       //---------------------------------------------------------------
@@ -152,16 +185,16 @@ import java.util.Vector;
             String s = v.asString();
             v.denominator.add(radian);
             if (!v.isNumber())
-              throw new EvalError("Argument " + s + " of " +
-                            name + " is not a number or angle.");
+              throw new EvalError("Argument '" + s + "' of '" +
+                            name + "' is not a number or angle.");
           }
           break;
 
         case ANGLEOUT:  //-------- Must be a number
         case DIMLESS:
           if (!v.isNumber())
-            throw new EvalError("Argument " + v.asString() + " of " +
-                            name + " is not a number.");
+            throw new EvalError("Argument '" + v.asString() + "' of '" +
+                            name + "' is not a number.");
           break;
 
         case NOCHECK:   //-------- No checking
@@ -204,13 +237,13 @@ import java.util.Vector;
         case DIMLESS:
           if (NaN)
             throw new EvalError("The result of " +
-                            name + " is undefined.");
+                            name + "(" + arg + ") is undefined.");
           break;
 
         case ANGLEOUT:  //-------- Must be an angle
           if (NaN)
             throw new EvalError("The result of " +
-                            name + " is undefined.");
+                            name + "(" + arg + ") is undefined.");
             v.numerator.add(radian);
           break;
 
@@ -227,7 +260,7 @@ import java.util.Vector;
   //  These methods, defined in Entity and Function classes,
   //  are never invoked for a BuiltInFunction.
   //=====================================================================
-  public void applyInverseTo(Value v)
+  void applyInverseTo(Value v)
     { throw new Error("Program Error"); }
 
   String showdef()
@@ -236,7 +269,7 @@ import java.util.Vector;
   void check()
     { throw new Error("Program Error"); }
 
-  boolean isCompatibleWith(final Value v)
+  boolean conformsTo(final Value v)
     { throw new Error("Program Error"); }
 
   String desc()

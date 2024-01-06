@@ -1,11 +1,11 @@
 #
 # This file is the units database for use with GNU units, a units conversion
-# program by Adrian Mariano adrian@cam.cornell.edu
+# program by Adrian Mariano adrianm@gnu.org
 #
-# 14 February 2010 Version 1.50
+# 17 November 2011 Version 1.53
 #
 # Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2004, 2005, 2006
-#               2007, 2008, 2009, 2010
+#               2007, 2008, 2009, 2010, 2011
 # Free Software Foundation, Inc
 #
 # This program is free software; you can redistribute it and/or modify
@@ -21,8 +21,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, 
-# Boston, MA  02110-1301  USA
-#
+# Boston, MA  02110-1301  USA#
 ############################################################################
 #
 # Improvements and corrections are welcome.
@@ -57,13 +56,49 @@
 #                   http://www.ukmetrication.com/history.htm
 #
 # Thanks to Jeff Conrad for assistance in ferreting out unit definitions.
-#
+
 ###########################################################################
 #
 # If units you use are missing or defined incorrectly, please contact me.
+# If your country's local units are missing and you are willing to supply
+# them, please send me a list. 
 #
 # I added shoe size information but I'm not convinced that it's correct.
 # If you know anything about shoe sizes please contact me. 
+#
+###########################################################################
+
+###########################################################################
+#
+# Brief Philosophy of this file
+# 
+# Most unit definitions are made in terms of integers or simple fractions of
+# other definitions.  The typical exceptions are when converting between two
+# different unit systems, or the values of measured physical constants.  In
+# this file definitions are given in the most natural and revealing way in
+# terms of integer factors.
+#
+# The file is USA-centric, but there is some modest effort to support other
+# countries.  This file is now coded in UTF-8.  To support environments where
+# UTF-8 is not available, definitions that require this character set are
+# wrapped in !utf8 directives.  
+#
+# When a unit name is used in different countries with the different meanings 
+# the system should be as follows:
+#
+# Suppose countries ABC and XYZ both use the "foo".  Then globally define
+#    
+#   ABCfoo  <some value>
+#   XYZfoo  <different value>
+#
+# The using the !locale directive, define the "foo" appropriately for each of
+# the two countries with a definition like
+#
+# !locale ABC
+#    foo  ABCfoo
+# !endlocale
+#
+# If you make changes be sure to run 'units --check' to check your work.
 #
 ###########################################################################
 
@@ -128,7 +163,7 @@ radian    !dimensionless   # The angle subtended at the center of a circle by
                            #   circle
 sr        !dimensionless   # Solid angle which cuts off an area of the surface 
 steradian sr               #   of the sphere equal to that of a square with
-                           #   sides of length equal to the radius of the 
+                           #   sides of length equal to the radius of the
                            #   sphere
 
 #
@@ -179,7 +214,7 @@ demi-                   0.5
 hemi-                   0.5
 half-                   0.5
 double-                 2
-triple-                 3
+triple-			3
 treble-                 3
 
 kibi-                   2^10     # In response to the convention of illegally
@@ -451,15 +486,17 @@ funal                   sthene
 pieze                   sthene / m^2
 quintal                 100 kg
 bar                     1e5 Pa     # About 1 atm
+b                       bar
 vac                     millibar
 micron                  micrometer # One millionth of a meter
 bicron                  picometer  # One brbillionth of a meter
 cc                      cm^3
 are                     100 m^2
+a                       are
 liter                   1000 cc       # The liter was defined in 1901 as the
 oldliter                1.000028 dm^3 # space occupied by 1 kg of pure water at
-l                       liter         # the temperature of its maximum density
-L                       liter         # under a pressure of 1 atm.  This was
+L                       liter         # the temperature of its maximum density
+l                       liter         # under a pressure of 1 atm.  This was
                                       # supposed to be 1000 cubic cm, but it
                                       # was discovered that the original
                                       # measurement was off.  In 1964, the
@@ -584,7 +621,7 @@ mas                     milli arcsec # Used by astronomers
 seclongitude            circle (seconds/day) # Astronomers measure longitude
                                      # (which they call right ascension) in
                                      # time units by dividing the equator into
-                                     # 24 hours instead of 360 degrees. 
+                                     # 24 hours instead of 360 degrees.
 #
 # Some geometric formulas
 #
@@ -708,7 +745,7 @@ degreaumur              10|8 degC # The Reaumur scale was used in Europe and
                                   # divisible by many numbers.
 
 degK                    K         # "Degrees Kelvin" is forbidden usage.
-tempK                   K         # For consistency.  
+tempK                   K         # For consistency
 
 # Gas mark is implemented below but in a terribly ugly way.  There is
 # a simple formula, but it requires a conditional which is not
@@ -745,7 +782,7 @@ gasmark[degR] \
 #      air temperature and wind on the human body. The index was first defined
 #      by the American Antarctic explorer Paul Siple in 1939. As currently used
 #      by U.S. meteorologists, the wind chill index is computed from the
-#      temperature T (in �F) and wind speed V (in mi/hr) using the formula: 
+#      temperature T (in °F) and wind speed V (in mi/hr) using the formula: 
 #          WCI = 0.0817(3.71 sqrt(V) + 5.81 - 0.25V)(T - 91.4) + 91.4. 
 #      For very low wind speeds, below 4 mi/hr, the WCI is actually higher than
 #      the air temperature, but for higher wind speeds it is lower than the air
@@ -753,7 +790,7 @@ gasmark[degR] \
 # 
 # heat index (HI or HX) a measure of the combined effect of heat and
 #      humidity on the human body. U.S. meteorologists compute the index
-#      from the temperature T (in �F) and the relative humidity H (as a
+#      from the temperature T (in °F) and the relative humidity H (as a
 #      value from 0 to 1).
 #        HI = -42.379 + 2.04901523 T + 1014.333127 H - 22.475541 TH 
 #             - .00683783 T^2 - 548.1717 H^2 + 0.122874 T^2 H + 8.5282 T H^2
@@ -776,14 +813,9 @@ h                     6.62606896e-34 J s # Planck constant
 hbar                    h / 2 pi
 spin                    hbar
 G               6.67428e-11 N m^2 / kg^2 # Newtonian gravitational constant
-                                         #    This is the NIST 2002 value.
-                                         #    Note that NIST increased the
-                                         #    uncertainty of G to 1500 ppm
-                                         #    as a result of disagreements
-                                         #    between experiments performed in
-                                         #    the late 1990s.  Some other
-                                         #    sources give conflicting values
-                                         #    with a much lower uncertainty.
+                                         #    This is the NIST 2006 value.
+                                         #    The relative uncertainty on this
+					 #    is 1e-4. 
 coulombconst            1/4 pi epsilon0  # listed as "k" sometimes
 
 # Physico-chemical constants
@@ -866,6 +898,8 @@ wc                      water            # water column
 mach                    331.46 m/s       # speed of sound in dry air at STP
 standardtemp            273.15 K         # standard temperature
 stdtemp                 standardtemp
+normaltemp		tempF(70)        # for gas density, from NIST
+normtemp		normaltemp       # Handbook 44
 
 # Weight of mercury and water at different temperatures using the standard
 # force of gravity.
@@ -1219,11 +1253,11 @@ moonlum                 2500 cd/m^2
 
 # Photographic Exposure Value
 #
-# The Additive Photographic EXposure (APEX) system developed in Germany in
-# the 1960s was an attempt to simplify exposure determination for people
-# who relied on exposure tables rather than exposure meters.  Shortly
-# thereafter, nearly all cameras incorporated exposure meters, so the APEX
-# system never caught on, but the concept of Exposure Value (EV) given by
+# The Additive Photographic EXposure (APEX) system proposed in ASA PH2.5-1960
+# was an attempt to simplify exposure determination for people who relied on
+# exposure tables rather than exposure meters.  Shortly thereafter, nearly all
+# cameras incorporated exposure meters, so the APEX system never caught on,
+# but the concept of Exposure Value (EV) given by
 # 
 #            A^2   LS   ES
 #     2^EV = --- = -- = --
@@ -1246,15 +1280,25 @@ moonlum                 2500 cd/m^2
 # are in even 1/3-step increments, the exact value is 64 * 2^(2|3)).
 # Calibration constants vary among camera and meter manufacturers: Canon,
 # Nikon, and Sekonic use a value of 12.5 for reflected-light meters, while
-# Minolta and Pentax use a value of 14.  Minolta and Sekonic use a value
-# of 250 for incident-light meters with flat receptors.
+# Kenko (formerly Minolta) and Pentax use a value of 14.  Kenko and
+# Sekonic use a value of 250 for incident-light meters with flat
+# receptors.
 
-s100                    64 * 2^(2|3) / lx s     # exact speed for ISO 100 film
+# This was stated in ASA PH2.5-1960, but it assumed APEX, which never
+# found widespread acceptance.
+
+#s100                    64 * 2^(2|3) / lx s	# exact speed for ISO 100 film
+
+# ISO speed standards (e.g., ISO 6:1993) do not discuss "exact" values;
+# this value assumes ISO 100 is exact.
+
+s100                    100 / lx s		# ISO 100 speed
+iso100			s100
                          
-# Reflected-light meter calibration constant with ISO 100 film
+# Reflected-light meter calibration constant with ISO 100 speed
 
 k1250                   12.5 (cd/m2) / lx s     # For Canon, Nikon, and Sekonic
-k1400                   14   (cd/m2) / lx s     # For Minolta and Pentax
+k1400                   14   (cd/m2) / lx s     # For Kenko (Minolta) and Pentax
 
 # Incident-light meter calibration constant with ISO 100 film
 
@@ -1262,9 +1306,9 @@ c250                    250 lx / lx s           # flat-disc receptor
 
 # Exposure value to scene luminance with ISO 100 film
 
-# For Minolta or Pentax
+# For Kenko (Minolta) or Pentax
 #ev100(x) [;cd/m^2] 2^x k1400 / s100; log2(ev100 s100 / k1400)  
-# For Canon, Nikon or Sekonic
+# For Canon, Nikon, or Sekonic
 ev100(x) [;cd/m^2] 2^x k1250 / s100; log2(ev100 s100 / k1250)  
 
 # Exposure value to scene illuminance with ISO 100 film
@@ -1570,7 +1614,6 @@ atomictime              hbar^3/coulombconst^2 atomicmass e^4 # Period of first
 atomicvelocity          atomiclength / atomictime
 atomicenergy            hbar / atomictime
 hartree                 atomicenergy
-Hartree                 hartree
 
 #
 # These thermal units treat entropy as charge, from [5]
@@ -1591,17 +1634,28 @@ thermalvolt             K          # thermal potential difference
 
 # linear measure
 
-# The US Metric Law of 1866 legalized the metric system in the USA and defined
-# the meter in terms of the British system with the exact 1 meter = 39.37
-# inches.  On April 5, 1893 Corwin Mendenhall decided, in what has become known
-# as the "Mendenhall Order" that the meter and kilogram would be the
-# fundamental standards in the USA.  The definition from 1866 was turned around
-# to give an exact definition of the foot as 1200|3937 meters.  This definition
-# was used until July of 1959 when the definition was changed to bring the US
-# into agreement with other countries.  Since 1959, the foot has been exactly
-# 0.3048 meters.  At the same time it was decided that any data expressed in
-# feet derived from geodetic surveys within the US would continue to use the
-# old definition and call the old unit the "survey foot".
+# The US Metric Law of 1866 legalized the metric system in the USA and
+# defined the meter in terms of the British system with the exact
+# 1 meter = 39.37 inches.  On April 5, 1893 Thomas Corwin Mendenhall,
+# Superintendent of Weights and Measures, decided, in what has become
+# known as the "Mendenhall Order" that the meter and kilogram would be the
+# fundamental standards in the USA.  The definition from 1866 was turned
+# around to give an exact definition of the yard as 3600|3937 meters This
+# definition was used until July of 1959 when the definition was changed
+# to bring the US and other English-speaking countries into agreement; the
+# Canadian value of 1 yard = 0.9144 meter (exactly) was chosen because it
+# was approximately halfway between the British and US values; it had the
+# added advantage of making 1 inch = 25.4 mm (exactly).  Since 1959, the
+# "international" foot has been exactly 0.3048 meters.  At the same time,
+# it was decided that any data expressed in feet derived from geodetic
+# surveys within the US would continue to use the old definition and call
+# the old unit the "survey foot." The US continues to define the statute
+# mile, furlong, chain, rod, link, and fathom in terms of the US survey
+# foot.
+# Sources:
+# NIST Special Publication 447, Sects. 5, 7, and 8.
+# NIST Handbook 44, 2011 ed., Appendix C.
+# Canadian Journal of Physics, 1959, 37:(1) 84, 10.1139/p59-014.
 
 US                      1200|3937 m/ft   # These four values will convert
 US-                     US               #   international measures to
@@ -1658,8 +1712,23 @@ gurleylink              1|50 gurleychain  # same length
 wingchain               66 feet           # Chain from 1664, introduced by
 winglink                1|80 wingchain    # Vincent Wing, also found in a  
                                           # 33 foot length with 40 links.
+# early US length standards
 
+# The US has had four standards for the yard: one by Troughton of London
+# (1815); bronze yard #11 (1856); the Mendhall yard (1893), consistent
+# with the definition of the meter in the metric joint resolution of
+# Congress in 1866, but defining the yard in terms of the meter; and the
+# international yard (1959), which standardized definitions for Australia,
+# Canada, New Zealand, South Africa, the UK, and the US.
+# Sources: Pat Naughtin (2009), Which Inch?, www.metricationmatters.com;
+# Lewis E.  Barbrow and Lewis V.  Judson (1976).  NBS Special Publication
+# 447, Weights and Measures Standards of the United States: A Brief
+# History.
 
+troughtonyard		914.42190 mm
+bronzeyard11		914.39980 mm
+mendenhallyard		surveyyard
+internationalyard	yard
 
 # nautical measure
 
@@ -2189,6 +2258,11 @@ austblsp                australiatablespoon
 australiateaspoon       1|4 australiatablespoon
 austsp                  australiateaspoon
 
+# Italian
+
+etto                    100 g          # Used for buying items like meat and
+etti                    etto           #   cheese.  
+
 # Chinese
 
 catty                   0.5 kg         
@@ -2296,13 +2370,56 @@ eggyolkvolume           3.5 ustsp
 #   171      99.6 
 #
 
+#
+# This is from "Boiling point elevation of technical sugarcane solutions and 
+# its use in automatic pan boiling" by Michael Saska.  International Sugar 
+# Journal, 2002, 104, 1247, pp 500-507.  
+#
+# But I'm using equation (3) which is credited to Starzak and Peacock, 
+# "Water activity coefficient in aqueous solutions of sucrose--A comprehensive 
+# data analyzis.  Zuckerindustrie, 122, 380-387.  
+#
+# Note that the range of validity is uncertain, but answers are in agreement 
+# with the above table all the way to 99.6.  
+#
+# It is probably necessary to switch this to a table in order to get 
+# invertibility.  
+#
+
+sc(x)  (x / 342.3) / (( x/342.3) + (100-x)/18.02); \
+       100 sc 342.3|18.02 / (sc (342.3|18.02-1)+1)
+
+sss(Wds)  Ax (Wds/(100-Wds))^Bx ((stdtemp+tbw)/100 K)^Cx
+
+Ax 0.1660
+Bx 1.1394
+Cx 1.9735
+
+
+Bsp 3797.06 degC
+Csp 226.28 degC
+tbw 100 degC
+QQ -17638 J/mol
+asp -1.0038
+bsp -0.24653
+
+
+sug(x) ((1-QQ/R Bsp * x^2 (1+asp x + bsp x^2) (tbw + Csp) /(tbw+stdtemp)) /  (1+(tbw + Csp)/Bsp *ln(1-x))-1) * (tbw + Csp)
+
+# Boiling point elevation of sugar, x is concentration
+sugar_bpe(x) ((1+ 0.48851085 * sc(x)^2 (1+ -1.0038 sc(x) + -0.24653 sc(x)^2)) / (1+0.08592964 ln(1-sc(x)))-1) 326.28 K
+
+
+
+
+
 # Degrees Baume is used in European recipes to specify the density of a sugar
 # syrup.  An entirely different definition is used for densities below 
 # 1 g/cm^3.  An arbitrary constant appears in the definition.  This value is
 # equal to 145 in the US, but was according to [], the old scale used in
 # Holland had a value of 144, and the new scale or Gerlach scale used 146.78.
 
-baumeconst 144      # US value
+baumeconst 145      # US value
 baume(d) [1;g/cm^3] (baumeconst/(baumeconst+-d)) g/cm^3 ; \
                     (baume+((-g)/cm^3)) baumeconst / baume
 
@@ -2314,30 +2431,31 @@ quevenne(x) [1;g/cm^3] (1 + 0.001 x) g / cm^3 ; 1000 (quevenne / (g/cm^3) +- 1)
 # Degrees brix measures sugar concentration by weigh as a percentage, so a
 # solution that is 3 degrees brix is 3% sugar by weight.  This unit was named
 # after Adolf Brix who invented a hydrometer that read this percentage
-# directly.  This table converts brix to density at 20 degrees Celsius.  
+# directly.  This data is from Table 114 of NIST Circular 440, "Polarimetry,
+# Saccharimetry and the Sugars".  It gives apparent specific gravity at 20
+# degrees Celsius of various sugar concentrations.  As rendered below this
+# data is converted to apparent density at 20 degrees Celsius using the
+# density figure for water given in the same NIST reference.  They use the
+# word "apparent" to refer to measurements being made in air with brass
+# weights rather than vacuum.
 
-brix[g/cm^3]  \
-   0.0 0.9982,    0.5 1.0002,    1.0 1.0021 \
-   1.5 1.0040,    2.0 1.0060,    2.5 1.0079 \
-   3.0 1.0099,    3.5 1.0119,    4.0 1.0139 \
-   5.0 1.0178,    5.5 1.0198,    6.0 1.0218 \
-   6.5 1.0238,    7.0 1.0259,    7.5 1.0279 \
-   8.0 1.0299,    8.5 1.0320,    9.0 1.0340 \
-   9.5 1.0361,   10.0 1.0381,   11.0 1.0423 \
-  12.0 1.0465,   13.0 1.0507,   14.0 1.0549 \
-  15.0 1.0592,   16.0 1.0635,   17.0 1.0678 \
-  18.0 1.0722,   19.0 1.0766,   20.0 1.0810 \
-  22.0 1.0899,   24.0 1.0990,   26.0 1.1082 \
-  28.0 1.1175,   30.0 1.1270,   32.0 1.1366 \
-  34.0 1.1464,   36.0 1.1562,   38.0 1.1663 \
-  40.0 1.1765,   42.0 1.1868,   44.0 1.1972 \
-  46.0 1.2079,   48.0 1.2186,   50.0 1.2295 \
-  52.0 1.2406,   54.0 1.2518,   56.0 1.2632 \
-  58.0 1.2747,   60.0 1.2864,   62.0 1.2983 \
-  64.0 1.3103,   66.0 1.3224,   68.0 1.3348 \
-  70.0 1.3472,   72.0 1.3599,   74.0 1.3726 \
-  76.0 1.3855,   78.0 1.3986,   80.0 1.4117 \
-  82.0 1.4250,   84.0 1.4383    
+brix[0.99717g/cm^3]\
+    0 1.00000  1 1.00390  2 1.00780  3 1.01173  4 1.01569  5 1.01968 \
+    6 1.02369  7 1.02773  8 1.03180  9 1.03590 10 1.04003 11 1.04418 \
+   12 1.04837 13 1.05259 14 1.05683 15 1.06111 16 1.06542 17 1.06976 \
+   18 1.07413 19 1.07853 20 1.08297 21 1.08744 22 1.09194 23 1.09647 \
+   24 1.10104 25 1.10564 26 1.11027 27 1.11493 28 1.11963 29 1.12436 \
+   30 1.12913 31 1.13394 32 1.13877 33 1.14364 34 1.14855 35 1.15350 \
+   36 1.15847 37 1.16349 38 1.16853 39 1.17362 40 1.17874 41 1.18390 \
+   42 1.18910 43 1.19434 44 1.19961 45 1.20491 46 1.21026 47 1.21564 \
+   48 1.22106 49 1.22652 50 1.23202 51 1.23756 52 1.24313 53 1.24874 \
+   54 1.25439 55 1.26007 56 1.26580 57 1.27156 58 1.27736 59 1.28320 \
+   60 1.28909 61 1.29498 62 1.30093 63 1.30694 64 1.31297 65 1.31905 \
+   66 1.32516 67 1.33129 68 1.33748 69 1.34371 70 1.34997 71 1.35627 \
+   72 1.36261 73 1.36900 74 1.37541 75 1.38187 76 1.38835 77 1.39489 \
+   78 1.40146 79 1.40806 80 1.41471 81 1.42138 82 1.42810 83 1.43486 \
+   84 1.44165 85 1.44848 86 1.45535 87 1.46225 88 1.46919 89 1.47616 \
+   90 1.48317 91 1.49022 92 1.49730 93 1.50442 94 1.51157 95 1.51876
 
 # Density measure invented by the American Petroleum Institute.  Lighter
 # petroleum products are more valuable, and they get a higher API degree.
@@ -2373,6 +2491,8 @@ kip                     1000 lbf     # from kilopound
 ksi                     kip / in^2
 mil                     0.001 inch
 thou                    0.001 inch
+tenth			0.0001 inch  # one tenth of one thousandth of an inch
+millionth		1e-6 inch    # one millionth of an inch
 circularinch            1|4 pi in^2  # area of a one-inch diameter circle
 circleinch              circularinch #    A circle with diameter d inches has
                                      #    an area of d^2 circularinches
@@ -2832,7 +2952,7 @@ fournierpoint           0.1648 inch / 12  # First definition of the printers
                                           # point made by Pierre Fournier who
                                           # defined it in 1737 as 1|12 of a
                                           # cicero which was 0.1648 inches.
-olddidotpoint           1|72 frenchinch   # Fran�ois Ambroise Didot, one of 
+olddidotpoint           1|72 frenchinch   # François Ambroise Didot, one of 
                                           # a family of printers, changed
                                           # Fournier's definition around 1770 
                                           # to fit to the French units then in
@@ -3320,7 +3440,7 @@ saudiarabiariyal       0.2667 US$
 solomonislandsdollar   0.1273 US$
 seychellesrupee        0.08753 US$
 sudanpound             0.4464 US$
-swedenkronor           13.719 US$
+swedenkrona            13.719 US$
 singaporedollar        0.7065 US$
 sainthelenapound       1.5627 US$
 sierraleoneleone       0.000255 US$
@@ -3480,7 +3600,7 @@ SAR                     	saudiarabiariyal
 SBD                     	solomonislandsdollar
 SCR                     	seychellesrupee
 SDG                     	sudanpound
-SEK                     	swedenkronor
+SEK                     	swedenkrona
 SGD                     	singaporedollar
 SHP                     	sainthelenapound
 SLL                     	sierraleoneleone
@@ -3849,7 +3969,7 @@ screwgauge(g) [;m] (.06 + .013 g) in ; (screwgauge/in + (-.06)) / .013
 # several previous organizations.  One of the old organizations was
 # CAMI (Coated Abrasives Manufacturers' Institute).  
 #
-# UAMA has a web page with plots showing abrasve particle ranges for
+# UAMA has a web page with plots showing abrasive particle ranges for
 # various different grits and comparisons between standards.  
 #
 # http://www.uama.org/Abrasives101/101Standards.html
@@ -3910,6 +4030,9 @@ grit_P[micron] \
 	2000 10.3 \
 	2500 8.4
 
+# The F grit is the European standard for bonded abrasives such as 
+# grinding wheels 
+
 grit_F[micron] \
         4 4890 \
     	5 4125 \
@@ -3957,7 +4080,7 @@ grit_F[micron] \
 # from the UAMA web site and represent the average of the "d50" range
 # endpoints listed there.
 
-grit_ansibonded[micron] \
+ansibonded[micron] \
     4 4890 \
     5 4125 \
     6 3460 \
@@ -3994,6 +4117,8 @@ grit_ansibonded[micron] \
     800 7.65 \
     1000 5.8 \
     1200 3.8 
+
+grit_ansibonded(x) [1;micron] ansibonded(x); ~ansibonded(grit_ansibonded)
 
 # Like the bonded grit, the coated macrogrits below 240 are taken from the
 # FEPA F table.  Data above this is from the UAMA site.  Note that the coated
@@ -4045,6 +4170,9 @@ ansicoated[micron] \
     4000 3 \
     6000 2 \
     8000 1.2
+
+grit_ansicoated(x) [1;micron] ansicoated(x); ~ansicoated(grit_ansicoated)
+
 
 #
 # Is this correct?  This is the JIS Japanese standard used on waterstones
@@ -4429,6 +4557,22 @@ yttrium                 88.90585
 zinc                    65.39
 zirconium               91.224
 
+# from NASA Earth Fact Sheet (accessed 4 November 2011)
+# http://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html
+# Atmospheric composition:
+#   Nitrogen (N2)       78.08%
+#   Oxygen (O2)         20.95%
+#   Argon (Ar)             9340 ppm
+#   Carbon Dioxide (CO2)    380 ppm
+#   Neon (Ne)                18.18 ppm
+#   Helium (He)               5.24 ppm
+#   Methane (CH4)             1.7 ppm
+#   Krypton (Kr)              1.14 ppm
+#   Hydrogen (H2)             0.55 ppm
+
+air			28.967
+
+
 #
 # population units
 #
@@ -4489,6 +4633,14 @@ kanejakusun        sun      # Alias to emphasize architectural name
 kanejaku           shaku
 kanejakujou        jou
 
+# http://en.wikipedia.org/wiki/Taiwanese_units_of_measurement
+taichi             shaku   # http://zh.wikipedia.org/wiki/台尺
+taicun             sun     # http://zh.wikipedia.org/wiki/台制
+!utf8
+台尺               taichi  # via Hanyu Pinyin romanizations
+台寸               taicun
+!endutf8
+
 # In context of clothing, shaku is different from architecture
 # http://www.scinet.co.jp/sci/sanwa/kakizaki-essay54.html
 
@@ -4516,6 +4668,18 @@ tsubo                36 shaku^2    # Size of two tatami = ken^2 ??
 se                   30 tsubo
 tan_area             10 se
 chou_area            10 tan_area
+
+# http://en.wikipedia.org/wiki/Taiwanese_units_of_measurement
+ping                 tsubo     # http://zh.wikipedia.org/wiki/坪
+jia                  2934 ping # http://zh.wikipedia.org/wiki/甲_(单位)
+fen                  1|10 jia  # http://zh.wikipedia.org/wiki/分
+fen_area             1|10 jia  # Protection against future collisions
+!utf8
+坪                   ping      # via Hanyu Pinyin romanizations
+甲                   jia
+分                   fen
+分地                 fen_area  # Protection against future collisions
+!endutf8
 
 # Japanese architecture is based on a "standard" size of tatami mat.
 # Room sizes today are given in number of tatami, and this number
@@ -4559,16 +4723,27 @@ koku                 10 to  # No longer used; historically a measure of rice
 
 # Not really used anymore.
 
-rin_weight           1|10 bu
+rin_weight           1|10 bu_weight
 bu_weight            1|10 monme
 fun                  1|10 monme  
-monme                15|4 g
+monme                momme
 kin                  160 monme
 kan                  1000 monme
 kwan                 kan         # This was the old pronounciation of the unit.
                                  # The old spelling persisted a few centuries
                                  # longer and was not changed until around 
                                  # 1950.
+
+# http://en.wikipedia.org/wiki/Taiwanese_units_of_measurement
+# says: "Volume measure in Taiwan is largely metric".
+taijin               kin      # http://zh.wikipedia.org/wiki/台斤
+tailiang             10 monme # http://zh.wikipedia.org/wiki/台斤
+taiqian              monme    # http://zh.wikipedia.org/wiki/台制
+!utf8
+台斤                 taijin # via Hanyu Pinyin romanizations
+台兩                 tailiang
+台錢                 taiqian
+!endutf8
 
 #
 # Australian unit
@@ -5079,27 +5254,7 @@ periot                  1|20 droit
 blanc                   1|24 periot    
 
 #
-# Some definitions using ISO 8859-1 characters
-#
-
-�-                      1|4
-�-                      1|2
-�-                      3|4
-�-                      micro
-�                       cent
-�                       britainpound
-�                       japanyen
-�ngstr�m                angstrom
-�                       angstrom
-r�ntgen                 roentgen
-�C                      degC
-�F                      degF
-�K                      K             # �K is incorrect notation
-�R                      degR
-�                       degree
-
-#
-# Localisation
+# Localization
 #
 
 !locale en_US
@@ -5152,6 +5307,190 @@ acre                    intacre
 acrefoot                intacrefoot
 !endlocale
 
+!utf8
+⅛-                      1|8  
+¼-                      1|4
+⅜-                      3|8
+½-                      1|2
+⅝-                      5|8
+¾-                      3|4
+⅞-                      7|8
+⅙-                      1|6
+⅓-                      1|3
+⅔-                      2|3
+⅚-                      5|6
+⅕-                      1|5
+⅖-                      2|5
+⅗-                      3|5
+⅘-                      4|5 
+# U+2150-               1|7  For some reason these characters are getting
+# U+2151-               1|9  flagged as invalid UTF8.  
+# U+2152-               1|10
+ℯ                       exp(1)      # U+212F, base of natural log
+
+µ-                      micro       # micro sign U+00B5
+μ-                      micro       # small mu U+03BC
+ångström                angstrom
+Å                       angstrom    # angstrom symbol U+212B
+Å                       angstrom    # A with ring U+00C5
+röntgen                 roentgen
+°C                      degC
+°F                      degF
+°K                      K           # °K is incorrect notation
+°R                      degR
+°                       degree
+℃                       degC
+℉                       degF
+K                       K          # Kelvin symbol, U+212A
+ℓ                       liter      # unofficial abbreviation used in some places
+¢                       cent
+£                       britainpound
+¥                       japanyen
+€                       euro
+₩                       southkoreawon
+₪                       israelnewshekel
+₤                       lira
+₨                       rupee
+
+Ω                       ohm       # Ohm symbol U+2126
+Ω                       ohm       # Greek capital omega U+03A9
+℧                       mho
+ʒ                        dram     # U+0292
+℈                       scruple
+℥                       ounce
+℔                       lb
+ℎ                       h
+ℏ                       hbar
+‰                       1|1000
+‱                      1|10000
+′                        '        # U+2032
+″                        "        # U+2033
+
+#
+# Square unicode symbols starting at U+3371
+#
+
+㍱                      hPa 
+㍲                      da
+㍳                      au
+㍴                      bar
+# ㍵                          oV???
+㍶                      pc 
+㍷                      dm
+㍸                      dm^2
+㍹                      dm^3
+㎀                      pA
+㎁                      nA
+㎂                      µA
+㎃                      mA
+㎄                      kA
+㎅                      kB
+㎆                      MB
+㎇                      GB
+㎈                      cal
+㎉                      kcal
+㎊                      pF
+㎋                      nF
+㎌                      µF
+㎍                      µg
+㎎                      mg
+㎏                      kg
+㎐                      Hz
+㎑                      kHz
+㎒                      MHz
+㎓                      GHz
+㎔                      THz
+㎕                      µL
+㎖                      mL
+㎗                      dL
+㎘                      kL
+㎙                      fm
+㎚                      nm
+㎛                      µm
+㎜                      mm
+㎝                      cm
+㎞                      km
+㎟                      mm^2
+㎠                      cm^2
+㎡                      m^2
+㎢                      km^2
+㎣                      mm^3
+㎤                      cm^3
+㎥                      m^3
+㎦                      km^3
+㎧                      m/s
+㎨                      m/s^2
+㎩                      Pa
+㎪                      kPa
+㎫                      MPa
+㎬                      GPa
+㎭                      rad
+㎮                      rad/s
+㎯                      rad/s^2
+㎰                      ps
+㎱                      ns
+㎲                      µs
+㎳                      ms
+㎴                      pV
+㎵                      nV
+㎶                      µV
+㎷                      mV
+㎸                      kV
+㎹                      MV
+㎺                      pW
+㎻                      nW
+㎼                      µW
+㎽                      mW
+㎾                      kW
+㎿                      MW
+㏀                      kΩ
+㏁                      MΩ
+㏃                      Bq
+㏄                      cc
+㏅                      cd
+㏆                      C/kg
+㏈(x)                   [1;1] dB(x); ~dB(㏈)
+㏉                      Gy
+㏊                      ha
+# ㏋  HP??
+㏌                      in
+# ㏍                      KK??
+# ㏎                      KM???
+㏏                      kt
+㏐                      lm
+# ㏑                      ln
+# ㏒                      log
+㏓                      lx
+㏔                      mb
+㏕                      mil
+㏖                      mol
+㏗(x)                   [;mol/liter] pH(x); ~pH(㏗)
+㏙                      ppm
+#   ㏚     PR???
+㏛                      sr
+㏜                      Sv
+㏝                      Wb
+㏞                      V/m
+㏟                      A/m
+㏿                      gal
+
+!endutf8
+
+############################################################################
+# 
+# Unit list aliases
+#
+# These provide a shorthand for conversions to unit lists.  
+#
+############################################################################
+
+!unitlist hms hr;min;sec
+!unitlist time year;day;hr;min;sec
+!unitlist dms deg;arcmin;arcsec
+!unitlist ftin ft;in;1|8 in
+!unitlist usvol cup;3|4 cup;2|3 cup;1|2 cup;1|3 cup;1|4 cup;\
+                tbsp;tsp;1|2 tsp;1|4 tsp;1|8 tsp
+
 ############################################################################
 #
 # The following units were in the unix units database but do not appear in
@@ -5174,7 +5513,3 @@ acrefoot                intacrefoot
 #                 a single channel occupied for one hour.
 #
 ############################################################################
-
-
-
-

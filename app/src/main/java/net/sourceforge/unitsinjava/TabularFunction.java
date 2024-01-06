@@ -8,7 +8,7 @@
 //  2005, 2006, 2007 by Free Software Foundation, Inc.
 //
 //  Java version Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008,
-//  2009 by Roman R Redziejowski (roman.redz@tele2.se).
+//  2009, 2012 by Roman R Redziejowski (www.romanredz.se).
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -27,15 +27,39 @@
 //
 //  Change log
 //
-//    050315 Version 1.84.J07. Changed package name to "units".
-//    061229 Version 1.86.J01. Corrected test for 'verbose'.
+//  Version 1.84.J07.
+//    050315 Changed package name to 'units'.
+//
+//  Version 1.86.J01.
+//    061229 Corrected test for 'verbose'.
 //    070102 Suppress printing "\tDefinition :" and tabs for compact output.
-//    091024 Version 1.87.J01.
-//           Used modified 'insertAlph'.
+//
+//  Version 1.87.J01.
+//    091024 Used modified 'insertAlph'.
 //           Used generics for 'x'.'y'.
 //    091025 Replaced 'Parser.Exception' by 'EvalError'.
 //    091031 Moved definition of Ignore to Factor.
 //           Replaced 'addtolist' by 'isCompatibleWith'.
+//
+//  Version 1.88.J02
+//    110403 In 'showdef': removed optional "\tDefinition :";
+//           replaced StringBuffer by StringBuilder;
+//           removed unused variable 'nc'.
+//
+//  Version 1.89.J01
+//    120201 Adapted to use with File Parser:
+//           removed method 'accept' and added 'define'.
+//    120208 Renamed one-argument method 'isCompatibleWith'
+//           to 'conformsTo' to avoid confusion with two-argument one
+//           defined in Product and Value.
+//    120209 Definition of Ignore moved to separate file:
+//           replaced 'Factor.Ignore' by 'Ignore'.
+//    120311 Suppress error messages from 'conformsTo'.
+//    120313 Added 'location.where' to messages from 'check'.
+//    120317 Changed 'define' to replace an earlier definition
+//           instead of ignoring re-definition.
+//    120318 In 'check': check name conflict using 'checkHiding'.
+//    120404 In 'check': added checking of result unit.
 //
 //=========================================================================
 
@@ -60,260 +84,334 @@ import java.util.Vector;
   //-------------------------------------------------------------------
   //  The table
   //-------------------------------------------------------------------
-  private double[] xValues;
-  private double[] yValues;
+  private final double[] x; // Argument values
+  private final double[] y; // Corresponding values in units 'resUnit'.
 
   //-------------------------------------------------------------------
-  //  Dimension of the result
+  //  Result unit
   //-------------------------------------------------------------------
-  private String tableunit;
+  private final String resUnit;
 
 
   //=====================================================================
-  //  Return signum of double float number 'n'.
+  //  Constructor
   //=====================================================================
-  private static int signum(double n)
-    { return n==0? 0 : (n>0? 1 : -1); }
-
-
-  //=====================================================================
-  //  Construct object for function 'nam' defined at 'loc'.
-  //  Dimension of the result is defined by unit expression 'u',
-  //  and the table is given by the Vectors 'x' and 'y'.
-  //=====================================================================
+  /**
+   *  Constructs TabularFunction object.
+   *
+   *  @param name    function name.
+   *  @param loc     location where defined.
+   *  @param resUnit unit for y-values.
+   *  @param x       argument values.
+   *  @param y       corresponding values in units 'resUnit'.
+   */
   TabularFunction
-    ( String nam, Location loc,
-      String u, Vector<Double> x, Vector<Double> y)
+    ( final String name, final Location loc,
+      final String resUnit, final double[] x, final double[] y)
     {
-      super(nam,loc);
-      tableunit = u;
-      int n = x.size();
-      xValues = new double[n];
-      yValues = new double[n];
-      for (int i=0;i<n;i++)
+      super(name,loc);
+      this.resUnit = resUnit;
+      this.x = x;
+      this.y = y;
+    }
+
+
+  //=====================================================================
+  //  define
+  //=====================================================================
+  /**
+   *  Builds FunctionTable entry from a parsed definition.
+   *  The definition is parsed as follows:
+   *  <pre>
+   *    name[resUnit]  x1 y1, x2 y2, ... , xn yn
+   *  </pre>
+   *
+   *  @param name  function name.
+   *  @param resUnit unit for y-values.
+   *  @param x     argument values.
+   *  @param y     corresponding values in units 'resUnit'.
+   *  @param loc   location where defined.
+   */
+  public static void define
+    ( final String name, final String resUnit,
+      final double[] x, final double[] y, final Location loc)
+    {
+      //---------------------------------------------------------------
+      // Function with incorrect name can never be accessed.
+      //---------------------------------------------------------------
+      String diag = Entity.checkName(name);
+
+      if (diag!=null)
       {
-        xValues[i] = x.elementAt(i);
-        yValues[i] = y.elementAt(i);
+         Env.out.println
+           (loc.where() + ". Function '" + name
+            + "' is ignored. Its name " + diag + ".");
+         return;
+      }
+
+      //---------------------------------------------------------------
+      //  Install the function in table.
+      //---------------------------------------------------------------
+      Function old = table.put(name, new TabularFunction(name,loc,resUnit,x,y));
+
+      //---------------------------------------------------------------
+      //  Write a message if an earlier definition replaced.
+      //---------------------------------------------------------------
+      if (old!=null)
+      {
+        Env.out.println
+          ("Function '" + name + "' defined in " + old.location.where() +
+           ", is redefined in " + loc.where() + ".");
       }
     }
 
 
   //=====================================================================
-  //  Given is a line from units.dat file, parsed into
-  //  name 'nam' and definition 'df'. If this line defines a tabular
-  //  function, construct a TabularFunction object defined by it,
-  //  it into user function table, and return true. Otherwise return false.
+  //  applyTo
   //=====================================================================
-  public static boolean accept
-    ( final String nam, final String df, Location loc)
+  /**
+   *  Applies this function to a given Value,
+   *  and changes the Value to the result.
+   *
+   *  @param v the argument and result.
+   */
+   void applyTo(Value v)
     {
-      //  If unit name contains '[', we have a table definition.
-
-      int leftParen = nam.indexOf('[');
-      int rightParen = nam.indexOf(']',leftParen+1);
-
-      if (leftParen<0) return false;
-
-      // Get function name and unit
-
-      if (rightParen!=nam.length()-1
-           || rightParen==leftParen+1)
-      {
-        Env.err.println
-          ("Bad function definition of '" + nam + "' on line "
-            + loc.lineNum + " ignored.");
-        return true;
-      }
-
-      String funcname = nam.substring(0,leftParen);
-      String tabunit = nam.substring(leftParen+1,rightParen);
-
-      // Is it redefinition?
-
-      if (table.containsKey(funcname))
-      {
-        Env.err.println
-          ("Redefinition of function '" + funcname
-            + "' on line " + loc.lineNum + " is ignored.");
-        return true;
-      }
-
-      Vector<Double> x = new Vector<Double>();
-      Vector<Double> y = new Vector<Double>();
-
-      int p = 0;
-      while (p<df.length())
-      {
-        int q = Util.strtod(df,p);
-        if (p==q) break;
-
-        x.addElement(new Double(df.substring(p,q).trim()));
-        p = q;
-
-        q = Util.strtod(df,p);
-        if (p==q)
-        {
-          Env.err.println
-            ("Missing last value after "
-              + x.lastElement().doubleValue()
-              + ".\n"
-              + "Definition of function '" + nam
-              + "' on line " + loc.lineNum + " is ignored.");
-          return true;
-        }
-
-        y.addElement(new Double(df.substring(p,q).trim()));
-        p = q;
-
-        if (p>=df.length()) break;
-        if (df.charAt(p)==',') p++;
-      }
-
-      // Install function in table.
-
-      table.put(funcname,
-              new TabularFunction(funcname,loc,tabunit,x,y));
-      return true;
-    }
-
-
-  //=====================================================================
-  //  Apply the function to Value 'v' (with result in 'v').
-  //=====================================================================
-  void applyTo(Value v)
-    {
+      //---------------------------------------------------------------
+      //  Parse resUnit to obtain a Value, 'dim'.
+      //---------------------------------------------------------------
       Value dim = null;
       try
-      { dim = Value.parse(tableunit); }
+      { dim = Value.parse(resUnit); }
 
       catch (EvalError e)
       {
-        throw new EvalError("Invalid dimension, " + dim +
+        throw new EvalError("Invalid result unit, " + resUnit +
                          ", of function " + name + ". " + e.getMessage());
       }
 
+      //---------------------------------------------------------------
+      //  The argument must be a number.
+      //---------------------------------------------------------------
       if (!v.isNumber())
-        throw new EvalError("Argument " + v.asString() + " of " +
-                         name + " is not a number.");
+        throw new EvalError("Argument " + v.asString() + " of '" +
+                         name + "' is not a number.");
 
-      double result = interpolate(v,v.factor,xValues,yValues,"");
+      //---------------------------------------------------------------
+      //  Find y-value corresponding to argument 'x'.
+      //---------------------------------------------------------------
+       double result = interpolate(v.factor,x,y,v,"");
 
+      //---------------------------------------------------------------
+      //  Return result in result units.
+      //---------------------------------------------------------------
       dim.factor *= result;
       v.copyFrom(dim);
     }
 
 
   //=====================================================================
-  //  Apply inverse of the function to Value 'v' (with result in 'v').
+  //  applyInverseTo
   //=====================================================================
-  public void applyInverseTo(Value v)
+  /**
+   *  Applies the inverse of this function to a given Value,
+   *  and changes the Value to the result.
+   *
+   *  @param v the argument and result.
+   */
+  void applyInverseTo(Value v)
     {
+      //---------------------------------------------------------------
+      //  Parse resUnit to obtain a Value, 'dim'.
+      //---------------------------------------------------------------
       Value dim = null;
       try
-      { dim = Value.parse(tableunit); }
+      { dim = Value.parse(resUnit); }
 
       catch (EvalError e)
       {
-        throw new EvalError("Invalid dimension, " + dim +
-                         ", of function ~" + name + ". " + e.getMessage());
+        throw new EvalError("Invalid result unit, '" + resUnit +
+                         "', of '" + name + "'. " + e.getMessage());
       }
 
+      //---------------------------------------------------------------
+      //  Express argument as n*resUnit.
+      //---------------------------------------------------------------
       Value n = new Value(v);
       n.div(dim);
 
+      //---------------------------------------------------------------
+      //  'n' must be a number.
+      //---------------------------------------------------------------
       if (!n.isNumber())
         throw new EvalError("Argument " + v.asString() +
-                      " of function ~" + name + " is not conformable to " +
-                        dim.asString() + ".");
+                      " of '~" + name + "' is not conformable to '" +
+                        resUnit + "'.");
 
-      double result = interpolate(v,n.factor,yValues,xValues,"~");
+      //---------------------------------------------------------------
+      //  Find x-value corresponding to y-value 'n'.
+      //---------------------------------------------------------------
+      double result = interpolate(n.factor,y,x,v,"~");
 
+      //---------------------------------------------------------------
+      //  Return result as Value.
+      //---------------------------------------------------------------
       v.copyFrom(new Value());
       v.factor = result;
     }
 
   //=====================================================================
-  //  Return definition of the function.
-  //  (Originally 'showfuncdef'.)
+  //  showdef
   //=====================================================================
+  /**
+   *  Returns definition of this function.
+   *  (Originally 'showfuncdef'.)
+   *
+   *  @return formatted definition of this function.
+   */
   String showdef()
     {
-      String pref = ("0123456789.".indexOf(tableunit.charAt(0))>=0)? " * " : " ";
-      boolean nc = Env.verbose>0; // not compact?
+      String pref = ("0123456789.".indexOf(resUnit.charAt(0))>=0)? " * " : " ";
 
-      StringBuffer sb = new StringBuffer();
-      if (Env.verbose>0) sb.append("\tDefinition: interpolated table with points");
-      else sb.append("Interpolated table with points:");
+      StringBuilder sb = new StringBuilder("Interpolated table with points:");
 
-      for(int i=0;i<xValues.length;i++)
+      for(int i=0;i<x.length;i++)
         sb.append((Env.verbose>0? "\n\t\t    " : "\n ") + name
-                     + "(" + xValues[i]+ ") = " + yValues[i] + pref + tableunit);
+                     + "(" + x[i]+ ") = " + y[i] + pref + resUnit);
       return sb.toString();
     }
 
 
   //=====================================================================
-  //  Check the definition. Used in 'checkunits'.
+  //  check
   //=====================================================================
+  /**
+   *  Checks definition of this function for correctness.
+   *  Writes diagnostics to 'Env.out'.
+   *  Used by 'check' in 'Tables'.
+   */
   void check()
     {
       if (Env.verbose==2)
-        Env.out.println("doing function " + name);
+        Env.out.println(location.where() + ". Doing function " + name);
 
-      // Check for monotonicity which is needed for unique inverses
-      if (xValues.length<=1)
+      //---------------------------------------------------------------
+      //  Function name must be different from that of alias, unit,
+      //  and prefix. Conflict with alias is checked by Alias.
+      //  We check here for conflict with unit and prefix.
+      //---------------------------------------------------------------
+      checkHiding();
+
+      //---------------------------------------------------------------
+      //  Check result unit
+      //---------------------------------------------------------------
+      try
+      { Value.parse(resUnit); }
+
+      catch (EvalError e)
       {
         Env.out.println
-          ("Table '" + name + "' has only one data point");
+          (location.where() + ". Invalid result unit, '" + resUnit +
+           "', of '" + name + "'. " + e.getMessage());
+      }
+
+      //---------------------------------------------------------------
+      // Check that at least two points are defined.
+      //---------------------------------------------------------------
+      if (x.length<=1)
+      {
+        Env.out.println
+          (location.where() + ". Table '" + name +
+           "' has only one data point.");
         return;
       }
-      int direction = signum(yValues[1]-yValues[0]);
-      for(int i=2;i<xValues.length;i++)
-        if (direction==0 || signum(yValues[i]-yValues[i-1]) != direction)
+
+      //---------------------------------------------------------------
+      // Check for monotonicity which is needed for unique inverses
+      //---------------------------------------------------------------
+      int direction = signum(y[1]-y[0]);
+      for(int i=2;i<x.length;i++)
+        if (direction==0 || signum(y[i]-y[i-1]) != direction)
         {
           Env.out.println
-            ("Table '" + name + "' lacks unique inverse around entry "
-              + Util.shownumber(xValues[i-1]));
+            (location.where() + ". Table '" + name +
+             "' lacks unique inverse around entry " +
+             Util.shownumber(x[i-1]) + ".");
           return;
         }
-      return;
     }
 
-    public Value getConformability(){
-        return tableunit != null ? Value.fromString(tableunit) : null;
-    }
+
   //=====================================================================
-  //  Return true if this function is compatible with Value 'v',
+  //  conformsTo
   //=====================================================================
-  boolean isCompatibleWith(final Value v)
+  /**
+   *  Checks if result of this function conforms to Value 'v'.
+   *  Used by 'showConformable' in 'Tables'.
+   *
+   *  @param  v the Value to be checked against.
+   *  @return true if this function conforms to v, false otherwise.
+   */
+  boolean conformsTo(final Value v)
     {
-      Value thisvalue = Value.fromString(tableunit);
-      if (thisvalue==null) return false;
-      return thisvalue.isCompatibleWith(v,Factor.Ignore.DIMLESS);
+      try
+      {
+        Value thisvalue = Value.parse(resUnit);
+        thisvalue.completereduce();
+        return thisvalue.isCompatibleWith(v,Ignore.DIMLESS);
+      }
+      catch(EvalError e)
+      { return false; }
     }
 
 
   //=====================================================================
-  //  Return short description of this object to be shown by 'tryallunits'.
+  //  desc
   //=====================================================================
+  /**
+   *  Returns short description of this function
+   *  to be shown by 'showConformable' and 'showMatching' in 'Tables'.
+   *
+   *  @return description.
+   */
   String desc()
-    { return "<piecewise linear unit>"; }
+    { return "<function>"; }
 
 
   //=====================================================================
-  //  The arrays 'x' and 'y' contain x-values and corresponding y-values.
-  //  Find, by linear interpolation, the y-value corresponding to the
-  //  x-value given by the factor of Value object 'v'.
-  //  The argument 'inv' is either empty string or '~', and is used
-  //  in the error message to show if we are doing inverse or not.
+  //  interpolate
   //=====================================================================
-  private double interpolate(Value v, double xval, double[] x, double[] y, String inv)
+  /**
+   *  Finds by interpolation in tables an output value corresponding
+   *  to a given input value. Thhrow EvalError exception if input value
+   *  is outside the inputs table.
+   *
+   *  @param inval numeric input value.
+   *  @param in    table of input values.
+   *  @param out   table of output values.
+   *  @param v     input value with units, for diagnostics.
+   *  @param inv   empty string or '~', for disagnostics.
+   */
+  private double interpolate(double inval, double[] in, double[] out, Value v, String inv)
     {
-      for(int i=0;i<x.length-1;i++)
-        if ((x[i]<=xval && xval<=x[i+1]) || (x[i]>=xval && xval>=x[i+1]))
-          return y[i] + (xval-x[i])*(y[i+1]-y[i])/(x[i+1]-x[i]);
+      for(int i=0;i<in.length-1;i++)
+        if ((in[i]<=inval && inval<=in[i+1]) || (in[i]>=inval && inval>=in[i+1]))
+          return out[i] + (inval-in[i])*(out[i+1]-out[i])/(in[i+1]-in[i]);
 
       throw new EvalError("Argument " + v.asString() +
-                     " is outside the domain of " + inv + name + ".");
+                     " is outside the domain of '" + inv + name + "'.");
     }
+
+
+  //=====================================================================
+  //  signum
+  //=====================================================================
+  /**
+   *  Finds signum of a given number.
+   *
+   *  @param  d a number.
+   *  @return -1, 0, or +1 if, respectively, d<0, d==0, or d>0.
+   */
+  private static int signum(double d)
+    { return d==0? 0 : (d>0? 1 : -1); }
 }

@@ -5,10 +5,10 @@
 //  Units is a program for unit conversion originally written in C
 //  by Adrian Mariano (adrian@cam.cornell.edu.).
 //  Copyright (C) 1996, 1997, 1999, 2000, 2001, 2002, 2003, 2004,
-//  2005, 2006, 2007 by Free Software Foundation, Inc.
+//  2005, 2006, 2007, 2009, 2011 by Free Software Foundation, Inc.
 //
 //  Java version Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008,
-//  2009 by Roman R Redziejowski (roman.redz@tele2.se).
+//  2009, 2011, 2012 by Roman R Redziejowski (www.romanredz.se).
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -27,13 +27,25 @@
 //
 //  Change log
 //
-//    050315 Version 1.84.J07. Changed package name to "units".
-//    091024 Version 1.87.J01.
-//           Used generics for 'factors'.
+//  Version 1.84.J07.
+//    050315 Changed package name to 'units'.
+//
+//  Version 1.87.J01.
+//    091024 Used generics for 'factors'.
 //           Used modified 'insertAlph'.
 //    091025 Replaced 'Parser.Exception' by 'EvalError'.
 //    091031 Moved definition of Ignore to Factor.
 //    091101 'insertAlph' replaced by simple loop.
+//
+//  Version 1.88.J02.
+//    110314 Bug fix in 'root': did not accept product of n-th powers
+//           because of an extra increment of 'i'.
+//
+//  Version 1.89.J01.
+//    120209 Definition of Ignore moved to separate file:
+//           replaced 'Factor.Ignore' by 'Ignore'.
+//    120209 Method 'isCompatibleWith' renamed to 'hasSameFactorsAs'
+//           to avoid confusion with method defined in Value.
 //
 //=========================================================================
 
@@ -57,35 +69,48 @@ import java.util.Vector;
  public class Product
 {
   //-------------------------------------------------------------------
-  //  The factors in a Product are represented as element of this Vector.
-  //  The factors are Factor objects (units or prefixes).
-  //  They are sorted in increasing alphabetic order of their names.
-  //  Duplicates are allowed (mean a power>1 of the unit).
+  /** The factors in a Product are represented as element of this Vector.
+   *  The factors are Factor objects (units or prefixes).
+   *  They are sorted in increasing ALPHABETIC ORDER of their names.
+   *  Duplicates are allowed (mean a power>1 of the unit). */
   //-------------------------------------------------------------------
   private Vector<Factor> factors = new Vector<Factor>();
 
   //=====================================================================
   //  Default constructor.
   //=====================================================================
+  /**
+   *  Constructs empty Product.
+   */
   Product()
-    { factors = new Vector<Factor>(); }
+    {}
 
 
   //=====================================================================
   //  Copy constructor.
   //=====================================================================
+  /**
+   *  Constructs a copy of given Product.
+   *
+   *  @param p Product to copy.
+   */
   Product(final Product p)
     {
-      for (Factor e: p.factors)
-        factors.add(e);
+      for (Factor f: p.factors)
+        factors.add(f);
     }
 
 
   //=====================================================================
-  //  Add Factor 'f' to the Product.
-  //  Return the result.
-  //  (Originally 'addsubunit').
+  //  add Factor
   //=====================================================================
+  /**
+   *  Adds given Factor to this Product.
+   *  (Originally 'addsubunit').
+   *
+   *  @param  f Factor to be added.
+   *  @return the modified Product.
+   */
   Product add (final Factor f)
     {
       for (int i=0;i<factors.size();i++)
@@ -100,10 +125,15 @@ import java.util.Vector;
 
 
   //=====================================================================
-  //  Add all factors of Product "p" to "this".
-  //  Return the result.
-  //  (Originally 'addsubunitlist').
+  //  add Product
   //=====================================================================
+  /**
+   *  Adds all factors of a given Product to this Product.
+   *  (Originally 'addsubunitlist').
+   *
+   *  @param  p Product to be added.
+   *  @return the modified Product.
+   */
   Product add(final Product p)
     {
       for (int i=0;i<p.size();i++)
@@ -113,34 +143,56 @@ import java.util.Vector;
 
 
   //=====================================================================
-  //  Return number of factors.
+  // size
   //=====================================================================
-  public int size()
+  /**
+   *  Obtains number of factors in this Product.
+   *
+   *  @return number of factors.
+   */
+  int size()
     { return factors.size(); }
 
 
   //=====================================================================
-  //  Return i-th factor.
+  //  factor
   //=====================================================================
-  public Factor factor(int i)
+  /**
+   *  Obtains a Factor of this Product with given index.
+   *
+   *  @param  i the index
+   *  @return the i-th Factor of this Product.
+   */
+  Factor factor(int i)
     { return factors.elementAt(i); }
 
 
   //=====================================================================
-  //  Remove i-th factor.
+  //  delete
   //=====================================================================
-  public void delete(int i)
+  /**
+   *  Removes a Factor of this Product with given index.
+   *
+   *  @param  i the index
+   */
+  void delete(int i)
     { factors.removeElementAt(i); }
 
-  public Vector<Factor> getFactors(){
-    return factors;
-  }
+
   //=====================================================================
-  //  Return true if this Product and Product "p" have the same factors,
-  //  other than those marked dimensionless.
-  //  (Originally 'compareproducts'.)
+  //  hasSameFactors
   //=====================================================================
-  boolean isCompatibleWith(final Product p, Factor.Ignore ignore)
+  /**
+   *  Compares this Products with another Product.
+   *  (Originally 'compareproducts'.)
+   *
+   *  @param  p Product to compare with.
+   *  @param  ignore indicates which Factors should be ignored.
+   *  @return true if this Product and Product 'p' have the same
+   *          factors, except those to be ignored.
+   *          Otherwise false.
+   */
+  boolean hasSameFactorsAs(final Product p, Ignore ignore)
     {
       int i = 0;
       int j = 0;
@@ -160,9 +212,14 @@ import java.util.Vector;
 
 
   //=====================================================================
-  //  Return printable representation of the Product.
+  //  asString
   //=====================================================================
-  public String asString()
+  /**
+   *  Represents this Product as a String.
+   *
+   *  @return printable representation of this Product.
+   */
+  String asString()
     {
       StringBuffer sb = new StringBuffer();
       int counter = 1;
@@ -171,11 +228,15 @@ import java.util.Vector;
       {
         Factor f = factor(i);
 
+        //-------------------------------------------------------------
         // If s is the same as preceding, increment counter.
+        //-------------------------------------------------------------
         if (i>0 && f==factor(i-1))
           counter++;
 
+        //-------------------------------------------------------------
         // If s is first or distinct from preceding:
+        //-------------------------------------------------------------
         else
         {
           if (counter>1)
@@ -193,13 +254,21 @@ import java.util.Vector;
 
 
   //=====================================================================
-  //  Return n-th root of the Product, or null if not n-th root.
-  //  (Originally 'subunitroot').
+  //  root
   //=====================================================================
+  /**
+   *  Computes a root of this Product.
+   *  (Originally 'subunitroot').
+   *
+   *  @param  n positive integer.
+   *  @return n-th root of this Product, or null if this Product
+   *          is not an n-th power.
+   */
   Product root(int n)
     {
       Product p = new Product();
-      for (int i=0;i<size();i++)
+      int i = 0;
+      while (i<size())
       {
         Factor f = factor(i);
         int j = 1;
@@ -217,4 +286,4 @@ import java.util.Vector;
 
       return p;
     }
-} // end of Product
+}

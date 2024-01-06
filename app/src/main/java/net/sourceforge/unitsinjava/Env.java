@@ -5,10 +5,10 @@
 //  Units is a program for unit conversion originally written in C
 //  by Adrian Mariano (adrian@cam.cornell.edu.).
 //  Copyright (C) 1996, 1997, 1999, 2000, 2001, 2002, 2003, 2004,
-//  2005, 2006, 2007, 2010 by Free Software Foundation, Inc.
+//  2005, 2006, 2007, 2009, 2011 by Free Software Foundation, Inc.
 //
 //  Java version Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008,
-//  2009, 2010 by Roman R Redziejowski (roman.redz@tele2.se).
+//  2009, 2010, 2011 by Roman R Redziejowski (www.romanredz.se).
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -27,32 +27,64 @@
 //
 //  Change log
 //
-//    050203 Version 1.84.J05.
-//           Added constants, 'unitcheck' and 'filenames'.
+//  Version 1.84.J05.
+//    050203 Added constants, 'unitcheck' and 'filenames'.
 //    050205 Added method 'getProperties'.
 //    050207 Added 'propfile'.
-//    050226 Version 1.84.J06.
-//           Expanded examples to help text moved from 'GUI' and 'convert'.
-//    050315 Version 1.84.J07.
-//           Changed package name to "units".
-//           Removed 'Bug reports to.." from ABOUT.
-//    050731 Version 1.85.J01.
-//           Changed version numbers and copyright.
-//    061228 Version 1.86.J01.
-//           Changed version numbers and copyright.
+//
+//  Version 1.84.J06.
+//    050226 Expanded examples to help text moved from 'GUI' and 'convert'.
+//
+//  Version 1.84.J07.
+//    050315 Changed package name to 'units'.
+//           Removed 'Bug reports to..' from ABOUT.
+//
+//  Version 1.85.J01.
+//    050731 Changed version numbers and copyright.
+//
+//  Version 1.86.J01.
+//    061228 Changed version numbers and copyright.
 //    061229 Changed 'verbose' to indicate compact / normal / verbose.
 //           Removed 'terse'. Added 'oneline'.
 //    070103 Added method 'showAbout' and variable 'gui'.
-//    091024 Version 1.87.J01.
-//           Used generics for 'filenames'.
+//
+//  Version 1.87.J01.
+//    091024 Used generics for 'filenames'.
 //    091028 Changed version numbers and copyright years in 'ABOUT'
 //           Added warning about obsolete currency rates.
 //    091103 Added method 'getPersonalUnits'.
-//    101031 Version 1.87.J01.
-//           Changed version numbers and copyright years.
+//
+//  Version 1.88.J01.
+//    101031 Changed version numbers and copyright years.
 //           Renamed 'ABOUT' to 'COPYRIGHT' and removed version info.
 //           Changed 'showAbout' to show version and invocation info
 //           before copyright.
+//
+//  Version 1.88.J02.
+//    110219 Changed version numbers and copyright years.
+//    110404 Lines in COPYRIGHT made shorter to fit smaller window.
+//
+//  Version 1.88.J03.
+//    110623 Changed version number.
+//           Moved EXAMPLES text to 'convert'.
+//
+//  Version 1.88.J04.
+//    110814 Changed version number.
+//
+//  Version 1.89.J01.
+//    120123 Changed version number of Java Units, original Units,
+//           and 'units.dat' file.
+//           Changed return type of 'open' in 'FileAcc' to InputStream.
+//    120126 Added variable for option '-r'.
+//    120228 Removed the error writer 'Env.err'.
+//           Replaced use of 'Env.err' by 'Env.out'.
+//    120311 Added method 'convert'.
+//    120326 Removed 'gui' - never used.
+//           Added 'encoding', 'font', and their default values.
+//           Added 'guiFont'.
+//           Renamed DEFAULTLOCALE to LOCALE.
+//           Modified 'getProperties' to obtain ENCODING and GUIFONT.
+//           Moved FileAcc and 'files' to UnitsFile.
 //
 //=========================================================================
 
@@ -61,8 +93,9 @@ package net.sourceforge.unitsinjava;
 import java.util.Vector;
 import java.util.Properties;
 
+import java.awt.Font;
 import java.io.File;
-import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
@@ -75,116 +108,106 @@ import java.io.FileNotFoundException;
 //HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 /**
  *  Contains static constants, variables, and methods common
- *  to different modes of invocation.
+ *  to different components and modes of invocation
  *  Is never instantiated.
  */
-//HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-
  public class Env
 {
   //-------------------------------------------------------------------
   //  Constants
   //-------------------------------------------------------------------
   public static final String PROGNAME = "gnu.units";  // Used in error messages
-  public static final String VERSION = "1.88.J01";    // Program version
-  public static final String ORIGVER = "1.88";        // Original version
+  public static final String VERSION = "1.89.J01";    // Program version
+  public static final String ORIGVER = "1.89e";       // Original version
   public static final String UNITSFILE = "units.dat"; // Default units file
-  public static final String FILEVER = "1.50 (14 February 2010)";
+  public static final String FILEVER = "Version 1.53 (17 November 2011)";
   public static final String PROPFILE = "units.opt";  // Properties file
-  public static final String DEFAULTLOCALE = "en_US"; // Default locale
+  public static final String LOCALE = "en_US";        // Default locale
+  public static final String GUIFONT = "Monospaced";  // Default GUI font name
   public static final int    MAXFILES = 25;           // Max number of units files
   public static final int    MAXINCLUDE = 5;          // Max depth of include files
 
 
   public static final String COPYRIGHT = ""
-    + "This is an extended Java version of GNU Units " + ORIGVER + ", a program written in C\n"
-    + "by Adrian Mariano, copyright (C) 1996, 1997, 1999, 2000, 2001, 2002, 2003,\n"
-    + "2004, 2005, 2006, 2007, 2010 by Free Software Foundation, Inc.\n"
-    + "Java version copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010\n"
-    + "by Roman R Redziejowski.\n"
-    + "The program is free software; you can redistribute it and/or modify under\n"
-    + "the terms of the GNU General Public License as published by the Free Software\n"
-    + "Foundation; either version 3 of the License or (at your option) any later\n"
-    + "version. The program is distributed in the hope that it will be useful, but\n"
-    + "WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY\n"
-    + "or FITNESS FOR A PARTICULAR PURPOSE. For more details, see the GNU General\n"
-    + "Public License (http://www.gnu.org/licenses/).";
-
-  public static final String EXAMPLES =
-     " Examples of conversions:\n\n"
-     + " EXAMPLE 1. What is 6 feet 4 inches in meters?\n\n"
-     + "   You have: 6 ft + 4 in\n"
-     + "   You want: m\n"
-     + "           6 ft + 4 in = 1.9304 m\n"
-     + "           6 ft + 4 in = (1 / 0.51802737) m\n\n"
-     + " Answer: About 1.93 m (or 1/0.518 m).\n\n"
-     + " EXAMPLE 2. Thermometer shows 75 degrees Fahrenheit.\n"
-     + " What is the temperature in degrees Celsius?\n\n"
-     + "   You have: tempF(75)\n"
-     + "   You want: tempC\n"
-     + "           tempF(75) = tempC(23.88889)\n\n"
-     + " Answer: About 24 C.\n\n"
-     + " EXAMPLE 3. A European car maker states fuel consumption of the newest model\n"
-     + " as 8 liters per 100 km. What it means in miles per gallon?\n\n"
-     + "   You have: 8 liters / 100 km\n"
-     + "   You want: miles per gallon\n"
-     + "          reciprocal conversion\n"
-     + "           1 / (8 liters / 100 km) = 29.401823 miles per gallon\n"
-     + "           1 / (8 liters / 100 km) = (1 / 0.034011498) miles per gallon\n\n"
-     + " Answer: About 29.4 mpg. Notice the indication that 'miles per gallon'\n"
-     + " and 'liters per 100 km' are reciprocal dimensions.\n\n"
-     + " EXAMPLE 4. A flow of electrons in a vacuum tube has ben measured as 5 mA.\n"
-     + " How many electrons flow through the tube every second?\n"
-     + " (Hint: units data file defines the electron charge as 'e'.)\n\n"
-     + "   You have: 5 mA\n"
-     + "   You want: e/sec\n"
-     + "           5mA = 3.12075481E16 e/sec\n"
-     + "           5mA = (1 / 3.2043528E-17) e/sec\n\n"
-     + " Answer: About 31 200 000 000 000 000.\n\n"
-     + " EXAMPLE 5. What is the energy, in electronvolts, of a photon of yellow sodium light\n"
-     + " with wavelength of 5896 angstroms? (The energy is equal to Planck's constant times\n"
-     + " speed of light divided by the wavelength. The units data file defines the Planck's\n"
-     + " constant as 'h' and the speed of light as 'c'.)\n\n"
-     + "   You have: h * (c/5896 angstroms)\n"
-     + "   You want: e V\n"
-     + "           h * (c/5896 angstroms) = 2.1028526 e V\n"
-     + "           h * (c/5896 angstroms) = (1 / 0.4755445) e V\n\n"
-     + " Answer: About 2.103 eV.\n\n";
-
+    + "This is an extended Java version of GNU Units " + ORIGVER + ", a program\n"
+    + "written in C by Adrian Mariano, copyright (C) 1996, 1997, 1999,\n"
+    + "2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2010, 2011 by\n"
+    + "Free Software Foundation, Inc.\n"
+    + "Java version copyright (C) 2003, 2004, 2005, 2006, 2007, 2008,\n"
+    + "2009, 2010, 2011, 2012 by Roman R Redziejowski.\n"
+    + "The program is free software; you can redistribute it and/or\n"
+    + "modify under the terms of the GNU General Public License\n"
+    + "as published by the Free SoftwareFoundation; either version 3\n"
+    + "of the License or (at your option) any later version.\n"
+    + "The program is distributed in the hope that it will be useful,\n"
+    + "but WITHOUT ANY WARRANTY; without even the implied warranty\n"
+    + "of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
+    + "For more details, see the GNU General Public License\n"
+    + "(http://www.gnu.org/licenses/).";
 
   //-------------------------------------------------------------------
-  //  Current environment
+  /** Property file if there was one, else null.
+   *  Set by 'getProperties'. */
   //-------------------------------------------------------------------
+  public static String propfile = null;
+
+  //-------------------------------------------------------------------
+  /** GUI font if instantiated, else null.
+   *  Set and used by GUI and Browser. */
+  //-------------------------------------------------------------------
+  public static Font guiFont = null;
+
+  //=====================================================================
+  //  Options. Set by UnitsWindow, convert, and applet.
+  //  They are first set to default values for each environment; then:
+  //  - UnitsWindow may override 'filenames', 'locale', 'encoding',
+  //    and 'guifont' by values obtained from property file.
+  //  - convert may override 'filenames', 'locale', 'encoding',
+  //    and 'guifont' by values obtained from property file,
+  //    then override all by values specified as command options.
+  //  - applet may override 'location' and 'guifont'
+  //    by values from parameters.
+  //=====================================================================
   public static Vector<String> filenames;  // Unit definition files
-  public static String locale;             // Locale in effect
-  public static String propfile;           // Property file used
-
-  public static int verbose;               // 0=compact, 1=normal, 2=verbose
+  public static String  locale;            // Locale in effect
+  public static String  encoding;          // Encoding name for System io
+  public static String  font;              // GUI font name
+  public static int     verbose;           // 0=compact, 1=normal, 2=verbose
   public static boolean quiet;             // Suppress prompting and statistics
   public static boolean oneline;           // Only one line of output
   public static boolean strict;            // Strict conversion
   public static boolean unitcheck;         // Unit checking
+  public static boolean round;             // Round last element of unit list
 
-  public static FileAcc files;             // File system
-  public static Writer out;                // Standard output
-  public static Writer err;                // Standard error
 
-  //-------------------------------------------------------------------
-  //  Access to file system
-  //-------------------------------------------------------------------
-  abstract public static class FileAcc
-  {
-    public abstract BufferedReader open(final String name);
-  }
 
-  //-------------------------------------------------------------------
-  //  Output writer
-  //-------------------------------------------------------------------
+  //HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+  //
+  //  Writer
+  //
+  //HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+  /**
+   *  Output writer.
+   *  Different subclasses of Writer specify different ways
+   *  to write standard output in different environments.
+   *  An object of the proper subclass for current environment
+   *  is instantiated and assigned to 'out'.
+   *  <ul>
+   *  <li>GUI defines subclass 'GUI.myOut' and plugs its instance into 'out'.
+   *  <li>convert defines subclass 'GUI.myOut' and plugs its instance into 'out'.
+   *  </ul>
+   */
   abstract public static class Writer
   {
-    public abstract void print(final String s);
-    public abstract void println(final String s);
+    abstract void print(final String s);
+    abstract void println(final String s);
   }
+
+  //-------------------------------------------------------------------
+  //  Current Writer
+  //-------------------------------------------------------------------
+  public static Writer out;
+
 
 
   //=====================================================================
@@ -229,23 +252,17 @@ import java.io.FileNotFoundException;
       }
       catch (Exception e)
       {
-        Env.err.println(PROGNAME + ": error reading properties from '" + propPath +"'.\n" + e);
+        Env.out.println(PROGNAME + ": error reading properties from '" + propPath +"'.\n" + e);
         return;
       }
 
       propfile = propPath; // Property file found and read.
 
       //---------------------------------------------------------------
-      //  If LOCALE defined, store it as Env.locale.
-      //---------------------------------------------------------------
-      String prop = props.getProperty("LOCALE");
-      if (prop!=null) Env.locale = prop.trim();
-
-      //---------------------------------------------------------------
       //  If UNITSFILE defined, it is a semicolon-separated list
       //  of file names. Convert it to a vector and store as Env.filenames.
       //---------------------------------------------------------------
-      prop = props.getProperty("UNITSFILE");
+      String prop = props.getProperty("UNITSFILE");
       if (prop!=null)
       {
         Env.filenames = new Vector<String>();
@@ -267,6 +284,24 @@ import java.io.FileNotFoundException;
           Env.filenames.add(fileName);
         }
       }
+
+      //---------------------------------------------------------------
+      //  If LOCALE defined, store it as Env.locale.
+      //---------------------------------------------------------------
+      prop = props.getProperty("LOCALE");
+      if (prop!=null) Env.locale = prop.trim();
+
+      //---------------------------------------------------------------
+      //  If ENCODING defined, store it as Env.encoding.
+      //---------------------------------------------------------------
+      prop = props.getProperty("ENCODING");
+      if (prop!=null) Env.encoding = prop.trim();
+
+      //---------------------------------------------------------------
+      //  If GUIFONT defined, store it as Env.font.
+      //---------------------------------------------------------------
+      prop = props.getProperty("GUIFONT");
+      if (prop!=null) Env.font = prop.trim();
     }
 
 
@@ -315,4 +350,69 @@ import java.io.FileNotFoundException;
 
       Env.out.println("\n" + Env.COPYRIGHT);
     }
+
+  //=====================================================================
+  //  convert
+  //=====================================================================
+  /**
+   *  Performs the computation specified by the user.
+   *  This is the main work horse of 'units'.
+   *
+   *  @param  fromExpr expression specifying the value to be converted.
+   *  @param  fromValue the value to be converted, completely reduced.
+   *  @param  toString string specifying the desired result:
+   *          expression, function name, unit list name, or unit list.
+   *  @return <code>true</code> if conversion was successful,
+   *          <code>false</code> otherwise.
+   */
+  public static boolean convert
+    (final String fromExpr, final Value fromValue, final String toString)
+    {
+      //---------------------------------------------------------------
+      //  If 'toString' is a unit list or name of a unit list,
+      //  show conversion to unit list.
+      //---------------------------------------------------------------
+      String uList = UnitList.isUnitList(toString);
+
+      if (uList!=null)
+      {
+        UnitList ul = null;
+        try
+        { ul = new UnitList(uList); }
+        catch(EvalError ee)
+        {
+          Env.out.println("Invalid unit list. " + ee.getMessage());
+          return false;
+        }
+
+        boolean ok = ul.convert(fromExpr,fromValue);
+        return ok;
+      }
+
+      //---------------------------------------------------------------
+      //  If 'toString' is a function name without argument,
+      //  show conversion to that function and return.
+      //---------------------------------------------------------------
+      DefinedFunction func = DefinedFunction.table.get(toString);
+      if (func!=null)
+      {
+        boolean ok = func.convert(fromExpr,fromValue);
+        return ok;
+      }
+
+      //---------------------------------------------------------------
+      //  Evaluate 'toString' to Value 'toValue'.
+      //  A failed evaluation prints error message and returns null.
+      //---------------------------------------------------------------
+      Value toValue = Value.fromString(toString);
+      if (toValue==null)
+        return false;
+
+      //---------------------------------------------------------------
+      //  Evaluation successful, show conversion.
+      //---------------------------------------------------------------
+      boolean ok = Value.convert(fromExpr,fromValue,toString,toValue);
+      return ok;
+    }
+
 }

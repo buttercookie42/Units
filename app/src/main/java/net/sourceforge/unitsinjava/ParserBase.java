@@ -2,7 +2,8 @@
 //
 //  Part of PEG parser generator Mouse.
 //
-//  Copyright (C) 2009, 2010 by Roman R. Redziejowski (www.romanredz.se).
+//  Copyright (C) 2009, 2010, 2011, 2012
+//  by Roman R. Redziejowski (www.romanredz.se).
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -27,6 +28,20 @@
 //    100429 Bug fix in errMerge(Phrase): assignment to errText replaced
 //           by clear + addAll (assignment produced alias resulting in
 //           explosion of errText in memo version).
+//    101105 Changed errMerge(msg,pos) to errAdd(who).
+//    101105 Commented error handling.
+//    101129 Added 'boolReject'.
+//    101203 Convert result of 'listErr' to printable.
+//   Version 1.4
+//    110918 Changed 'listErr' to separate 'not' texts as 'not expected'.
+//    111004 Added methods to implement ^[s].
+//    111004 Implemented method 'where' of Phrase.
+//   Version 1.5
+//    111027 Revised methods for ^[s] and ^[c].
+//    111104 Implemented methods 'rule' and 'isTerm' of Phrase.
+//   Version 1.5.1
+//    120102 (Steve Owens) Ensure failure() method does not emit blank
+//           line when error info is absent.
 //
 //=========================================================================
 
@@ -113,8 +128,8 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   protected boolean failure()
     {
-      String message = current.errMsg();
-      System.out.println(message.replace("\n","\\n").replace("\t","\\t").replace("\r","\\r"));
+      if (current.errPos>=0)
+        System.out.println(current.errMsg());
       return false;
     }
 
@@ -142,6 +157,12 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
 
   //-------------------------------------------------------------------
   //  Accept Rule
+  //  Note: 'upgrade error info' is applied when rule such as
+  //  R = A/B/C/... or R = (A/B/C/...)* consumed empty string after one
+  //  or more of A,B,C failed without advancing cursor.
+  //  In case of a later failure, it gives message 'expected R',
+  //  which is not strictly correct because R succeeded, but is
+  //  more comprehensible than 'expected A or B or C or ...'.
   //-------------------------------------------------------------------
   protected boolean accept()
     {
@@ -153,20 +174,6 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
       current.end = pos;               // Update end of parent
       current.rhs.add(p);              // Attach p to rhs of parent
       current.errMerge(p);             // Merge error info with parent
-      return true;
-    }
-
-  //-------------------------------------------------------------------
-  //  Accept Rule by true return from boolean action
-  //-------------------------------------------------------------------
-  protected boolean acceptBoolean()
-    {
-      Phrase p = pop();                // Pop p from compile stack
-      p.rhs = null;                    // Remove right-hand side of p
-      p.errClear();
-      p.success = true;                // Indicate p successful
-      current.end = pos;               // Update end of parent
-      current.rhs.add(p);              // Attach p to rhs of parent
       return true;
     }
 
@@ -185,6 +192,7 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
 
   //-------------------------------------------------------------------
   //  Accept And-predicate (argument was accepted)
+  //  Note: we ignore all failures encountered in processing the argument.
   //-------------------------------------------------------------------
   protected boolean acceptAnd()
     {
@@ -199,6 +207,7 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
 
   //-------------------------------------------------------------------
   //  Accept Not-predicate (argument was rejected)
+  //  Note: we ignore all failures encountered in processing the argument.
   //-------------------------------------------------------------------
   protected boolean acceptNot()
     {
@@ -213,6 +222,10 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
 
   //-------------------------------------------------------------------
   //  Reject Rule
+  //  Note: 'upgrade error info' is applied when rule such as
+  //  R = A/B/C/... failed after one or more of A,B,C failed without
+  //  advancing cursor. In case of a later failure, it gives message
+  //  'expected R', instead of 'expected A or B or C or ...'.
   //-------------------------------------------------------------------
   protected boolean reject()
     {
@@ -228,19 +241,17 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
     }
 
   //-------------------------------------------------------------------
-  //  Reject Rule by false return from boolean action
+  //  Simulate failure after boolean action returned false.
+  //  Note: the action was called after the Rule accepted some text.
+  //  We ignore all failures encountered in the process
+  //  and report failure at the start of the text.
   //-------------------------------------------------------------------
-  protected boolean rejectBoolean()
+  protected boolean boolReject()
     {
-      Phrase p = pop();                // Pop p from compile stack
-      p.end = p.start;                 // Reset end of p
-      p.rhs = null;                    // Remove right-hand side of p
-      System.out.println(p.diag + " " + source.where(p.start));
-      System.out.println(current.errTxt + " " + current.errPos);
-      p.errSet(p.diag,p.start);
-      p.success = false;               // Indicate p failed
-      current.errMerge(p);             // Merge error info with parent
-      pos = p.start;                   // Backtrack to start of p
+      pos = current.start;             // Backtrack to start
+      current.end = pos;               // Reset end
+      current.rhs.clear();             // Clear right-hand side
+      current.errSet(current.diag,pos);// Register failure
       return false;
     }
 
@@ -260,6 +271,8 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
 
   //-------------------------------------------------------------------
   //  Reject And-predicate (argument was rejected)
+  //  Note: we ignore all failures encountered in processing the argument,
+  //  and register failure at the point of call of the predicate.
   //-------------------------------------------------------------------
   protected boolean rejectAnd()
     {
@@ -273,6 +286,8 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
 
   //-------------------------------------------------------------------
   //  Reject Not-predicate (argument was accepted)
+  //  Note: we ignore all failures encountered in processing the argument,
+  //  and register failure at the point of call of the predicate.
   //-------------------------------------------------------------------
   protected boolean rejectNot()
     {
@@ -297,7 +312,16 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
     }
 
   //-------------------------------------------------------------------
-  //  Execute expression &'c'
+  //  Execute expression ^'c'
+  //-------------------------------------------------------------------
+  protected boolean nextNot(char ch)
+    {
+      if (pos<endpos && source.at(pos)!=ch) return consume(1);
+      else return fail("not '" + ch + "'");
+    }
+
+  //-------------------------------------------------------------------
+  //  Execute expression &'c', !^'c'
   //-------------------------------------------------------------------
   protected boolean ahead(char ch)
     {
@@ -305,8 +329,11 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
       else return fail("'" + ch + "'");
     }
 
+  protected boolean aheadNotNot(char ch)  // temporary
+    { return ahead(ch); }
+
   //-------------------------------------------------------------------
-  //  Execute expression !'c'
+  //  Execute expression !'c', &^'c'
   //-------------------------------------------------------------------
   protected boolean aheadNot(char ch)
     {
@@ -356,7 +383,16 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
     }
 
   //-------------------------------------------------------------------
-  //  Execute expression &[s]
+  //  Execute expression ^[s]
+  //-------------------------------------------------------------------
+  protected boolean nextNotIn(String s)
+    {
+      if (pos<endpos && s.indexOf(source.at(pos))<0) return consume(1);
+      else return fail("not [" + s + "]");
+    }
+
+  //-------------------------------------------------------------------
+  //  Execute expression &[s], !^[s]
   //-------------------------------------------------------------------
   protected boolean aheadIn(String s)
     {
@@ -364,8 +400,11 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
       else return fail("[" + s + "]");
     }
 
+  protected boolean aheadNotNotIn(String s) // temporary
+    { return aheadIn(s); }
+
   //-------------------------------------------------------------------
-  //  Execute expression ![s]
+  //  Execute expression ![s], &^[s]
   //-------------------------------------------------------------------
   protected boolean aheadNotIn(String s)
     {
@@ -462,7 +501,7 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
   //-------------------------------------------------------------------
   private boolean fail(String msg)
     {
-      current.errMerge(msg,pos);
+      current.errAdd(msg);
       return false;
     }
 
@@ -491,8 +530,19 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
     Object value = null;
     Phrase parent = null;
 
+    //-----------------------------------------------------------------
+    //  Errors encountered in processing of this Phrase.
+    //  We keep information about the failure farthest down in text,
+    //  and only failure of a rule or a terminal (inner expressions
+    //  do not have diagnostic names.
+    //  - 'errPos' is position the failure, or -1 if there was none.
+    //  - 'errTxt' identifies the expression(s) that failed at 'errPos'.
+    //     There may be several such expressions if 'errPos' was reached
+    //     on several attempts. The expressions are identified
+    //     by their diagnostic names.
+    //-----------------------------------------------------------------
     int errPos = -1;
-    Vector<String> errTxt   = new Vector<String>();
+    Vector<String> errTxt = new Vector<String>();
 
 
     //===================================================================
@@ -544,11 +594,23 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
     public boolean isEmpty()
       { return start==end; }
 
-    //-----------------------------------------------------------------
-    //  Is this s?
-    //-----------------------------------------------------------------
-    public boolean isA(String s)
-      { return name.equals(s); }
+    //-------------------------------------------------------------------
+    //  Get name of rule that created this Phrase.
+    //-------------------------------------------------------------------
+    public String rule()
+      { return name; }
+
+    //-------------------------------------------------------------------
+    //  Was this Phrase created by rule 'rule'?
+    //-------------------------------------------------------------------
+    public boolean isA(String rule)
+      { return name.equals(rule); }
+
+    //-------------------------------------------------------------------
+    //  Was this Phrase created by a terminal?
+    //-------------------------------------------------------------------
+    public boolean isTerm()
+      { return name.length() == 0; }
 
     //-----------------------------------------------------------------
     //  Get error message
@@ -556,17 +618,23 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
     public String errMsg()
       {
         if (errPos<0) return "";
-        return source.where(errPos) + ": expected " + listErr();
+        return source.where(errPos) + ":" + listErr();
       }
 
     //-----------------------------------------------------------------
-    //  Clear error message
+    //  Clear error information
     //-----------------------------------------------------------------
     public void errClear()
       {
         errTxt.clear();
         errPos = -1;
       }
+
+    //-----------------------------------------------------------------
+    //  Describe position of i-th character of the Phrase in source text.
+    //-----------------------------------------------------------------
+    public String where(int i)
+      { return source.where(start+i); }
 
 
     //===================================================================
@@ -575,33 +643,36 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
     //
     //===================================================================
 
-    void errSet(final String msg, int where)
+    //-----------------------------------------------------------------
+    //  Set fresh info ('who' failed 'where'), discarding any previous.
+    //-----------------------------------------------------------------
+    void errSet(final String who, int where)
       {
         errTxt.clear();
-        errTxt.add(msg);
+        errTxt.add(who);
         errPos = where;
       }
 
-    void errMerge(final String msg, int newPos)
+    //-----------------------------------------------------------------
+    //  Add info about 'who' failing at current position.
+    //-----------------------------------------------------------------
+    void errAdd(final String who)
       {
-        if (errPos<pos && newPos<pos)   // If we passed all error points
-        {
-          errClear();
-          return;
-        }
-
-        if (errPos>newPos) return;      // If new position older: forget
-        if (errPos<newPos)              // If new position newer: replace all info
+        if (errPos>pos) return;   // If current position older: forget
+        if (errPos<pos)           // If current position newer: replace
         {
           errTxt.clear();
-          errPos = newPos;
-          errTxt.add(msg);
+          errPos = pos;
+          errTxt.add(who);
           return;
         }
-                                        // If error in p at same position: add
-        errTxt.add(msg);
+                                  // If error at same position: add
+        errTxt.add(who);
       }
 
+    //-----------------------------------------------------------------
+    //  Merge error info with with that from Phrase 'p'.
+    //-----------------------------------------------------------------
     void errMerge(final Phrase p)
       {
         if (p.errPos<pos && errPos<pos) // If we passed all error points
@@ -620,7 +691,7 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
           return;
         }
                                         // If error in p at same position
-        errTxt.addAll(p.errTxt);        // Add messages from p
+        errTxt.addAll(p.errTxt);        // Add all from p
       }
 
     //-----------------------------------------------------------------
@@ -628,17 +699,56 @@ public class ParserBase implements net.sourceforge.unitsinjava.CurrentRule
     //-----------------------------------------------------------------
     private String listErr()
       {
-        StringBuffer sb = new StringBuffer();
-        String sp = "";
+        StringBuilder one = new StringBuilder();
+        StringBuilder two = new StringBuilder();
         Vector<String> done = new Vector<String>();
         for (String s: errTxt)
         {
           if (done.contains(s)) continue;
-          sb.append(sp + s);
           done.add(s);
-          sp = " or ";
+          if (s.startsWith("not "))
+            toPrint(" or " + s.substring(4),two);
+          else
+            toPrint(" or " + s,one);
         }
-        return sb.toString();
+
+        if (one.length()>0)
+        {
+          if (two.length()==0)
+            return " expected " + one.toString().substring(4);
+          else
+            return " expected " + one.toString().substring(4) +
+                   "; not expected " + two.toString().substring(4);
+        }
+        else
+          return " not expected " + two.toString().substring(4);
+      }
+
+    //-----------------------------------------------------------------
+    //  Convert string to printable and append to StringBuilder.
+    //-----------------------------------------------------------------
+    private void toPrint(final String s, StringBuilder sb)
+      {
+        for (int i=0;i<s.length();i++)
+        {
+          char c = s.charAt(i);
+          switch(c)
+          {
+            case '\b': sb.append("\\b"); continue;
+            case '\f': sb.append("\\f"); continue;
+            case '\n': sb.append("\\n"); continue;
+            case '\r': sb.append("\\r"); continue;
+            case '\t': sb.append("\\t"); continue;
+            default:
+              if (c<32 || c>256)
+              {
+                String u = "000" + Integer.toHexString(c);
+                sb.append("\\u" + u.substring(u.length()-4,u.length()));
+              }
+              else sb.append(c);
+              continue;
+          }
+        }
       }
   }
 

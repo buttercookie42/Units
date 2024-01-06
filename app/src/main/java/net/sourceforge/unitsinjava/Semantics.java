@@ -5,10 +5,10 @@
 //  Units is a program for unit conversion originally written in C
 //  by Adrian Mariano (adrian@cam.cornell.edu.).
 //  Copyright (C) 1996, 1997, 1999, 2000, 2001, 2002, 2003, 2004,
-//  2005, 2006, 2007 by Free Software Foundation, Inc.
+//  2005, 2006, 2007, 2009, 2011 by Free Software Foundation, Inc.
 //
 //  Java version Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008,
-//  2009 by Roman R Redziejowski (roman.redz@tele2.se).
+//  2009, 2012 by Roman R Redziejowski (www.romanredz.se).
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -27,7 +27,11 @@
 //
 //  Change log
 //
-//    091024 Created for Version 1.87.J01.
+//  Version 1.87.J01.
+//    091024 Created
+//
+//  Version 1.89.J01.
+//    120202 In 'unitname': extract exponent only if not part of subscript.
 //
 //=========================================================================
 
@@ -270,10 +274,15 @@ package net.sourceforge.unitsinjava;
 
       if (DefinedFunction.table.containsKey(word)) return false;
 
-      // Do exponent handling like m3
-      int exp = 2 + "23456789".indexOf(word.charAt(word.length()-1));
-      if (exp>1)
-        word = word.substring(0,word.length()-1);
+      // Extract concatenated exponent if present -
+      // - only if 'word' does not have subscript.
+      int exp = 1;
+      if (!Unit.hasSubscript(word))
+      {
+        exp = 2 + "23456789".indexOf(word.charAt(word.length()-1));
+        if (exp>1)
+          word = word.substring(0,word.length()-1);
+      }
 
       Value v = Value.fromName(word);
 

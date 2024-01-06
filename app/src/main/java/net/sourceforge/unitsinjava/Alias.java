@@ -5,7 +5,7 @@
 //  Units is a program for unit conversion originally written in C
 //  by Adrian Mariano (adrian@cam.cornell.edu.).
 //  Copyright (C) 1996, 1997, 1999, 2000, 2001, 2002, 2003, 2004,
-//  2005, 2006, 2007 by Free Software Foundation, Inc.
+//  2005, 2006, 2007, 2009, 2011 by Free Software Foundation, Inc.
 //
 //  Java version Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008,
 //  2009, 2012 by Roman R Redziejowski (www.romanredz.se).
@@ -27,115 +27,89 @@
 //
 //  Change log
 //
-//    050203 Do not initialize table.
-//
-//  Version 1.84.J07.
-//    050315 Changed package name to 'units'.
-//
-//  Version 1.86.J01.
-//    061229 Corrected test for 'verbose'.
-//
-//  Version 1.87.J01.
-//    091024 Used generics for 'table'.
-//    091031 Moved definition of Ignore to Factor.
-//           Replaced 'addtolist' by 'isCompatibleWith'.
-//
 //  Version 1.89.J01
-//    120201 Adapted to use with File Parser:
-//           removed method 'accept' and added 'define'.
-//    120208 Renamed one-argument method 'isCompatibleWith'
-//           to 'conformsTo' to avoid confusion with two-argument one
-//           defined in Product and Value.
-//    120209 Definition of Ignore moved to separate file:
-//           replaced 'Factor.Ignore' by 'Ignore'.
-//    120313 Added 'location.where' to messages from 'check'.
-//    120316 Added methods 'desc' and 'conformsTo'.
+//    120201 Created for this version.
 //    120317 Changed 'define' to replace an earlier definition
 //           instead of ignoring re-definition.
-//    120405 Used method 'startsWith' in 'find'.
 //
 //=========================================================================
 
 package net.sourceforge.unitsinjava;
 
 import java.util.Hashtable;
-import java.util.Enumeration;
 
 
 //HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 //
-//  class Prefix
+//  class Alias
 //
 //HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 /**
- *  A prefix.
+ *  Alias for a UnitList.
  */
 
- public class Prefix extends Factor
+ public class Alias extends Entity
 {
   //-------------------------------------------------------------------
-  //  Table of Prefixes
+  //  Unit list that the alias stands for.
   //-------------------------------------------------------------------
-  public static Hashtable<String,Prefix> table = null;
+  final String unitList;
 
   //-------------------------------------------------------------------
-  //  Uned in conformability checks
+  //  Table of Aliases.
   //-------------------------------------------------------------------
-  public static Value one = new Value();
+  public static Hashtable<String,Alias> table = null;
 
 
   //=====================================================================
   //  Constructor
   //=====================================================================
   /**
-   *  Constructs a Prefix object.
+   *  Constructs an Alias object.
    *
-   *  @param name the prefix.
-   *  @param loc  location where defined.
-   *  @param def  definition.
+   *  @param  name  the alias.
+   *  @param  ulist unit list that the alias stands for.
+   *  @param  loc   location where defined.
    */
-  Prefix(final String name, Location loc, final String def)
-    { super(name,loc,def); }
+  Alias(final String name, final String ulist, final Location loc)
+    {
+      super(name,loc);
+      unitList = ulist.replace(" ","").replace("\t","");
+    }
 
 
   //=====================================================================
   //  define
   //=====================================================================
   /**
-   *  Builds PrefixTable entry from a parsed definition.
-   *  The definition is parsed as follows:
-   *  <pre>
-   *    name-  definition
-   *  </pre>
+   *  Constructs an Alias object from a parsed '!unitlist' statement.
+   *  Checks the name and, if correct, enters the object into Alias table.
+   *  Writes diagnostics to Env.out.
    *
-   *  @param name the prefix.
-   *  @param def  definition.
-   *  @param loc  location where defined.
+   *  @param  name  the alias.
+   *  @param  ulist the unit list.
+   *  @param  loc   location where defined.
    */
-  public static void define(final String name, final String def, final Location loc)
+  public static void define
+    ( final String name, final String ulist, final Location loc)
     {
       //---------------------------------------------------------------
-      //  Get name without suffix '-'.
+      //  Alias with incorrect name can never be accessed.
       //---------------------------------------------------------------
-      String prefname = name.substring(0,name.length()-1);
-
-      //---------------------------------------------------------------
-      //  Prefix with incorrect syntax can never be accessed.
-      //---------------------------------------------------------------
-      String diag = Entity.checkName(prefname);
+      String diag = Entity.checkName(name);
 
       if (diag!=null)
       {
          Env.out.println
-           (loc.where() + ". Prefix '" + prefname
+           (loc.where() + ". Alias '" + name
             + "' is ignored. It " + diag + ".");
          return;
       }
 
       //---------------------------------------------------------------
-      //  Install the prefix in table.
+      //  Install the alias in table.
       //---------------------------------------------------------------
-      Prefix old = table.put(prefname, new Prefix(prefname,loc,def));
+      Alias old = table.put(name, new Alias(name,ulist,loc ));
 
       //---------------------------------------------------------------
       //  Write a message if an earlier definition was replaced.
@@ -143,7 +117,7 @@ import java.util.Enumeration;
       if (old!=null)
       {
         Env.out.println
-          ("Prefix '" + name + "' defined in " + old.location.where() +
+          ("Unit list '" + name + "' defined in " + old.location.where() +
            ", is redefined in " + loc.where() + ".");
       }
     }
@@ -153,94 +127,103 @@ import java.util.Enumeration;
   //  check
   //=====================================================================
   /**
-   *  Checks definition of this Prefix for correctness.
+   *  Checks definition of this Alias for correctness.
    *  Writes diagnostics to 'Env.out'.
    *  Used by 'check' in 'Tables'.
    */
   void check()
     {
+      //---------------------------------------------------------------
+      //  If requested, write check trace.
+      //---------------------------------------------------------------
+      String where = location.where() + ". ";
       if (Env.verbose==2)
-        Env.out.println(location.where() + ". Doing '" + name + "'");
+        Env.out.println(where + "Doing '" + name + "'.");
 
       //---------------------------------------------------------------
-      // check for bad '/' character in prefix
+      //  Check the unit list for correctness.
       //---------------------------------------------------------------
-      int plevel = 0;
-      for (int i=0;i<def.length();i++)
+      try
+      { UnitList ul = new UnitList(unitList); }
+      catch(EvalError e)
       {
-        int ch = def.charAt(i);
-        if (ch==')') plevel--;
-        else if (ch=='(') plevel++;
-        else if (plevel==0 && ch=='/')
-        {
-          Env.out.println
-           (location.where() + ". Prefix '" + name + "-' defined as '"
-             + def + "' contains bad '/'");
-          return;
-        }
-      }
-
-      //---------------------------------------------------------------
-      // check if can be reduced
-      //---------------------------------------------------------------
-      Value v = Value.fromString(name);
-      if (v==null || !v.isCompatibleWith(one,Ignore.PRIMITIVE))
         Env.out.println
-          (location.where() + ". Prefix '" + name + "' defined as '"
-           + def + "' is irreducible");
-    }
-
-
-  //=====================================================================
-  //  find
-  //=====================================================================
-  /**
-   *  Finds the longest prefix of a given name that is in Prefix table.
-   *  (The prefix may be all of that name.)
-   *
-   *  @param  name the name to be investigated.
-   *  @return the longest prefix or null if none found.
-   */
-  public static Prefix find(final String name)
-    {
-      int maxlg = 0;
-      Prefix maxp = null;
-      for (Enumeration<Prefix> enu=Prefix.table.elements();enu.hasMoreElements();)
-      {
-        Prefix p = enu.nextElement();
-        int plg = p.name.length();
-        if (plg>maxlg && name.startsWith(p.name))
-        {
-          maxp = p;
-          maxlg = plg;
-        }
+            (where + "Unit list '" + name + "'. " + e.getMessage());
       }
-      return maxp;
+
+      //---------------------------------------------------------------
+      //  Alias must be different from function, unit, and prefix.
+      //---------------------------------------------------------------
+      Function func = DefinedFunction.table.get(name);
+      if (func!=null)
+        Env.out.println
+          (where + "Unit list '" + name +
+           "' hides the function defined in " +
+           func.location.where() + ".");
+
+      Unit unit = Unit.table.get(name);
+      if (unit!=null)
+        Env.out.println
+          (where + "Unit list '" + name +
+           "' hides the unit defined in " +
+           unit.location.where() + ".");
+
+      Prefix pref = Prefix.table.get(name);
+      if (pref!=null)
+        Env.out.println
+          (where + "Unit list '" + name +
+           "' hides the prefix defined in " +
+           pref.location.where() + ".");
     }
 
 
   //=====================================================================
   //  conformsTo
   //=====================================================================
-  /** Checks if this Prefix conforms to Value 'v'.
+  /**
+   *  Checks if unit list defined by this Alias conforms to given Value.
+   *  Fails without a message if the unit list is invalid.
    *  Used by 'showConformable' in 'Tables'.
    *
    *  @param  v the Value to be checked against.
-   *  @return true if this Prefix conforms to v, false otherwise.
+   *  @return true if this Alias conforms to v, false otherwise.
    */
   boolean conformsTo(final Value v)
-    { return one.isCompatibleWith(v,Ignore.DIMLESS); }
+    {
+      UnitList ul;
+      try { ul = new UnitList(unitList); }
+      catch(EvalError e) { return false; }
+      return ul.value[0].isCompatibleWith(v,Ignore.DIMLESS);
+    }
+
+
+  //=====================================================================
+  //  showdef
+  //=====================================================================
+  /**
+   *  If the argument is the name of a unit list, returns its definition.
+   *  Otherwise returns null.
+   *
+   *  @param  name the name to be checked.
+   *  @return the definition or null.
+   */
+  public static String showdef(final String name)
+    {
+      Alias alias = Alias.table.get(name);
+      if (alias!=null) return "unit list, " + alias.unitList;
+      else return null;
+    }
 
 
   //=====================================================================
   //  desc
   //=====================================================================
   /**
-   *  Returns short description of this Prefix.
+   *  Returns short description of this Alias.
    *  To be shown by 'showConformable' and 'showMatching' in 'Tables'.
    *
    *  @return description.
    */
   String desc()
-    { return ("<prefix> " + def); }
+    { return ("= " + unitList); }
 }

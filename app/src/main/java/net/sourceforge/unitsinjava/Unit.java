@@ -8,7 +8,7 @@
 //  2005, 2006, 2007 by Free Software Foundation, Inc.
 //
 //  Java version Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008,
-//  2009 by Roman R Redziejowski (roman.redz@tele2.se).
+//  2009, 2012 by Roman R Redziejowski (www.romanredz.se).
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -27,12 +27,34 @@
 //
 //  Change log
 //
-//    050203 Version 1.84.J05. Do not initialize table.
-//    050315 Version 1.84.J07. Changed package name to "units".
-//    061229 Version 1.86.J01. Corrected test for 'verbose'.
-//    091024 Version 1.87.J01. Used modified 'insertAlph'.
+//  Version 1.84.J05.
+//    050203 Do not initialize table.
+//
+//  Version 1.84.J07.
+//    050315 Changed package name to 'units'.
+//
+//  Version 1.86.J01.
+//    061229 Corrected test for 'verbose'.
+//
+//  Version 1.87.J01.
+//    091024 Used modified 'insertAlph'.
 //    091031 Moved definition of Ignore to Factor.
 //           Replaced 'addtolist' by 'isCompatibleWith'.
+//
+//  Version 1.89.J01
+//    120201 Adapted to use with File Parser:
+//           removed method 'accept' and added 'define'.
+//    120202 Added method 'hasSubscript' and used it to check the name.
+//    120208 Renamed one-argument method 'isCompatibleWith'
+//           to 'conformsTo' to avoid confusion with two-argument one
+//           defined in Product and Value.
+//    120209 Definition of Ignore moved to separate file:
+//           replaced 'Factor.Ignore' by 'Ignore'.
+//    120311 Suppress error messages from 'conformsTo'.
+//    120313 Added 'location.where' to messages from 'check'.
+//    120317 Changed 'define' to replace an earlier definition
+//           instead of ignoring re-definition.
+//    120318 In 'check': removed check for name conflict.
 //
 //=========================================================================
 
@@ -55,112 +77,169 @@ import java.util.Vector;
  public class Unit extends Factor
 {
   //-------------------------------------------------------------------
-  //  Table of Units
+  /**  Table of Units */
   //-------------------------------------------------------------------
   public static Hashtable<String,Unit> table = null;
 
 
   //=====================================================================
-  //  Construct object for unit 'nam' defined at 'loc'.
-  //  The unit is defined by string 'df'.
+  //  Constructor
   //=====================================================================
-  Unit(final String nam, Location loc, final String df)
-    { super(nam,loc,df); }
+  /**
+   *  Constructs a Unit object.
+   *
+   *  @param name unit name.
+   *  @param loc  location where defined.
+   *  @param def  definition.
+   */
+  Unit(final String name, final Location loc, final String def)
+    { super(name,loc,def); }
 
 
   //=====================================================================
-  //  Given is a line number 'lin' from units.dat file, parsed into
-  //  name 'nam' and definition 'df'. It should be a unit definition.
-  //  Construct a Unit object defined by the line, enter it into
-  //  Units table, and return true.
+  //  define
   //=====================================================================
-  public static boolean accept
-    ( final String nam, final String df, Location loc)
+  /**
+   *  Builds UnitTable entry from a parsed definition.
+   *  The definition is parsed as follows:
+   *  <pre>
+   *    name definition
+   *  </pre>
+   *
+   *  @param name unit name.
+   *  @param def  definition.
+   *  @param loc  location where defined.
+   */
+  public static void define
+    (final String name, final String def, final Location loc)
     {
-      // Units that end in [2-9] can never be accessed.
+      //---------------------------------------------------------------
+      // Units with incorrect syntax can never be accessed.
+      //---------------------------------------------------------------
+      String diag = Entity.checkName(name);
 
-      if ("23456789".indexOf(nam.charAt(nam.length()-1))>=0)
+      if (diag!=null)
       {
-         Env.err.println
-           ("Unit '" + nam + "' on line " + loc.lineNum
-             +  " ignored. It ends with a digit 2-9.");
-         return true;
+         Env.out.println
+           (loc.where() + ". Unit '" + name
+            + "' is ignored. Its name " + diag + ".");
+         return;
       }
 
-      // Units that start with a digit can never be accessed.
-
-      if ("0123456789".indexOf(nam.charAt(0))>=0)
+      //---------------------------------------------------------------
+      // Units that end in [2-9] without '_' can never be accessed.
+      //---------------------------------------------------------------
+      if (!hasSubscript(name)
+          && "23456789".indexOf(name.charAt(name.length()-1))>=0)
       {
-         Env.err.println
-           ("Unit '" + nam + "' on line " + loc.lineNum
-             +  " ignored. It starts with a digit.");
-         return true;
+         Env.out.println
+           (loc.where() + ". Unit '" + name
+            + "' is ignored. Its name ends with a digit 2-9 without '_'.");
+         return;
       }
 
-      // Is it a redefinition?
+      //---------------------------------------------------------------
+      //  Install the unit in table.
+      //---------------------------------------------------------------
+      Unit old = table.put(name, new Unit(name,loc,def));
 
-      if (table.containsKey(nam))
+      //---------------------------------------------------------------
+      //  Write a message if an earlier definition was replaced.
+      //---------------------------------------------------------------
+      if (old!=null)
       {
-        Env.err.println
-          ("Redefinition of unit '" + nam
-            + "' on line " + loc.lineNum + " is ignored.");
-         return true;
+        Env.out.println
+          ("Unit '" + name + "' defined in " + old.location.where() +
+           ", is redefined in " + loc.where() + ".");
       }
-
-      // Install unit in table.
-
-      table.put(nam, new Unit(nam,loc,df));
-      return true;
     }
 
 
   //=====================================================================
-  //  Check the unit definition. Used in 'checkunits'.
+  //  check
   //=====================================================================
+  /**
+   *  Checks definition of this unit for correctness.
+   *  Writes diagnostics to 'Env.out'.
+   *  Used by 'check' in 'Tables'.
+   */
   public static Value one = new Value();
 
   void check()
     {
-      // check if can be reduced
       if (Env.verbose==2)
-        Env.out.println("doing '" + name + "'");
-      Value v = Value.fromString(name);
-      if (v==null || !v.isCompatibleWith(one,Factor.Ignore.PRIMITIVE))
-        Env.out.println
-          ("'" + name + "' defined as '"
-           + def + "' is irreducible");
+        Env.out.println(location.where() + ". Doing '" + name + "'");
 
-      // check if not hidden by function
-      if (DefinedFunction.table.containsKey(name))
+      //---------------------------------------------------------------
+      // check if can be reduced
+      //---------------------------------------------------------------
+      Value v = null;
+      try
+      {
+        v = Value.parse(name);
+        v.completereduce();
+      }
+      catch (EvalError e)
+      {
+        Env.out.println(location.where() + ". " + e.getMessage());
+        return;
+      }
+
+      if (!v.isCompatibleWith(one,Ignore.PRIMITIVE))
         Env.out.println
-          ("unit '" + name
-           + "' is hidden by function '" + name + "'");
+          (location.where() + ". Unit '" + name + "' defined as '"
+           + def + "' is irreducible.");
     }
 
 
   //=====================================================================
-  //  Return true if this unit is compatible with Value 'v',
+  //  conformsTo
   //=====================================================================
-  boolean isCompatibleWith(final Value v)
+  /**
+   *  Checks if this unit conforms to Value 'v'.
+   *  Used by 'showConformable' in 'Tables'.
+   *
+   *  @param  v the Value to be checked against.
+   *  @return true if this unitconforms to v, false otherwise.
+   */
+  boolean conformsTo(final Value v)
     {
-      Value thisvalue = Value.fromString(name);
-      if (thisvalue==null) return false;
-      return thisvalue.isCompatibleWith(v,Factor.Ignore.DIMLESS);
+      try
+      {
+        Value thisvalue = Value.parse(def);
+        thisvalue.completereduce();
+        return thisvalue.isCompatibleWith(v,Ignore.DIMLESS);
+      }
+      catch(EvalError e)
+      { return false; }
     }
 
 
   //=====================================================================
-  //  Return short description of this object to be shown by 'tryallunits'.
+  //  desc
   //=====================================================================
+  /**
+   *  Returns short description of this unit
+   *  to be shown by 'showConformable' and 'showMatching' in 'Tables'.
+   *
+   *  @return description.
+   */
   String desc()
     { return (isPrimitive? "<primitive unit>" : "= " + def); }
 
 
   //=====================================================================
-  //  Find out if 'name' is the name of a known unit, possibly in plural.
-  //  Return the Unit object if so, or null otherwise.
-  //  (Originally part of 'lookupunit'.)
+  //  find
   //=====================================================================
+  /**
+   *  Finds out if given string is the name of a known unit,
+   *  possibly in plural, and returns the Unit object if so.
+   *  (Originally part of 'lookupunit'.)
+   *
+   *  @param  name the string to be investigated.
+   *  @return the Unit object identified by 'name',
+   *          or null if none found.
+   */
   public static Unit find(final String name)
     {
       //---------------------------------------------------------------
@@ -171,14 +250,17 @@ import java.util.Vector;
         return Unit.table.get(name);
 
       //---------------------------------------------------------------
-      //  Plural rules for English: add -s
-      //  after x, sh, ch, ss   add -es
-      //  -y becomes -ies except after a vowel when you just add -s
-      //  Try removing 's'.
+      //  Plural rules for English:
+      //  add -s
+      //  after x, sh, ch, ss add -es
+      //  -y becomes -ies except after a vowel when you just add -s.
       //---------------------------------------------------------------
       int ulg = name.length();
       if (ulg>2 && name.charAt(ulg-1)=='s')
       {
+        //-------------------------------------------------------------
+        //  Try removing 's'.
+        //-------------------------------------------------------------
         String temp = name.substring(0,ulg-1);
         if (Unit.table.containsKey(temp))
           return Unit.table.get(temp);
@@ -208,4 +290,26 @@ import java.util.Vector;
 
       return null;
     }
+
+
+  //=====================================================================
+  //  hasSubscript
+  //=====================================================================
+  /**
+   *  Chcks if given name ends with a 'subscript'.
+   *  A subscript starts with '_' and is followed by a sequence
+   *  of digits, point, and/or comma.
+   *
+   *  @param  name the name.
+   *  @return true if the name ends with a subscript, false otherwise.
+   */
+  public static boolean hasSubscript(final String name)
+  {
+    int i = name.lastIndexOf('_');
+    if (i<0 || i == name.length()-1) return false;
+    for (int j = i+1;j<name.length();j++)
+      if ("0123456789,.".indexOf(name.charAt(j))<0) return false;
+    return true;
+  }
+
 }

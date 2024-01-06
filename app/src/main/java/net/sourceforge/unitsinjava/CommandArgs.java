@@ -8,7 +8,7 @@
 //  2005, 2006, 2007 by Free Software Foundation, Inc.
 //
 //  Java version Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008,
-//  2009 by Roman R Redziejowski (roman.redz@tele2.se).
+//  2009 by Roman R Redziejowski (www.romanredz.se).
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -27,15 +27,18 @@
 //
 //  Change log
 //
-//    050203 Version 1.84.J05. User interface redesigned.
-//           Instead of cycling through options, you ask directly
+//  Version 1.84.J05. User interface redesigned.
+//    050203 Instead of cycling through options, you ask directly
 //           if a given option was specified and how many times.
 //           You can directly get a list of all values specified
 //           with that option.
 //           Attribute 'public' removed from all methods.
-//    050315 Version 1.84.J07. Changed package name to "units".
-//    091024 Version 1.87.J01.
-//           Used generics and modernized access to options.
+//
+//  Version 1.84.J07.
+//    050315 Changed package name to 'units'.
+//
+//  Version 1.87.J01.
+//    091024 Used generics and modernized access to options.
 //    091103 Corrected bug: exception on empty string as option argument.
 //    091104 'String.isEmpty' not accepted by JDK1.5. Changed to length==0.
 //
@@ -53,8 +56,8 @@ import java.util.Vector;
 //
 //HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 /**
- *  Object-oriented counterpart of C procedure 'getopt':
- *  an object of class CommandArgs represents parsed argument list
+ *  Object-oriented counterpart of C procedure 'getopt'.
+ *  An object of class CommandArgs represents parsed argument list
  *  of a command (the 'argv' parameter to 'main').
  *  <p>
  *  The list is supposed to follow POSIX conventions,
@@ -77,6 +80,7 @@ import java.util.Vector;
  *      Anything that follows is an argument, even if it begins with a hyphen.
  *  <li>A hyphen alone is an argument. It terminates options.
  *  </ul>
+ *  <p>
  *  A CommandArgs object is constructed by parsing the argument list
  *  according to instructions supplied to the constructor.
  *  The options and arguments can be then obtained by invoking
@@ -87,37 +91,39 @@ import java.util.Vector;
 public class CommandArgs
 {
   //-------------------------------------------------------------------
-  //  Option letters in order of appearance.
-  //  Note that options with argument may have multiple occurrences.
+  /** Option letters in order of appearance.
+   *  Note that options with argument may have multiple occurrences. */
   //-------------------------------------------------------------------
   private String letters;
 
   //-------------------------------------------------------------------
-  //  Arguments specified with letters.
-  //  Null for argument-less options.
+  /** Arguments specified with letters.
+   *  Null for argument-less options. */
   //-------------------------------------------------------------------
   private Vector<String> optArgs = new Vector<String>();
 
   //-------------------------------------------------------------------
-  //  Positional arguments.
+  /** Positional arguments. */
   //-------------------------------------------------------------------
   private Vector<String> args = new Vector<String>();
 
   //-------------------------------------------------------------------
-  //  Error count.
+  /** Error count. */
   //-------------------------------------------------------------------
   private int errors = 0;
 
-  //-------------------------------------------------------------------
-  /** Construct CommandArgs object from an argument list 'argv'.
-  *   <br>
+  //=====================================================================
+  //  Constructor
+  //=====================================================================
+  /**
+  *   Constructs CommandArgs object from an argument list 'argv'.
+  *
   *   @param  argv Argument list, as passed to the program.
   *   @param  options String consisting of option letters for options without argument.
   *   @param  optionsWithArg String consisting of option letters for options with argument.
   *   @param  minargs Minimum number of arguments.
   *   @param  maxargs Maximum number of arguments.
   */
-  //-------------------------------------------------------------------
   public CommandArgs
     ( final String[] argv,
       final String options,
@@ -245,9 +251,9 @@ public class CommandArgs
       }
     }
 
-  //-------------------------------------------------------------------
-  //  Access to options
-  //-------------------------------------------------------------------
+  //=====================================================================
+  //  opt
+  //=====================================================================
   /**
   *  Checks if a given option was specified.
   *
@@ -257,6 +263,9 @@ public class CommandArgs
   public boolean opt(char c)
     { return letters.indexOf(c)>=0; }
 
+  //=====================================================================
+  //  optArg
+  //=====================================================================
   /**
   *  Gets argument of a given option.
   *  Returns null if the option is not specified or does not have argument.
@@ -271,6 +280,9 @@ public class CommandArgs
       return i<0? null : optArgs.elementAt(i);
     }
 
+  //=====================================================================
+  //  optArgs
+  //=====================================================================
   /**
   *  Gets arguments of a given option.
   *  Returns a vector of arguments for an option specified repeatedly-
@@ -288,17 +300,20 @@ public class CommandArgs
       return result;
     }
 
-  //-------------------------------------------------------------------
-  //  Access to positional arguments
-  //-------------------------------------------------------------------
+  //=====================================================================
+  //  nArgs
+  //=====================================================================
   /**
   *  Gets the number of arguments in the argument list.
   *
-  *  @return Number of arguments.
+  *  @return number of arguments.
   */
   public int nArgs()
     { return args.size(); }
 
+  //=====================================================================
+  //  arg
+  //=====================================================================
   /**
   *  Gets the i-th argument.
   *
@@ -308,6 +323,9 @@ public class CommandArgs
   public String arg(int i)
     { return args.elementAt(i); }
 
+  //=====================================================================
+  //  args
+  //=====================================================================
   /**
   *  Gets the argument vector.
   *
@@ -316,9 +334,9 @@ public class CommandArgs
   public Vector<String> args()
     { return args; }
 
-  //-------------------------------------------------------------------
-  //  Error count
-  //-------------------------------------------------------------------
+  //=====================================================================
+  //  nErrors
+  //=====================================================================
   /**
   *  Gets number of errors detected when parsing the argument list.
   *

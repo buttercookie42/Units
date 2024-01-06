@@ -8,7 +8,7 @@
 //  2005, 2006, 2007 by Free Software Foundation, Inc.
 //
 //  Java version Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008,
-//  2009 by Roman R Redziejowski (roman.redz@tele2.se).
+//  2009 by Roman R Redziejowski (www.romanredz.se).
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -27,8 +27,11 @@
 //
 //  Change log
 //
-//    050315 Version 1.84.J07. Changed package name to "units".
-//    091025 Version 1.87.J01. Replaced 'Parser.Exception' by 'EvalError'.
+//  Version 1.84.J07.
+//    050315 Changed package name to 'units'.
+//
+//  Version 1.87.J01.
+//    091025 Replaced 'Parser.Exception' by 'EvalError'.
 //
 //=========================================================================
 
@@ -42,33 +45,55 @@ package net.sourceforge.unitsinjava;
 //
 //HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 /**
- *  A function (built-in, computed, or tabular).
+ *  A function. Base class for BuiltInFunction and DefinedFunction.
  */
 
-public abstract class Function extends Entity
+abstract class Function extends Entity
 {
   //=====================================================================
-  //  Construct object for function 'nam' defined at 'loc'.
+  //  Constructor
   //=====================================================================
-  Function(String nam,Location loc)
-    { super(nam,loc); }
+  /**
+    * Constructs a Function object.
+    *
+    *  @param name function name.
+    *  @param loc  location where defined.
+    */
+  Function(String name,Location loc)
+    { super(name,loc); }
 
 
   //=====================================================================
-  //  Apply the function to Value 'v' (with result in 'v').
+  //  applyTo
   //=====================================================================
+  /**
+   *  Applies this function to a given Value,
+   *  and changes the Value to the result.
+   *
+   *  @param v the argument and result.
+   */
   abstract void applyTo(Value v);
 
 
   //=====================================================================
-  //  Apply inverse of the function to Value 'v' (with result in 'v').
+  //  applyInverseTo
   //=====================================================================
-  public abstract void applyInverseTo(Value v);
+  /**
+   *  Applies the inverse of this function to a given Value,
+   *  and changes the Value to the result.
+   *
+   *  @param v the argument and result.
+   */
+  abstract void applyInverseTo(Value v);
 
-
   //=====================================================================
-  //  Return definition of the function.
-  //  (Originally 'showfuncdef'.)
+  //  showdef
   //=====================================================================
+  /**
+   *  Returns definition of this function.
+   *  (Originally 'showfuncdef'.)
+   *
+   *  @return formatted definition of this function.
+   */
   abstract String showdef();
 }
