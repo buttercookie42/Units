@@ -20,6 +20,7 @@ import net.sourceforge.unitsinjava.EvalError;
 import net.sourceforge.unitsinjava.Factor;
 import net.sourceforge.unitsinjava.Function;
 import net.sourceforge.unitsinjava.Ignore;
+import net.sourceforge.unitsinjava.UnitList;
 import net.sourceforge.unitsinjava.Value;
 
 /**
@@ -166,6 +167,41 @@ public class ValueGui extends Value {
         return fun.name + "(" + fromValue.asString() + ")";
     }
 
+    //=====================================================================
+    //  convert a list of units
+    //=====================================================================
+
+    /**
+     * Returns result of conversion of unit expression to a list of units.
+     *
+     * @param fromExpr  The original user-entered 'from' expression
+     * @param fromValue 'from' expression converted to completely reduced Value.
+     * @param ul       'to' list of units.
+     */
+    public static String convertNonInteractive(String fromExpr, Value fromValue, UnitList ul) throws ConversionException {
+        boolean result = ul.convert(fromExpr, fromValue);
+        if (!result) {
+            throw new ConversionException();
+        } else {
+            StringBuilder sb = new StringBuilder();
+            boolean gotNonZero = false;
+            String sep = "";
+            for (int i = 0; i < ul.n; i++) {
+                if (ul.result[i] != 0) {
+                    sb.append(sep);
+                    sb.append(UnitList.showUnit(ul.result[i], ul.unit[i]));
+                    sep = " + ";
+                    gotNonZero = true;
+                } else if (i == ul.n - 1 && !gotNonZero) {
+                    // If everything's zero, always print the last partial result, even if that
+                    // might be zero, too.
+                    sb.append(sep);
+                    sb.append(UnitList.showUnit(ul.result[i], ul.unit[i]));
+                }
+            }
+            return sb.toString();
+        }
+    }
 
     public static class ConversionException extends Exception {
         /**

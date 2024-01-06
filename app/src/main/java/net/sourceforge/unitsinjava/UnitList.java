@@ -68,6 +68,8 @@ import java.util.Locale;
   //-------------------------------------------------------------------
   public Value[] value;
 
+  public double[] result;
+
   //-------------------------------------------------------------------
   /** Indicates handling of the last expression:
    *  <br> 0 = round to integer;
@@ -214,7 +216,7 @@ import java.util.Locale;
       //  Perform the conversion.
       //  No rounding yet, as it should be done on converted value.
       //---------------------------------------------------------------
-      double result[] = new double[n];
+      result = new double[n];
       double rem = fromValue.factor;
       for (int i=0;i<n-1;i++)
       {
@@ -338,7 +340,7 @@ import java.util.Locale;
    *  @param unit the corresponding expression from the unit list.
    *  @return the constructed representation.
    */
-  private String showUnit(double value, final String unit)
+  public static String showUnit(double value, final String unit)
     {
       //----------------------------------------------------------------
       //  The processing depends on the form of 'unit'.

@@ -493,15 +493,12 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
                     return;
                 }
 
-                if (!ul.convert(haveStr, have)) {
-                    throw new ConversionException();
-                } else {
-                    wantEditText.setError(null);
-                    // unit lists are a special case and don't have a reciprocal, so the result
-                    // is just stored in the wantStr.
-                    resultVal = null;
-                    wantStr = "Unit lists not yet implemented";
-                }
+                wantEditText.setError(null);
+                // unit lists are a special case and don't have a reciprocal, so the result
+                // is just stored in the wantStr.
+                resultVal = null;
+                wantStr = ValueGui.convertNonInteractive(haveStr, have, ul);
+
             } else {
                 Value want = null;
                 Function func = null;
