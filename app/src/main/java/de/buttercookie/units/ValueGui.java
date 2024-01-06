@@ -151,7 +151,6 @@ public class ValueGui extends Value {
     /**
      * Returns result of conversion of unit expression to function.
      *
-     * @param fromExpr  'from' expression.
      * @param fromValue 'from' expression converted to completely reduced Value.
      * @param fun       'to' function.
      */
