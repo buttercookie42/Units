@@ -237,7 +237,7 @@ import java.util.Locale;
       }
 
       else          // Otherwise round to displayed precision
-        rounded = Double.valueOf(String.format(Locale.US,"%.8g",result[n-1]));
+        rounded = Double.valueOf(String.format(Locale.US,"%.8G",result[n-1]));
 
       result[n-1] = rounded;
 
@@ -258,7 +258,7 @@ import java.util.Locale;
       for (int i=n-1;i>0;i--)
       {
         double nextUnit = value[i-1].factor / value[i].factor;
-        nextUnit = Double.valueOf(String.format(Locale.US,"%.8g",nextUnit));
+        nextUnit = Double.valueOf(String.format(Locale.US,"%.8G",nextUnit));
         if (result[i]==nextUnit)
         {
           result[i] = 0;

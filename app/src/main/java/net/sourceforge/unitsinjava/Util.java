@@ -104,10 +104,10 @@ import java.util.Locale;
       if (d==(int)d)
         return Integer.toString((int)d);
 
-      StringBuilder s = new StringBuilder(String.format(Locale.US,"%.8g",d));
+      StringBuilder s = new StringBuilder(String.format(Locale.US,"%.8G",d));
       int p = s.indexOf("."); // Position of decimal point
-      int e = s.indexOf("e"); // Positon of 'e' or -1 if none
-      if (e>0)                // If 'e' present remove '+' and leading '0'
+      int e = s.indexOf("E"); // Positon of 'E' or -1 if none
+      if (e>0)                // If 'E' present remove '+' and leading '0'
       {
         if (s.charAt(e+1)=='+') s.deleteCharAt(e+1);
         if (s.charAt(e+1)=='0') s.deleteCharAt(e+1);
