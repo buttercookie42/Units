@@ -4,6 +4,7 @@
 "foot": 2,
 "yard": 2,
 "mile": 2,
+"ftin": 2,
 
 "league": 1,
 
@@ -26,6 +27,7 @@
 "pint": 2,
 "quart": 2,
 "gallon": 2,
+"usvol": 2,
 
 "-- mass --": 0,
 "ton": 2,

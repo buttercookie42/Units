@@ -105,6 +105,10 @@
 "inch Hg": 1,
 "mmHg": 1,
 
+"hms": 1,
+"time": 1,
+"dms": 1,
+
 "radian": 1,
 "degree": 1,
 
@@ -148,6 +152,7 @@
 "yard": 2,
 "foot": 2,
 "inch": 2,
+"ftin": 1,
 
 "stone": 1,
 "pound": 2,
