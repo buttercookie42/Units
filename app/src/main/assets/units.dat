@@ -5257,7 +5257,7 @@ blanc                   1|24 periot
 # Localization
 #
 
-!locale en_US
+# !locale en_US
 hundredweight           ushundredweight
 ton                     uston
 scruple                 apscruple
@@ -5279,7 +5279,7 @@ firkin                  usfirkin
 hogshead                ushogshead
 acre                    usacre
 acrefoot                usacrefoot
-!endlocale
+# !endlocale
 
 !locale en_GB
 hundredweight           brhundredweight
