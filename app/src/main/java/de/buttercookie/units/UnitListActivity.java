@@ -18,6 +18,7 @@
 
 package de.buttercookie.units;
 
+import android.annotation.SuppressLint;
 import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.ContentUris;
@@ -87,7 +88,7 @@ public class UnitListActivity extends ListActivity implements OnClickListener {
         final String[] projection = {UsageEntry._ID, UsageEntry._UNIT, ClassificationEntry._DESCRIPTION};
 
         final Cursor c;
-        String query = null;
+        String query;
 
         final Uri data = UsageEntry.CONTENT_URI_WITH_CLASSIFICATION;
 
@@ -195,7 +196,7 @@ public class UnitListActivity extends ListActivity implements OnClickListener {
      *
      * @author steve
      */
-    private class SearchHighlightAdapter extends SimpleCursorAdapter {
+    private static class SearchHighlightAdapter extends SimpleCursorAdapter {
         private String query;
         private final int searchedId;
 
@@ -232,6 +233,7 @@ public class UnitListActivity extends ListActivity implements OnClickListener {
         }
     }
 
+    @SuppressLint("NonConstantResourceId")
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.search:

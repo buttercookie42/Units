@@ -27,6 +27,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -56,7 +58,7 @@ public class UnitsContentProvider extends ContentProvider {
             MATCHER_UNIT_USAGE_WITH_CLASSIFICATION = 11,
             MATCHER_UNIT_USAGE_ITEM_FPRINT = 12;
 
-    public static UriMatcher uriMatcher;
+    public static final UriMatcher uriMatcher;
 
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -123,7 +125,7 @@ public class UnitsContentProvider extends ContentProvider {
 
 
     @Override
-    public String getType(Uri uri) {
+    public String getType(@NonNull Uri uri) {
         switch (uriMatcher.match(uri)) {
             case MATCHER_HISTORY_ENTRY_DIR:
                 return TYPE_HISTORY_ENTRY_DIR;
@@ -150,7 +152,7 @@ public class UnitsContentProvider extends ContentProvider {
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues cv) {
+    public Uri insert(@NonNull Uri uri, ContentValues cv) {
 
         Uri newItem;
         switch (uriMatcher.match(uri)) {
@@ -174,7 +176,7 @@ public class UnitsContentProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection,
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
 
         long id;
@@ -251,7 +253,7 @@ public class UnitsContentProvider extends ContentProvider {
                 final String tbPfxUnit = UnitUsageDBHelper.DB_USAGE_TABLE + ".";
                 final String tbPfxClass = UnitUsageDBHelper.DB_CLASSIFICATION_TABLE + ".";
 
-                final ArrayList<String> projection2 = new ArrayList<String>(Arrays.asList(projection));
+                final ArrayList<String> projection2 = new ArrayList<>(Arrays.asList(projection));
                 final int idIdx = projection2.indexOf(UsageEntry._ID);
                 if (idIdx != -1) {
                     projection2.remove(idIdx);
@@ -280,6 +282,7 @@ public class UnitsContentProvider extends ContentProvider {
                 qb.appendWhere(ClassificationEntry._ID + "=" + id);
                 c = qb.query(db, projection, selection, selectionArgs, null, null, sortOrder);
             }
+            break;
 
             case MATCHER_CLASSIFICATION_ITEM_FPRINT: {
                 final SQLiteDatabase db = unitDbHelper.getReadableDatabase();
@@ -329,7 +332,7 @@ public class UnitsContentProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection,
+    public int update(@NonNull Uri uri, ContentValues values, String selection,
                       String[] selectionArgs) {
 
         int numUpdated;
@@ -345,7 +348,7 @@ public class UnitsContentProvider extends ContentProvider {
 
                 final long id = ContentUris.parseId(uri);
                 if (selection != null) {
-                    selection = "(" + selection + ")" + " AND " + HistoryEntry._ID + "=" + id + "";
+                    selection = "(" + selection + ")" + " AND " + HistoryEntry._ID + "=" + id;
                 } else {
                     selection = HistoryEntry._ID + "=" + id;
                 }
@@ -364,7 +367,7 @@ public class UnitsContentProvider extends ContentProvider {
 
                 final long id = ContentUris.parseId(uri);
                 if (selection != null) {
-                    selection = "(" + selection + ")" + " AND " + UsageEntry._ID + "=" + id + "";
+                    selection = "(" + selection + ")" + " AND " + UsageEntry._ID + "=" + id;
                 } else {
                     selection = UsageEntry._ID + "=" + id;
                 }
@@ -380,7 +383,7 @@ public class UnitsContentProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String where, String[] whereArgs) {
+    public int delete(@NonNull Uri uri, String where, String[] whereArgs) {
 
         int numDeleted;
         switch (uriMatcher.match(uri)) {
@@ -395,7 +398,7 @@ public class UnitsContentProvider extends ContentProvider {
                 final SQLiteDatabase db = dbHelper.getWritableDatabase();
                 final long id = ContentUris.parseId(uri);
                 if (where != null) {
-                    where = "(" + where + ")" + " AND " + HistoryEntry._ID + "=" + id + "";
+                    where = "(" + where + ")" + " AND " + HistoryEntry._ID + "=" + id;
                 } else {
                     where = HistoryEntry._ID + "=" + id;
                 }
@@ -414,7 +417,7 @@ public class UnitsContentProvider extends ContentProvider {
                 final SQLiteDatabase db = unitDbHelper.getWritableDatabase();
                 final long id = ContentUris.parseId(uri);
                 if (where != null) {
-                    where = "(" + where + ")" + " AND " + UsageEntry._ID + "=" + id + "";
+                    where = "(" + where + ")" + " AND " + UsageEntry._ID + "=" + id;
                 } else {
                     where = UsageEntry._ID + "=" + id;
                 }
@@ -450,7 +453,7 @@ public class UnitsContentProvider extends ContentProvider {
      * @return
      */
     public static String[] addExtraWhereArgs(String[] whereArgs, String... extraArgs) {
-        final List<String> whereArgs2 = new ArrayList<String>();
+        final List<String> whereArgs2 = new ArrayList<>();
         if (whereArgs != null) {
             whereArgs2.addAll(Arrays.asList(whereArgs));
         }

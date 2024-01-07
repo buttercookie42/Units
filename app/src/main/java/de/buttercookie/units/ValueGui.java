@@ -224,7 +224,7 @@ public class ValueGui extends Value {
          *
          */
         private static final long serialVersionUID = 5809033194217476893L;
-        public Value reciprocal;
+        public final Value reciprocal;
 
         public ReciprocalException(Value reciprocal) {
             super();

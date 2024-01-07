@@ -412,7 +412,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         return text;
     }
 
-    public static HashMap<Character, String> UNICODE_TRANS = new HashMap<Character, String>();
+    public static final HashMap<Character, String> UNICODE_TRANS = new HashMap<>();
 
     static {
         UNICODE_TRANS.put('÷', "/");
@@ -463,7 +463,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         String wantStr = wantEditText.getText().toString().trim();
 
         try {
-            Value have = null;
+            Value have;
             try {
                 if (haveStr.length() == 0) {
                     haveEditText.requestFocus();
@@ -501,11 +501,11 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
             } else {
                 Value want = null;
-                Function func = null;
+                Function func;
                 try {
                     func = DefinedFunction.table.get(wantStr);
                     if (func == null && wantStr.endsWith("(")) {
-                        func = DefinedFunction.table.get(wantStr.subSequence(0, wantStr.length() - 1));
+                        func = DefinedFunction.table.get(wantStr.substring(0, wantStr.length() - 1));
                     }
                     if (func == null) {
                         wantStr = ValueGui.closeParens(wantStr);
@@ -534,7 +534,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
                     } else {
                         resultVal = have.factor;
-                        final StringBuffer haveDef = new StringBuffer();
+                        final StringBuilder haveDef = new StringBuilder();
 
                         haveDef.append(have.numerator.asString());
 
@@ -572,6 +572,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         haveEditText.requestFocus();
     }
 
+    @SuppressLint("NonConstantResourceId")
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.result:
@@ -585,6 +586,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     }
 
 
+    @SuppressLint("NonConstantResourceId")
     public boolean onLongClick(View v) {
         switch (v.getId()) {
             case R.id.result:
@@ -702,6 +704,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         return super.onPrepareOptionsMenu(menu);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -987,6 +990,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
     private class ButtonEventListener implements OnClickListener, OnLongClickListener {
 
+        @SuppressLint("NonConstantResourceId")
         public void onClick(View v) {
 
             switch (v.getId()) {
@@ -1070,6 +1074,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
             }
         }
 
+        @SuppressLint("NonConstantResourceId")
         public boolean onLongClick(View v) {
             switch (v.getId()) {
                 case R.id.unit_entry: {
@@ -1104,6 +1109,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         }
     }
 
+    @SuppressLint("NonConstantResourceId")
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         switch (v.getId()) {
             case R.id.want:
@@ -1127,6 +1133,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         }
     };
 
+    @SuppressLint("NonConstantResourceId")
     public boolean onTouch(View v, MotionEvent event) {
         switch (v.getId()) {
 

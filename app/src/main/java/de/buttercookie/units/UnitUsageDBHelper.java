@@ -43,8 +43,6 @@ import android.view.View.OnFocusChangeListener;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-import de.buttercookie.units.R;
-
 import net.sourceforge.unitsinjava.BuiltInFunction;
 import net.sourceforge.unitsinjava.DefinedFunction;
 import net.sourceforge.unitsinjava.EvalError;
@@ -147,13 +145,12 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         return count;
     }
 
-    @SuppressWarnings("unchecked")
     public HashMap<String, String> loadFingerprints() {
-        final HashMap<String, String> fingerprints = new HashMap<String, String>();
+        final HashMap<String, String> fingerprints = new HashMap<>();
         try {
             final JSONObject fprints = loadJsonObjectFromRawResource(context, R.raw.fingerprints);
-            for (final Iterator i = fprints.keys(); i.hasNext(); ) {
-                final String key = (String) i.next();
+            for (final Iterator<String> i = fprints.keys(); i.hasNext(); ) {
+                final String key = i.next();
                 fingerprints.put(key, fprints.optString(key));
             }
         } catch (final Exception e) {
@@ -199,7 +196,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 
         Log.d(TAG, "init all weights hash");
         final HashMap<String, Integer> allUnitWeights =
-                new HashMap<String, Integer>(Unit.table.keySet().size());
+                new HashMap<>(Unit.table.keySet().size());
         Log.d(TAG, "adding all known weights…");
         for (final String unitName : Unit.table.keySet()) {
             // don't add all uppercase names
@@ -227,7 +224,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 
         // This is so that things of common weight end up in non-random order
         // without having to do an SQL order-by.
-        final ArrayList<String> sortedUnits = new ArrayList<String>(allUnitWeights.keySet());
+        final ArrayList<String> sortedUnits = new ArrayList<>(allUnitWeights.keySet());
         Log.d(TAG, "Sorting units…");
         Collections.sort(sortedUnits);
         Log.d(TAG, "Adding all sorted units…");
@@ -289,7 +286,6 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 
     @SuppressLint("ApplySharedPref")
     // apply() not available in old SDK, plus we're running in a AsyncTask anyway
-    @SuppressWarnings("unchecked")
     public void loadUnitClassifications() {
         final SharedPreferences prefs = SharedPrefs.getAppPrefs(context);
         String storedLocale = prefs.getString(PREF_LAST_CLASSIFICATION_LOCALE, null);
@@ -307,8 +303,8 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         db.beginTransaction();
         db.delete(DB_CLASSIFICATION_TABLE, null, null);
         final ContentValues cv = new ContentValues();
-        for (final Iterator i = jo.keys(); i.hasNext(); ) {
-            final String unit = (String) i.next();
+        for (final Iterator<String> i = jo.keys(); i.hasNext(); ) {
+            final String unit = i.next();
             final String description = jo.optString(unit);
             final String fprint = getFingerprint(unit);
             cv.put(ClassificationEntry._FACTOR_FPRINT, fprint);
@@ -327,10 +323,9 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         editor.commit();
     }
 
-    @SuppressWarnings("unchecked")
     private void addAll(JSONObject unitWeights, HashMap<String, Integer> allWeights) {
-        for (final Iterator i = unitWeights.keys(); i.hasNext(); ) {
-            final String key = (String) i.next();
+        for (final Iterator<String> i = unitWeights.keys(); i.hasNext(); ) {
+            final String key = i.next();
             if (allWeights.containsKey(key)) {
                 allWeights.put(key, allWeights.get(key) + unitWeights.optInt(key));
             } else {
@@ -346,15 +341,14 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
      * @param resourceId
      * @return
      */
-    @SuppressWarnings("unchecked")
     private JSONObject loadInitialWeights(int resourceId) {
         try {
 
             final JSONObject jo = loadJsonObjectFromRawResource(context, resourceId);
 
             // remove all "comments", which are just key entries that start with "--"
-            for (final Iterator i = jo.keys(); i.hasNext(); ) {
-                final String key = (String) i.next();
+            for (final Iterator<String> i = jo.keys(); i.hasNext(); ) {
+                final String key = i.next();
                 if (key.startsWith("--")) {
                     i.remove();
                 }
@@ -394,7 +388,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
     private synchronized static String[] getConformingSelectionArgs(TextView otherEntry) {
         final String otherEntryText = otherEntry.getText().toString();
         if (otherEntryText.length() > 0) {
-            if (otherEntryText.toString().equals(cachedEntryText)) {
+            if (otherEntryText.equals(cachedEntryText)) {
                 return cachedEntryFprintArgs;
             }
             try {
@@ -438,8 +432,6 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
                         break;
                 }
             }
-
-            ;
         };
 
         public UnitCursorAdapter(Activity context, Cursor dbCursor, TextView otherEntry) {
@@ -483,7 +475,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 
             final String[] selectionArgs = null;
             final String selection = null;
-            Cursor c = null;
+            Cursor c;
 
             if (constraint == null || constraint.length() == 0) {
                 c = queryWithConforming(mOtherEntry, selection, selectionArgs);
@@ -508,7 +500,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
             if (selection != null) {
                 if (conformingSelectionArgs != null) {
                     conformingSelection = CONFORMING_SELECTION + " AND " + selection;
-                    final ArrayList<String> args = new ArrayList<String>();
+                    final ArrayList<String> args = new ArrayList<>();
                     args.add(conformingSelectionArgs[0]);
                     args.addAll(Arrays.asList(selectionArgs));
                     conformingSelectionArgs = args.toArray(new String[]{});
@@ -583,8 +575,8 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         final Cursor c = cr.query(UsageEntry.CONTENT_URI, INCREMENT_QUERY_PROJECTION, UsageEntry._UNIT + "=?", selectionArgs, null);
         if (c.getCount() > 0) {
             c.moveToFirst();
-            final int useCount = c.getInt(c.getColumnIndex(UsageEntry._USE_COUNT));
-            final int id = c.getInt(c.getColumnIndex(UsageEntry._ID));
+            final int useCount = c.getInt(c.getColumnIndexOrThrow(UsageEntry._USE_COUNT));
+            final int id = c.getInt(c.getColumnIndexOrThrow(UsageEntry._ID));
             final ContentValues cv = new ContentValues();
             cv.put(UsageEntry._USE_COUNT, useCount + 1);
 

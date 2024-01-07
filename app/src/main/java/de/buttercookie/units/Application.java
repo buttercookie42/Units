@@ -54,7 +54,7 @@ public class Application extends android.app.Application {
     }
 
     private void initUnits() {
-        Env.filenames = new Vector<String>();
+        Env.filenames = new Vector<>();
         Env.filenames.add("units.dat");
 
         Env.locale = Locale.getDefault().toString();
@@ -98,6 +98,7 @@ public class Application extends android.app.Application {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return config.getLocales().get(0);
         } else {
+            //noinspection deprecation
             return config.locale;
         }
     }
