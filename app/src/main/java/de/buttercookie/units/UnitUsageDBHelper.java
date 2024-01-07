@@ -43,10 +43,12 @@ import android.view.View.OnFocusChangeListener;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+import net.sourceforge.unitsinjava.Alias;
 import net.sourceforge.unitsinjava.BuiltInFunction;
 import net.sourceforge.unitsinjava.DefinedFunction;
 import net.sourceforge.unitsinjava.EvalError;
 import net.sourceforge.unitsinjava.Unit;
+import net.sourceforge.unitsinjava.UnitList;
 import net.sourceforge.unitsinjava.Value;
 
 import org.json.JSONException;
@@ -236,6 +238,10 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         }
         for (final String functionName : DefinedFunction.table.keySet()) {
             allUnitWeights.put(functionName + "(", 0);
+        }
+        Log.d(TAG, "adding known unit list aliases");
+        for (final String aliasName : Alias.table.keySet()) {
+            allUnitWeights.put(aliasName, 0);
         }
         Log.d(TAG, "adding common weights");
         addAll(loadInitialWeights(R.raw.common_weights), allUnitWeights);
