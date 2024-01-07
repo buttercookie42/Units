@@ -206,7 +206,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 
     public void updateUnitUsage() {
         final SQLiteDatabase db = getWritableDatabase();
-        if (getUnitUsageDbCount(db) > 0 && localeAndVersionUnchanged()) {
+        if (!BuildConfig.DEBUG && getUnitUsageDbCount(db) > 0 && localeAndVersionUnchanged()) {
             Log.d(TAG, "Unit weights still valid, skipping update");
             db.close();
             return;
@@ -332,7 +332,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
     }
 
     public void loadUnitClassifications() {
-        if (localeAndVersionUnchanged()) {
+        if (!BuildConfig.DEBUG && localeAndVersionUnchanged()) {
             Log.d(TAG, "Unit classifications still valid, skipping update.");
             return;
         }
