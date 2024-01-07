@@ -37,7 +37,7 @@ public class Application extends android.app.Application {
     @Override
     public void onCreate() {
         if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+            /*StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                     .detectAll()
                     .penaltyLog()
                     //.penaltyDeath()
@@ -46,7 +46,7 @@ public class Application extends android.app.Application {
                     .detectAll()
                     .penaltyLog()
                     //.penaltyDeath()
-                    .build());
+                    .build());*/
         }
 
         super.onCreate();
