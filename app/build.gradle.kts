@@ -67,16 +67,16 @@ dependencies {
 }
 
 fun ApkSigningConfig.checkExternalSigningConfig(): Boolean {
-    return props.exists(name + ".keyStore") &&
-            file(props.get(name + ".keyStore")).exists() &&
-            props.exists(name + ".storePassword") &&
-            props.exists(name + ".keyAlias") &&
-            props.exists(name + ".keyPassword")
+    return props.exists("$name.keyStore") &&
+            file(props.get("$name.keyStore")).exists() &&
+            props.exists("$name.storePassword") &&
+            props.exists("$name.keyAlias") &&
+            props.exists("$name.keyPassword")
 }
 
 fun ApkSigningConfig.applyExternalSigningConfig() {
-    storeFile = file(props.get(name + ".keyStore"))
-    storePassword = props.get(name + ".storePassword")
-    keyAlias = props.get(name + ".keyAlias")
-    keyPassword = props.get(name + ".keyPassword")
+    storeFile = file(props.get("$name.keyStore"))
+    storePassword = props.get("$name.storePassword")
+    keyAlias = props.get("$name.keyAlias")
+    keyPassword = props.get("$name.keyPassword")
 }
