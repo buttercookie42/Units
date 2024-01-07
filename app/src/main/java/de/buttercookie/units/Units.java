@@ -137,17 +137,17 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        wantEditText = ((MultiAutoCompleteTextView) findViewById(R.id.want));
-        haveEditText = ((MultiAutoCompleteTextView) findViewById(R.id.have));
+        wantEditText = findViewById(R.id.want);
+        haveEditText = findViewById(R.id.have);
         defaultInputType = wantEditText.getInputType();
         wantEditText.setOnFocusChangeListener(inputBoxOnFocusChange);
         haveEditText.setOnFocusChangeListener(inputBoxOnFocusChange);
 
-        resultView = ((TextView) findViewById(R.id.result));
-        history = ((ListView) findViewById(R.id.history_list));
-        historyDrawer = ((LinearLayout) findViewById(R.id.history_drawer));
-        historyClose = ((Button) findViewById(R.id.history_close));
-        workspace = (WorkspaceView) findViewById(R.id.numpad_switcher);
+        resultView = findViewById(R.id.result);
+        history = findViewById(R.id.history_list);
+        historyDrawer = findViewById(R.id.history_drawer);
+        historyClose = findViewById(R.id.history_close);
+        workspace = findViewById(R.id.numpad_switcher);
         //workspace.setTouchSlop(); // XXX scale
         //workspace.setShowTabIndicator(false);
 
@@ -171,8 +171,8 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
         // Go through the numberpad and add all the onClick listeners.
         // Make sure to update if the layout changes.
-        setGridChildrenListener(((LinearLayout) findViewById(R.id.numberpad)), buttonListener, buttonListener);
-        setGridChildrenListener((ViewGroup) findViewById(R.id.numberpad2), buttonListener, buttonListener);
+        setGridChildrenListener(findViewById(R.id.numberpad), buttonListener, buttonListener);
+        setGridChildrenListener(findViewById(R.id.numberpad2), buttonListener, buttonListener);
 
         final View backspace = findViewById(R.id.backspace);
         backspace.setOnClickListener(buttonListener);

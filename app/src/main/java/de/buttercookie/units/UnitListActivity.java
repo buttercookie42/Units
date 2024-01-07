@@ -34,7 +34,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -61,7 +60,7 @@ public class UnitListActivity extends ListActivity implements OnClickListener {
         super.onCreate(savedInstanceState);
 
         getListView().setEmptyView(findViewById(R.id.empty));
-        ((Button) findViewById(R.id.search)).setOnClickListener(this);
+        findViewById(R.id.search).setOnClickListener(this);
 
         loadFromIntent(getIntent());
 
