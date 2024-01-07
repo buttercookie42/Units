@@ -182,23 +182,29 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 
         String fpr = null;
         try {
-            Value unit;
-            // this is done here to allow for unicode that maps to functions
-            unitName = Units.unicodeToAscii(unitName);
-            if (unitName.endsWith("(")) {
-                final DefinedFunction f = DefinedFunction.table.get(unitName.substring(0, unitName.length() - 1));
-                if (f != null) {
-                    unit = f.getConformability();
-                } else {
-                    // non-DefinedFunctions are built in and compatible with numbers.
-                    unit = Value.fromString("0");
-                }
+            String uList = UnitList.isUnitList(unitName);
+            if (uList != null) {
+                UnitList ul = new UnitList(uList);
+                fpr = ValueGui.getFingerprint(ul);
             } else {
-                unit = ValueGui.fromUnicodeString(unitName);
+                Value unit;
+                // this is done here to allow for unicode that maps to functions
+                unitName = Units.unicodeToAscii(unitName);
+                if (unitName.endsWith("(")) {
+                    final DefinedFunction f = DefinedFunction.table.get(unitName.substring(0, unitName.length() - 1));
+                    if (f != null) {
+                        unit = f.getConformability();
+                    } else {
+                        // non-DefinedFunctions are built in and compatible with numbers.
+                        unit = Value.fromString("0");
+                    }
+                } else {
+                    unit = ValueGui.fromUnicodeString(unitName);
 
-            }
-            if (unit != null) {
-                fpr = ValueGui.getFingerprint(unit);
+                }
+                if (unit != null) {
+                    fpr = ValueGui.getFingerprint(unit);
+                }
             }
         } catch (final EvalError e) {
             // skip things we can't handle

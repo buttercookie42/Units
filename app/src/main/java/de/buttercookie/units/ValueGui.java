@@ -108,6 +108,10 @@ public class ValueGui extends Value {
         return unitFprint.toString();
     }
 
+    public static String getFingerprint(UnitList ul) {
+        return getFingerprint(ul.value[0]);
+    }
+
     //=====================================================================
     //  convert to Value
     //=====================================================================
