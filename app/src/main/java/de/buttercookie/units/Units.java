@@ -388,6 +388,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         c.close();
     }
 
+    @SuppressLint("SetTextI18n")
     private void setCurrentEntry(String have, String want) {
         haveEditText.setText(have + " ");// extra space is to prevent auto-complete from triggering.
         wantEditText.setText(want + (want.length() > 0 ? " " : ""));
