@@ -64,6 +64,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -87,10 +88,6 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 
     private final Context context;
 
-    // TODO add a preference that remembers the last loaded version. Load new
-    // units and fingerprints.
-    @SuppressWarnings("unused")
-    private static final String UNITS_DAT_VERSION = "1.50";
     private static final int DB_VERSION = 5;
 
     private HashMap<String, String> mDebugFingerprints;
@@ -131,8 +128,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 
     }
 
-    public int getUnitUsageDbCount() {
-        final SQLiteDatabase db = getReadableDatabase();
+    private int getUnitUsageDbCount(SQLiteDatabase db) {
         final String[] proj = {UsageEntry._ID};
         if (!db.isOpen()) {
             return -1;
@@ -141,7 +137,6 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         c.moveToFirst();
         final int count = c.getCount();
         c.close();
-        db.close();
         return count;
     }
 
@@ -209,8 +204,19 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         return fpr;
     }
 
-    public void loadInitialUnitUsage() {
+    public void updateUnitUsage() {
         final SQLiteDatabase db = getWritableDatabase();
+        if (getUnitUsageDbCount(db) > 0 && localeAndVersionUnchanged()) {
+            Log.d(TAG, "Unit weights still valid, skipping update");
+            db.close();
+            return;
+        }
+
+        Log.d(TAG, "getting existing weights…");
+        final HashMap<String, Integer> existingUnitWeights = getAllUnitWeights(db);
+        db.beginTransaction();
+        db.delete(DB_USAGE_TABLE, null, null);
+
         // load the initial table in
         final ContentValues cv = new ContentValues();
 
@@ -236,6 +242,21 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         Log.d(TAG, "adding regional weights");
         addAll(loadInitialWeights(R.raw.regional_weights), allUnitWeights);
 
+        Log.d(TAG, "loading pre-computed fingerprints");
+        final Fingerprints fingerprints = new Fingerprints();
+
+        Log.d(TAG, "applying existing usage weights");
+        for (final Map.Entry<String, Integer> entry: existingUnitWeights.entrySet()) {
+            final String unitName = entry.getKey();
+            if (allUnitWeights.containsKey(unitName) ||
+                    // Users can generate "custom" usage entries by combining base units with one of
+                    // the allowed prefixes. Check for the fingerprint to see if the unit is still
+                    // valid, or whether the base unit or prefix was dropped from the units file.
+                    fingerprints.getFingerprint(unitName) != null) {
+                allUnitWeights.put(unitName, entry.getValue());
+            }
+        }
+
         // This is so that things of common weight end up in non-random order
         // without having to do an SQL order-by.
         final ArrayList<String> sortedUnits = new ArrayList<>(allUnitWeights.keySet());
@@ -243,9 +264,6 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         Collections.sort(sortedUnits);
         Log.d(TAG, "Adding all sorted units…");
 
-        final Fingerprints fingerprints = new Fingerprints();
-
-        db.beginTransaction();
         for (final String unitName : sortedUnits) {
             cv.put(UsageEntry._UNIT, unitName);
             cv.put(UsageEntry._USE_COUNT, allUnitWeights.get(unitName));
@@ -262,6 +280,25 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
             mDebugFingerprints = fingerprints.getAllFingerprints();
         }
         Log.d(TAG, "done!");
+    }
+
+    private HashMap<String, Integer> getAllUnitWeights(SQLiteDatabase db) {
+        final String[] proj = {UsageEntry._UNIT, UsageEntry._USE_COUNT};
+        final Cursor c = db.query(DB_USAGE_TABLE, proj, null, null, null, null, null);
+        final HashMap<String, Integer> allUnits;
+
+        allUnits = new HashMap<>(c.getCount());
+        if (c.getCount() > 0) {
+            final int unitsCol = c.getColumnIndexOrThrow(UsageEntry._UNIT);
+            final int usageCol = c.getColumnIndexOrThrow(UsageEntry._USE_COUNT);
+            c.moveToFirst();
+            do {
+                allUnits.put(c.getString(unitsCol), c.getInt(usageCol));
+            } while (c.moveToNext());
+        }
+
+        c.close();
+        return allUnits;
     }
 
     public boolean canDebugDumpFingerprints() {
@@ -294,15 +331,8 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         }
     }
 
-    @SuppressLint("ApplySharedPref")
-    // apply() not available in old SDK, plus we're running in a AsyncTask anyway
     public void loadUnitClassifications() {
-        final SharedPreferences prefs = SharedPrefs.getAppPrefs(context);
-        String storedLocale = prefs.getString(PREF_LAST_CLASSIFICATION_LOCALE, null);
-        int storedVersion = prefs.getInt(PREF_LAST_CLASSIFICATION_VERSION_CODE, 0);
-
-        if (getCurrentLocale(context).toString().equals(storedLocale) &&
-                BuildConfig.VERSION_CODE == storedVersion) {
+        if (localeAndVersionUnchanged()) {
             Log.d(TAG, "Unit classifications still valid, skipping update.");
             return;
         }
@@ -326,11 +356,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         db.close();
         Log.d(TAG, "Successfully added " + jo.length() + " classification entries.");
 
-        final SharedPreferences.Editor editor = prefs.edit();
-        Locale curLocale = getCurrentLocale(context);
-        editor.putString(PREF_LAST_CLASSIFICATION_LOCALE, curLocale.toString());
-        editor.putInt(PREF_LAST_CLASSIFICATION_VERSION_CODE, BuildConfig.VERSION_CODE);
-        editor.commit();
+        storeLocaleAndVersion();
     }
 
     private void addAll(JSONObject unitWeights, HashMap<String, Integer> allWeights) {
@@ -382,6 +408,25 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
             jsonString.append(isReader.readLine());
         }
         return new JSONObject(jsonString.toString());
+    }
+
+    private boolean localeAndVersionUnchanged() {
+        final SharedPreferences prefs = SharedPrefs.getAppPrefs(context);
+        String storedLocale = prefs.getString(PREF_LAST_CLASSIFICATION_LOCALE, null);
+        int storedVersion = prefs.getInt(PREF_LAST_CLASSIFICATION_VERSION_CODE, 0);
+
+        return getCurrentLocale(context).toString().equals(storedLocale) &&
+                BuildConfig.VERSION_CODE == storedVersion;
+    }
+
+    @SuppressLint("ApplySharedPref")
+    // apply() not available in old SDK, plus we're running in a AsyncTask anyway
+    private void storeLocaleAndVersion() {
+        final SharedPreferences.Editor editor = SharedPrefs.getAppPrefs(context).edit();
+        Locale curLocale = getCurrentLocale(context);
+        editor.putString(PREF_LAST_CLASSIFICATION_LOCALE, curLocale.toString());
+        editor.putInt(PREF_LAST_CLASSIFICATION_VERSION_CODE, BuildConfig.VERSION_CODE);
+        editor.commit();
     }
 
 
