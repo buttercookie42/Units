@@ -300,6 +300,13 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
             cv.put(UsageEntry._UNIT, unitName);
             cv.put(UsageEntry._USE_COUNT, allUnitWeights.get(unitName));
             cv.put(UsageEntry._FACTOR_FPRINT, fingerprints.getFingerprint(unitName));
+
+            if (Alias.table.containsKey(unitName)) {
+                cv.put(UsageEntry._IS_UNIT_ALIAS, 1);
+            } else {
+                cv.put(UsageEntry._IS_UNIT_ALIAS, 0);
+            }
+
             db.insert(DB_USAGE_TABLE, null, cv);
         }
         db.setTransactionSuccessful();
