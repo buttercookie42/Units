@@ -121,13 +121,24 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        Log.d(TAG, String.format("Upgrading database from version %1$d to %2$d", oldVersion, newVersion));
+        switch (oldVersion) {
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+                dropTables(db);
+                onCreate(db);
+                break;
+        }
+    }
+
+    private void dropTables(SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + DB_USAGE_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + DB_CLASSIFICATION_TABLE);
 
         db.execSQL("DROP INDEX IF EXISTS " + DB_USAGE_INDEX);
         db.execSQL("DROP INDEX IF EXISTS " + DB_CLASSIFICATION_INDEX);
-        onCreate(db);
-
     }
 
     private int getUnitUsageDbCount(SQLiteDatabase db) {
