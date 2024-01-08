@@ -319,7 +319,8 @@ public class UnitsContentProvider extends ContentProvider {
                 c = db.query(UnitUsageDBHelper.DB_USAGE_TABLE +
                                 " LEFT JOIN " + UnitUsageDBHelper.DB_CLASSIFICATION_TABLE +
                                 " ON (" + tbPfxUnit + UsageEntry._FACTOR_FPRINT + "=" + tbPfxClass + ClassificationEntry._FACTOR_FPRINT + ")",
-                        queryProjection, UsageEntry._UNIT + " LIKE ?", querySelectionArgs, null, null, UsageEntry.SORT_DEFAULT);
+                        queryProjection, UsageEntry._UNIT + " LIKE ? AND " + UsageEntry._IS_UNIT_ALIAS + "=0",
+                        querySelectionArgs, null, null, UsageEntry.SORT_DEFAULT);
             }
             break;
 
