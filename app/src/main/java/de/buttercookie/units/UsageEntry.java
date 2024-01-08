@@ -22,7 +22,8 @@ public class UsageEntry implements BaseColumns {
     public static final String
             _UNIT = "unit",
             _USE_COUNT = "usecount",
-            _FACTOR_FPRINT = "factors";
+            _FACTOR_FPRINT = "factors",
+            _IS_UNIT_ALIAS = "isunitalias";
 
     public static final String
             PATH = "units",

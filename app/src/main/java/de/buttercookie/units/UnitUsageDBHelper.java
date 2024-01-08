@@ -90,7 +90,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 
     private final Context context;
 
-    private static final int DB_VERSION = 5;
+    private static final int DB_VERSION = 6;
 
     private HashMap<String, String> mDebugFingerprints;
 
@@ -106,7 +106,8 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
                 "'" + UsageEntry._ID + "' INTEGER PRIMARY KEY," +
                 "'" + UsageEntry._UNIT + "' TEXT UNIQUE ON CONFLICT IGNORE," +
                 "'" + UsageEntry._USE_COUNT + "' INTEGER," +
-                "'" + UsageEntry._FACTOR_FPRINT + "' TEXT" +
+                "'" + UsageEntry._FACTOR_FPRINT + "' TEXT," +
+                "'" + UsageEntry._IS_UNIT_ALIAS + "' INTEGER DEFAULT 0" +
                 ")");
         db.execSQL("CREATE INDEX '" + DB_USAGE_INDEX + "' ON " + DB_USAGE_TABLE + " (" + UsageEntry._FACTOR_FPRINT + ")");
 
@@ -130,7 +131,15 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
                 dropTables(db);
                 onCreate(db);
                 break;
+            case 5:
+                upgrade5to6(db);
         }
+    }
+
+    private void upgrade5to6(SQLiteDatabase db) {
+        db.execSQL("ALTER TABLE '" + DB_USAGE_TABLE +
+                "' ADD COLUMN " +
+                "'" + UsageEntry._IS_UNIT_ALIAS + "' INTEGER DEFAULT 0");
     }
 
     private void dropTables(SQLiteDatabase db) {
