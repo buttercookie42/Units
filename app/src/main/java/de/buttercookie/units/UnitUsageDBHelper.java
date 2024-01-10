@@ -32,6 +32,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
@@ -503,6 +504,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         private boolean runningQuery;
         private final ContentResolver mContentResolver;
         private final Activity mActivity;
+        private final Uri mQueryUri;
         private final TextView mOtherEntry;
         private final Handler mHandler = new Handler() {
             private int retryCount = 0;
@@ -528,15 +530,16 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
             }
         };
 
-        public UnitCursorAdapter(Activity context, Cursor dbCursor, TextView otherEntry) {
+        public UnitCursorAdapter(Activity context, Uri queryUri, TextView otherEntry) {
             super(context, android.R.layout.simple_dropdown_item_1line,
-                    dbCursor,
+                    context.managedQuery(queryUri, null, null, null, UnitUsageDBHelper.USAGE_SORT),
                     new String[]{UsageEntry._UNIT},
                     new int[]{android.R.id.text1});
 
             mActivity = context;
+            mQueryUri = queryUri;
             mContentResolver = context.getContentResolver();
-            setStringConversionColumn(dbCursor.getColumnIndex(UsageEntry._UNIT));
+            setStringConversionColumn(getCursor().getColumnIndex(UsageEntry._UNIT));
 
             final TextUpdateWatcher tuw = new TextUpdateWatcher(this);
             otherEntry.addTextChangedListener(tuw);
@@ -605,12 +608,12 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
             } else if (conformingSelectionArgs != null) {
                 conformingSelection = CONFORMING_SELECTION;
             }
-            Cursor c = mContentResolver.query(UsageEntry.CONTENT_URI, null, conformingSelection, conformingSelectionArgs, USAGE_SORT);
+            Cursor c = mContentResolver.query(mQueryUri, null, conformingSelection, conformingSelectionArgs, USAGE_SORT);
             // If we don't get anything by conforming, the user may be attempting to ask for
             // a complex result and we should just return everything.
             if (c.getCount() == 0) {
                 c.close();
-                c = mContentResolver.query(UsageEntry.CONTENT_URI, null, selection, selectionArgs, USAGE_SORT);
+                c = mContentResolver.query(mQueryUri, null, selection, selectionArgs, USAGE_SORT);
             }
             return c;
         }
