@@ -9,7 +9,9 @@ This edition is a continuation of [Steve Pomeroy's original app](https://github.
 
 ## Download
 
-Download it directly from the [Github Releases page](https://github.com/buttercookie42/Units/releases).
+<a href="https://apt.izzysoft.de/fdroid/index/apk/de.buttercookie.units"><img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroidButton.png" width="200"></a>
+
+… or download it directly from the [Github Releases page](https://github.com/buttercookie42/Units/releases).
 
 ## Usage
 
