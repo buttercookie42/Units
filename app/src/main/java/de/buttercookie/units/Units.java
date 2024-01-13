@@ -232,7 +232,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     protected void onStart() {
         super.onStart();
         haveEditText.setAdapter(new UnitUsageDBHelper.UnitCursorAdapter(this,
-                UsageEntry.CONTENT_URI,
+                UsageEntry.CONTENT_URI_NO_UNIT_ALIAS,
                 wantEditText));
         wantEditText.setAdapter(new UnitUsageDBHelper.UnitCursorAdapter(this,
                 UsageEntry.CONTENT_URI,

@@ -56,7 +56,8 @@ public class UnitsContentProvider extends ContentProvider {
             MATCHER_SEARCH_DIR = 9,
             MATCHER_SEARCH_ITEM = 10,
             MATCHER_UNIT_USAGE_WITH_CLASSIFICATION = 11,
-            MATCHER_UNIT_USAGE_ITEM_FPRINT = 12;
+            MATCHER_UNIT_USAGE_ITEM_FPRINT = 12,
+            MATCHER_UNIT_USAGE_NO_UNIT_ALIAS = 13;
 
     public static final UriMatcher uriMatcher;
 
@@ -70,6 +71,7 @@ public class UnitsContentProvider extends ContentProvider {
 
         uriMatcher.addURI(AUTHORITY, UsageEntry.PATH_CONFORM_TOP, MATCHER_UNIT_USAGE_CONFORM_TOP_DIR);
         uriMatcher.addURI(AUTHORITY, UsageEntry.PATH_WITH_CLASSIFICATION, MATCHER_UNIT_USAGE_WITH_CLASSIFICATION);
+        uriMatcher.addURI(AUTHORITY, UsageEntry.PATH_NO_UNIT_ALIAS, MATCHER_UNIT_USAGE_NO_UNIT_ALIAS);
         uriMatcher.addURI(AUTHORITY, UsageEntry.PATH + "/" + UsageEntry.PATH_BY_FPRINT + "/*", MATCHER_UNIT_USAGE_ITEM_FPRINT);
 
         uriMatcher.addURI(AUTHORITY, ClassificationEntry.PATH, MATCHER_CLASSIFICATION_DIR);
@@ -135,6 +137,7 @@ public class UnitsContentProvider extends ContentProvider {
             case MATCHER_UNIT_USAGE_DIR:
             case MATCHER_UNIT_USAGE_CONFORM_TOP_DIR:
             case MATCHER_UNIT_USAGE_WITH_CLASSIFICATION:
+            case MATCHER_UNIT_USAGE_NO_UNIT_ALIAS:
                 return TYPE_UNIT_USAGE_DIR;
             case MATCHER_UNIT_USAGE_ITEM:
             case MATCHER_UNIT_USAGE_ITEM_FPRINT:
@@ -264,6 +267,16 @@ public class UnitsContentProvider extends ContentProvider {
                                 " LEFT JOIN " + UnitUsageDBHelper.DB_CLASSIFICATION_TABLE +
                                 " ON (" + tbPfxUnit + UsageEntry._FACTOR_FPRINT + "=" + tbPfxClass + ClassificationEntry._FACTOR_FPRINT + ")",
                         projection2.toArray(new String[]{}), selection, selectionArgs, null, null, UsageEntry.SORT_DEFAULT);
+            }
+            break;
+
+            case MATCHER_UNIT_USAGE_NO_UNIT_ALIAS: {
+                final SQLiteDatabase db = unitDbHelper.getWritableDatabase();
+                final SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+                qb.setTables(UnitUsageDBHelper.DB_USAGE_TABLE);
+                qb.appendWhere(UsageEntry._IS_UNIT_ALIAS + "=0");
+
+                c = qb.query(db, projection, selection, selectionArgs, null, null, sortOrder);
             }
             break;
 
