@@ -25,10 +25,6 @@ android {
         buildConfig = true
     }
 
-    lint {
-        disable += "ExpiredTargetSdkVersion"
-    }
-
     buildTypes {
         release {
             isMinifyEnabled = true
