@@ -108,7 +108,7 @@ volume↔mass conversion (which can be found under "density"), such as `flour_sc
 
 ## Changelog
 
-* 05 January, 2023: 1.1 — Improved compatibility with modern Android versions. Adds German and
+* 05 January, 2024: 1.1 – Improved compatibility with modern Android versions. Adds German and
                           Spanish translations. Various improvements and fixes.
 * 15 September, 2011: 1.0 – Added advanced keypad and improved keypad UI. Adds Russian translations.
                             Numerous bug fixes.
