@@ -9,15 +9,17 @@ This edition is a continuation of [Steve Pomeroy's original app](https://github.
 
 ## Download
 
-<a href="https://apt.izzysoft.de/fdroid/index/apk/de.buttercookie.units"><img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroidButton.png" width="200"></a>
+<a href="https://apt.izzysoft.de/fdroid/index/apk/de.buttercookie.units">
+<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroidButton.png" width="200">
+</a>
 
 … or download it directly from the [Github Releases page](https://github.com/buttercookie42/Units/releases).
 
 ## Usage
 
-### key
-
-Anything that is shown within a dotted box can be entered into Units. Eg. `m³÷hr`
+| key |
+| --- |
+| Anything that is shown within a box can be entered into Units. Eg. `m³÷hr` |
 
 Place the value and the unit you want to convert from in the "you have" box (eg. `4.9inches`) and
 the unit you wish to convert to in the "you want" box (eg. `cm`). To enter units, either press the
@@ -26,9 +28,10 @@ keyboard should pop up.
 
 You can enter simple units, such as `cm`/`centimeter` or complex units, such as `m^3÷hr`. You can
 press the "unit" button to show a list of all the units. If you don't specify a "to" unit, it will
-provide a definition in base units. For a list of examples, please see below.
+provide a definition in base units. You can also convert into lists of units, for example `ft; in`.
+For a list of examples, please see below.
 
-## Auto-completion
+### Auto-completion
 
 [![](extra/sshot02.thumb.png)](extra/sshot02.png)
 
@@ -40,13 +43,47 @@ Units will not start off auto-completing every possible permutation of metric pr
 `centi`, `milli`) with unit name (`meter`, `liter`). Once you make a calculation with a prefix+unit
 combination, Units will remember it and auto-complete it from then-on.
 
-## Reciprocal detection
+### Reciprocal detection
 
 Units will auto-detect instances where you may have forgotten to convert from the reciprocal of a
 given value. For instance, if you enter `100mpg` and ask for `liter÷100km`, it will compute it using
 the reciprocal of the "from" value (`1÷(100mpg)`) and provide a warning that it used the reciprocal.
 
-## Calculations
+### Unit lists
+
+You can convert values into arbitrary lists of units, for example time durations into hours, minutes
+and seconds, lengths into foots and inches, or weights into 
+[libs and ozzes](https://www.gocomics.com/peanuts/1966/03/10). Enter the units separated by a
+semicolon (such as `ft; in`), and autocomplete will work as usual. You can also convert into
+fractional units like `ft; in; 1|8 in`.
+
+To split up display of the last unit into a decimal and an integer part, add a trailing semicolon.
+For rounding the last unit given, add two trailing semicolons.
+
+For example, converting from `42 cm` gives the following results:
+
+| You want   | Result                                             |
+|------------|----------------------------------------------------|
+| `ft; in`   | **1**`ft` + **4.5354331**`in`                      |
+| `ft; in;`  | **1**`ft` + **4**`in` + **0.5354331**`in`          |
+| `ft; in;;` | **1**`ft` + **5**`in` (rounded up to nearest `in`) |
+
+You can also use the same syntax for rounding single units. For example `3 ft + 7 in` to `cm` will
+give **109.22**`cm`, however the same length converted to `cm;;` will result in **109**`cm (rounded
+down to nearest cm)`.
+
+To make things easier, Units also includes aliases for a few commonly used unit combinations:
+
+| Alias   | Corresponds to                                                                                   |
+|---------|--------------------------------------------------------------------------------------------------|
+| `hms`   | `hr; min; sec`                                                                                   |
+| `time`  | `year; day; hr; min; sec`                                                                        |
+| `dms`   | `deg; arcmin; arcsec`                                                                            |
+| `ftin`  | `ft; in; 1\|8 in`                                                                                |
+| `usvol` | `cup; 3\|4 cup; 2\|3 cup; 1\|2 cup; 1\|3 cup; 1\|4 cup; tbsp; tsp; 1\|2 tsp; 1\|4 tsp; 1\|8 tsp` | 
+| `lsd`   | `poundsterling; shilling; oldpence; farthing`                                                    |
+
+### Calculations
 
 [![](extra/sshot01.thumb.png)](extra/sshot01.png)
 
@@ -61,6 +98,8 @@ provided that everything conforms properly.
 
 - US→EU height conversion
 `5ft + 6in` = **167.64**`cm`
+- EU→US height conversion
+`180 cm` = **5**`ft` + **10**`in` + **6.9291339** *`1|8in`
 - UK→US mass conversion
 `13 stone` = **182**`lbs`
 - Volume conversion
@@ -89,9 +128,9 @@ volume↔mass conversion (which can be found under "density"), such as `flour_sc
 - Your mass in eggs
 `78kg` = **1560**`eggs`
 - Time to walk across the U.S. (without sleeping)
-`2600mile ÷3mph` = **5.15873**`week`
+`2600mile ÷3mph` = **5**`week` + **1.1111111**`day`
 - Time to walk across the U.S. (assuming walking only 8 hours per day)
-`2600mile ÷(3mph ×(8hour ÷day))` = **15.47619**`week`
+`2600mile ÷(3mph ×(8hour ÷day))` = **15**`week` + **3.3333333**`day`
 - Gasoline efficiency in an alternative unit
 `1÷(25mile ÷gallon)` = **79.36508**`microhogshead ÷furlong`
 
@@ -108,6 +147,8 @@ volume↔mass conversion (which can be found under "density"), such as `flour_sc
 
 ## Changelog
 
+* TBD, 2024: 1.2 – Ability to convert into lists of units. Use US units by default for English units
+                   outside of the UK.
 * 05 January, 2024: 1.1 – Improved compatibility with modern Android versions. Adds German and
                           Spanish translations. Various improvements and fixes.
 * 15 September, 2011: 1.0 – Added advanced keypad and improved keypad UI. Adds Russian translations.
@@ -156,3 +197,6 @@ Units is an ongoing project, with volunteers contributing freely to it. We would
 * [Andrejs Gorbunovs](mailto:andrejs.gorbunovs@inbox.lv) – Russian translations
 * [ingfabby](https://github.com/ingfabby) – Spanish translations
 * [Jan Henning](https://github.com/buttercookie42) – German translations and code fixes
+
+A special thanks also goes out to [Roman Redziejowski](https://units-in-java.sourceforge.net/) as
+the original creator of the Java port of GNU Units.

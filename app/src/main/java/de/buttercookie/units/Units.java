@@ -95,7 +95,6 @@ import de.buttercookie.units.ValueGui.ReciprocalException;
 
 // TODO med: add implicit "last result" eg. "1+1=" then press "+1" to get "3"
 // TODO med: auto-ranging for metric units (auto add "kilo-" or "micro-")
-// TODO med: allow for returning composite Imperial and time units. eg. "3 hours + 12 minutes" instead of "3.2 hours"
 // TODO med: remove soft keyboard for non-touch devices
 // TODO med: look into performance bug on ADP device. Slows down considerably when backspacing whole entry.
 // TODO med: add date headers for history, to consolidate items ("yesterday", "1 week ago", etc.)
