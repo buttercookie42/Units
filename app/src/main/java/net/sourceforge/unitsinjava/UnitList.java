@@ -216,12 +216,20 @@ import java.util.Locale;
       //  Perform the conversion.
       //  No rounding yet, as it should be done on converted value.
       //---------------------------------------------------------------
+      final double DOUBLE_ACCURACY = 1e-16;
+
       result = new double[n];
       double rem = fromValue.factor;
-      for (int i=0;i<n-1;i++)
+      double fromAccuracy = DOUBLE_ACCURACY * fromValue.factor;
+      for (int i = 0; i < n-1; i++)
       {
         result[i] = Math.floor(rem / value[i].factor);  // Integer quotient
         rem = rem - result[i] * value[i].factor;        // Remainder
+        double floatAccuracy = fromAccuracy / value[i].factor;
+        if (rem < floatAccuracy) {
+          rem = 0;
+          break;
+        }
       }
 
       result[n-1] = rem / value[n-1].factor;
