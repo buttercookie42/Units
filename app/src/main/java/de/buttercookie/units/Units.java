@@ -75,6 +75,7 @@ import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import net.sourceforge.unitsinjava.DefinedFunction;
 import net.sourceforge.unitsinjava.EvalError;
@@ -350,10 +351,13 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     }
 
     // TODO make reciprocal notice better animated so it doesn't modify main layout
-    public void addToHistory(String haveExpr, String wantExpr, Double result, boolean reciprocal) {
+    public void addToHistory(@NonNull String haveExpr, @NonNull String wantExpr,
+                             @Nullable String unitAlias,
+                             Double result, boolean reciprocal) {
         haveExpr = haveExpr.trim();
         wantExpr = wantExpr.trim();
-        new AddToUsageTask().execute(haveExpr, wantExpr);
+        new AddToUsageTask().execute(haveExpr,
+                unitAlias != null ? unitAlias.trim() : wantExpr);
         haveExpr = reciprocal ? "1÷(" + haveExpr + ")" : haveExpr;
         resultView.setText(HistoryEntry.toCharSequence(haveExpr, wantExpr, result));
 
@@ -484,7 +488,9 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
             boolean reciprocal = false;
 
             String uList = UnitList.isUnitList(wantStr);
+            String unitAlias = null;
             if (uList != null) {
+                unitAlias = wantStr;
                 UnitList ul;
                 try {
                     ul = new UnitList(uList);
@@ -556,7 +562,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
             allClear();
 
-            addToHistory(haveStr, wantStr, resultVal, reciprocal);
+            addToHistory(haveStr, wantStr, unitAlias, resultVal, reciprocal);
 
         } catch (final ConversionException e) {
             resultView.setText(null);
