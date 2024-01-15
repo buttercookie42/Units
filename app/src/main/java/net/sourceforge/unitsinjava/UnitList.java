@@ -123,7 +123,7 @@ import java.util.Locale;
       //---------------------------------------------------------------
       //  Split string into expressions.
       //---------------------------------------------------------------
-      Vector<String> items = new Vector<String>();
+      Vector<String> items = new Vector<>();
       int i = 0;
       while(i<=lg)
       {
@@ -239,7 +239,7 @@ import java.util.Locale;
 
       result[n-1] = rem / value[n-1].factor;
 
-      Double rounded;
+      double rounded;
       double roundAmount = 0; // Positive if rounded up
 
       //---------------------------------------------------------------
@@ -252,7 +252,7 @@ import java.util.Locale;
       }
 
       else          // Otherwise round to displayed precision
-        rounded = Double.valueOf(String.format(Locale.US,"%.8G",result[n-1]));
+        rounded = Double.parseDouble(String.format(Locale.US, "%.8G", result[n - 1]));
 
       result[n-1] = rounded;
 
@@ -273,7 +273,7 @@ import java.util.Locale;
       for (int i=n-1;i>0;i--)
       {
         double nextUnit = value[i-1].factor / value[i].factor;
-        nextUnit = Double.valueOf(String.format(Locale.US,"%.8G",nextUnit));
+        nextUnit = Double.parseDouble(String.format(Locale.US,"%.8G",nextUnit));
         if (result[i]==nextUnit)
         {
           result[i] = 0;
@@ -375,7 +375,7 @@ import java.util.Locale;
       if (value==(int)value
           && value<10000
           && unit.length()>2
-          && unit.substring(0,2).equals("1|")
+          && unit.startsWith("1|")
           )
       {
         int i=2;
