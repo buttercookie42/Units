@@ -34,6 +34,10 @@
 
 package net.sourceforge.unitsinjava;
 
+import static net.sourceforge.unitsinjava.UnitList.RoundMode.FLOATING_POINT;
+import static net.sourceforge.unitsinjava.UnitList.RoundMode.INTEGER;
+import static net.sourceforge.unitsinjava.UnitList.RoundMode.SEPARATED_FRACTION;
+
 import java.util.Vector;
 import java.util.Locale;
 
@@ -76,7 +80,8 @@ import java.util.Locale;
    *  <br> 1 = show as integer.fraction;
    *  <br> 2 = split into integer and fraction. */
   //-------------------------------------------------------------------
-  int round = 1;
+  enum RoundMode { INTEGER, FLOATING_POINT, SEPARATED_FRACTION }
+  RoundMode roundMode = FLOATING_POINT;
 
 
   //=====================================================================
@@ -100,19 +105,19 @@ import java.util.Locale;
 
       if (list.endsWith(";;"))
       {
-        round = 0;
+        roundMode = INTEGER;
         list = list.substring(0,lg-2);
         lg -= 2;
       }
 
       else if (list.endsWith(";"))
       {
-        round = 2;
+        roundMode = SEPARATED_FRACTION;
         list = list.substring(0,lg-1);
         lg --;
       }
 
-      if (Env.round) round = 0; // Option '-r' overrides ';'
+      if (Env.round) roundMode = INTEGER; // Option '-r' overrides ';'
 
 
       //---------------------------------------------------------------
@@ -240,7 +245,7 @@ import java.util.Locale;
       //---------------------------------------------------------------
       //  Round the lowest value.
       //---------------------------------------------------------------
-      if (round==0) // If requested, round to integer.
+      if (roundMode==INTEGER) // If requested, round to integer.
       {
         rounded = Math.floor(result[n-1]+0.5);
         roundAmount = rounded - result[n-1];
@@ -254,7 +259,7 @@ import java.util.Locale;
       //---------------------------------------------------------------
       //  If requested, split lowest value into integer and fraction.
       //---------------------------------------------------------------
-      if (round==2)
+      if (roundMode==SEPARATED_FRACTION)
       {
         result[n-1] = Math.floor(rounded);
         rounded = rounded - result[n-1];
@@ -297,7 +302,7 @@ import java.util.Locale;
             sb.append(sep + showUnit(result[i],unit[i]));
             sep = " + ";
           }
-        if (round==2)
+        if (roundMode==SEPARATED_FRACTION)
           if (rounded!=0)
             sb.append(sep + showUnit(rounded,unit[n-1]));
 
@@ -322,7 +327,7 @@ import java.util.Locale;
           sep = ";";
         }
 
-        if (round==2)
+        if (roundMode==SEPARATED_FRACTION)
           sb.append(sep + Util.shownumber(rounded));
 
         if (roundAmount>0)
