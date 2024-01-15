@@ -423,25 +423,10 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         UNICODE_TRANS.put('³', "^3");
         UNICODE_TRANS.put('⁴', "^4");
         UNICODE_TRANS.put('−', "-");
-        UNICODE_TRANS.put('µ', "micro");
         UNICODE_TRANS.put('π', "pi");
         UNICODE_TRANS.put('Π', "pi");
-        UNICODE_TRANS.put('€', "euro");
-        UNICODE_TRANS.put('¥', "japanyen");
-        UNICODE_TRANS.put('₤', "greatbritainpound");
         UNICODE_TRANS.put('√', "sqrt");
         UNICODE_TRANS.put('∛', "cuberoot");
-        UNICODE_TRANS.put('½', "1|2");
-        UNICODE_TRANS.put('⅓', "1|3");
-        UNICODE_TRANS.put('⅔', "2|3");
-        UNICODE_TRANS.put('¼', "1|4");
-        UNICODE_TRANS.put('⅕', "1|5");
-        UNICODE_TRANS.put('⅖', "2|5");
-        UNICODE_TRANS.put('⅗', "3|5");
-        UNICODE_TRANS.put('⅙', "1|6");
-        UNICODE_TRANS.put('⅛', "1|8");
-        UNICODE_TRANS.put('⅜', "3|8");
-        UNICODE_TRANS.put('⅝', "5|8");
     }
 
     public static String unicodeToAscii(String unicodeInput) {
