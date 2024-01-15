@@ -30,4 +30,6 @@
     <string name="keypad_length">Länge…</string>
     <string name="keypad_mass">Masse…</string>
     <string name="keypad_time">Zeit…</string>
+    <string name="result_rounded_up">auf nächste %1$s aufgerundet</string>
+    <string name="result_rounded_down">auf nächste %1$s abgerundet</string>
 </resources>

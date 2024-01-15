@@ -504,7 +504,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
                 // unit lists are a special case and don't have a reciprocal, so the result
                 // is just stored in the wantStr.
                 resultVal = null;
-                wantStr = ValueGui.convertNonInteractive(haveStr, have, ul);
+                wantStr = ValueGui.convertNonInteractive(this, haveStr, have, ul);
 
             } else {
                 Value want = null;

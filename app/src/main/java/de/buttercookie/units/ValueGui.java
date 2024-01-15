@@ -15,6 +15,11 @@
 
 package de.buttercookie.units;
 
+import static net.sourceforge.unitsinjava.UnitList.RoundMode.INTEGER;
+import static net.sourceforge.unitsinjava.UnitList.RoundMode.SEPARATED_FRACTION;
+
+import android.content.Context;
+
 import net.sourceforge.unitsinjava.Env;
 import net.sourceforge.unitsinjava.EvalError;
 import net.sourceforge.unitsinjava.Factor;
@@ -182,7 +187,7 @@ public class ValueGui extends Value {
      * @param fromValue 'from' expression converted to completely reduced Value.
      * @param ul       'to' list of units.
      */
-    public static String convertNonInteractive(String fromExpr, Value fromValue, UnitList ul) throws ConversionException {
+    public static String convertNonInteractive(Context context, String fromExpr, Value fromValue, UnitList ul) throws ConversionException {
         boolean result = ul.convert(fromExpr, fromValue);
         if (!result) {
             throw new ConversionException();
@@ -196,12 +201,25 @@ public class ValueGui extends Value {
                     sb.append(UnitList.showUnit(ul.result[i], ul.unit[i]));
                     sep = " + ";
                     gotNonZero = true;
-                } else if (i == ul.n - 1 && !gotNonZero) {
+                } else if (i == ul.n - 1 && !gotNonZero && ul.roundMode != SEPARATED_FRACTION) {
                     // If everything's zero, always print the last partial result, even if that
                     // might be zero, too.
                     sb.append(sep);
                     sb.append(UnitList.showUnit(ul.result[i], ul.unit[i]));
+                    sep = " + ";
                 }
+            }
+            if (ul.roundMode == SEPARATED_FRACTION && ul.rounded != 0) {
+                sb.append(sep);
+                sb.append(UnitList.showUnit(ul.rounded, ul.unit[ul.n - 1]));
+            } else if (ul.roundMode == INTEGER && ul.roundAmount != 0) {
+                sb.append(" (");
+                if (ul.roundAmount > 0) {
+                    sb.append(context.getString(R.string.result_rounded_up, ul.unit[ul.n - 1]));
+                } else {
+                    sb.append(context.getString(R.string.result_rounded_down, ul.unit[ul.n - 1]));
+                }
+                sb.append(")");
             }
             return sb.toString();
         }

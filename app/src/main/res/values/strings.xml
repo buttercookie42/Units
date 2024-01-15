@@ -63,4 +63,11 @@
     <!-- Default currency. This should be the default unit for the given locale. -->
     <string name="currency">$</string>
 
+    <!-- Rounding strings -->
+    
+    <!-- %1$s will be replaced by the name of the unit that's being rounded to -->
+    <string name="result_rounded_up">rounded up to nearest %1$s</string>
+    <!-- %1$s will be replaced by the name of the unit that's being rounded to -->
+    <string name="result_rounded_down">rounded down to nearest %1$s</string>
+
 </resources>
