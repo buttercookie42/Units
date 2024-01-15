@@ -80,8 +80,11 @@ import java.util.Locale;
    *  <br> 1 = show as integer.fraction;
    *  <br> 2 = split into integer and fraction. */
   //-------------------------------------------------------------------
-  enum RoundMode { INTEGER, FLOATING_POINT, SEPARATED_FRACTION }
-  RoundMode roundMode = FLOATING_POINT;
+  public enum RoundMode { INTEGER, FLOATING_POINT, SEPARATED_FRACTION }
+  public RoundMode roundMode = FLOATING_POINT;
+
+  public double rounded;
+  public double roundAmount;
 
 
   //=====================================================================
@@ -239,8 +242,7 @@ import java.util.Locale;
 
       result[n-1] = rem / value[n-1].factor;
 
-      double rounded;
-      double roundAmount = 0; // Positive if rounded up
+      roundAmount = 0; // Positive if rounded up
 
       //---------------------------------------------------------------
       //  Round the lowest value.
