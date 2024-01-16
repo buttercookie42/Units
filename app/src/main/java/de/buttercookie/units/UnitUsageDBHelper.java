@@ -274,7 +274,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         } else {
             dumpFolder = context.getFilesDir();
         }
-        final File fprintsOutput = new File(dumpFolder, "units_fingerprints.json");
+        final File fprintsOutput = new File(dumpFolder, "fingerprints.json");
         final JSONObject jo = new JSONObject(fingerprints);
         try {
             final FileWriter fw = new FileWriter(fprintsOutput);
