@@ -95,8 +95,6 @@ import de.buttercookie.units.ValueGui.ReciprocalException;
 
 // TODO med: add implicit "last result" eg. "1+1=" then press "+1" to get "3"
 // TODO med: auto-ranging for metric units (auto add "kilo-" or "micro-")
-// TODO med: remove soft keyboard for non-touch devices
-// TODO med: look into performance bug on ADP device. Slows down considerably when backspacing whole entry.
 // TODO med: add date headers for history, to consolidate items ("yesterday", "1 week ago", etc.)
 // TODO med: show keyboard icon for 2nd tap (can't do this easily, as one can't detect if soft keyboard is shown or not). May need to scrap this idea.
 // TODO low: longpress on unit for description (look in unit addition error message for hints)
