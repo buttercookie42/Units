@@ -208,12 +208,6 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         for (final String functionName : BuiltInFunction.table.keySet()) {
             allUnitWeights.put(functionName + "(", 0);
         }
-//		for (final String functionName: TabularFunction.table.keySet()){
-//			allUnitWeights.put(functionName + "(", 0);
-//		}
-//		for (final String functionName: ComputedFunction.table.keySet()){
-//			allUnitWeights.put(functionName + "(", 0);
-//		}
         for (final String functionName : DefinedFunction.table.keySet()) {
             allUnitWeights.put(functionName + "(", 0);
         }
