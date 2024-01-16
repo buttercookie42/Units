@@ -654,8 +654,9 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         }
     }
 
-    private static final Pattern UNIT_REGEX = Pattern.compile("([a-zA-Z]\\w+)");
-    private static final Pattern UNIT_EXTRACT_REGEX = Pattern.compile(".*?([a-zA-Z]\\w+)");
+    public static final String UNIT_REGEX_PATTERN = "([a-zA-Z]\\w+)";
+    private static final Pattern UNIT_REGEX = Pattern.compile(UNIT_REGEX_PATTERN);
+    private static final Pattern UNIT_EXTRACT_REGEX = Pattern.compile(".*?" + UNIT_REGEX_PATTERN);
     private static final Pattern UNIT_EXPONENTIAL_REGEX = Pattern.compile("[eE]");
 
 

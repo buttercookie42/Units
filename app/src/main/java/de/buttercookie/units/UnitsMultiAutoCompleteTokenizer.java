@@ -15,14 +15,16 @@
 
 package de.buttercookie.units;
 
+import static de.buttercookie.units.UnitUsageDBHelper.UNIT_REGEX_PATTERN;
+
 import android.widget.MultiAutoCompleteTextView;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class UnitsMultiAutoCompleteTokenizer implements MultiAutoCompleteTextView.Tokenizer {
-    final Pattern unitRegex = Pattern.compile("([a-zA-Z]\\w+)$");
-    final Pattern unitRegexEnd = Pattern.compile("^([a-zA-Z]\\w+)");
+    final Pattern unitRegex = Pattern.compile(UNIT_REGEX_PATTERN + "$");
+    final Pattern unitRegexEnd = Pattern.compile("^" + UNIT_REGEX_PATTERN);
 
     public CharSequence terminateToken(CharSequence text) {
         return text + " ";
