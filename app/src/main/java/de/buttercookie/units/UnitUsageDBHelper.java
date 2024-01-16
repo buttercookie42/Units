@@ -145,23 +145,43 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         return count;
     }
 
-    public HashMap<String, String> loadFingerprints() {
-        final HashMap<String, String> fingerprints = new HashMap<>();
-        try {
-            final JSONObject fprints = loadJsonObjectFromRawResource(context, R.raw.fingerprints);
-            for (final Iterator<String> i = fprints.keys(); i.hasNext(); ) {
-                final String key = i.next();
-                fingerprints.put(key, fprints.optString(key));
-            }
-        } catch (final Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+    private class Fingerprints {
+
+        private final HashMap<String, String> mFingerprints = new HashMap<>();
+
+        Fingerprints() {
+            loadFingerprintsFromFile();
         }
-        return fingerprints;
+
+        private void loadFingerprintsFromFile() {
+            try {
+                final JSONObject fprints = loadJsonObjectFromRawResource(context, R.raw.fingerprints);
+                for (final Iterator<String> i = fprints.keys(); i.hasNext(); ) {
+                    final String key = i.next();
+                    mFingerprints.put(key, fprints.optString(key));
+                }
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        public String getFingerprint(String unitName) {
+            final String fpr;
+            if (mFingerprints.containsKey(unitName)) {
+                fpr = mFingerprints.get(unitName);
+            } else {
+                fpr = computeFingerprint(unitName);
+                mFingerprints.put(unitName, fpr);
+            }
+            return fpr;
+        }
+
+        public HashMap<String, String> getAllFingerprints() {
+            return mFingerprints;
+        }
     }
 
-
-    public static String getFingerprint(String unitName) {
+    public static String computeFingerprint(String unitName) {
 
         String fpr = null;
         try {
@@ -223,17 +243,13 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         Collections.sort(sortedUnits);
         Log.d(TAG, "Adding all sorted units…");
 
-        final HashMap<String, String> fingerprints = loadFingerprints();
+        final Fingerprints fingerprints = new Fingerprints();
 
         db.beginTransaction();
         for (final String unitName : sortedUnits) {
             cv.put(UsageEntry._UNIT, unitName);
             cv.put(UsageEntry._USE_COUNT, allUnitWeights.get(unitName));
-
-            final String fpr = fingerprints.containsKey(unitName) ? fingerprints.get(unitName) : getFingerprint(unitName);
-
-            fingerprints.put(unitName, fpr);
-            cv.put(UsageEntry._FACTOR_FPRINT, fpr);
+            cv.put(UsageEntry._FACTOR_FPRINT, fingerprints.getFingerprint(unitName));
             db.insert(DB_USAGE_TABLE, null, cv);
         }
         db.setTransactionSuccessful();
@@ -243,7 +259,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         context.getContentResolver().notifyChange(UsageEntry.CONTENT_URI, null);
 
         if (BuildConfig.DEBUG) {
-            mDebugFingerprints = fingerprints;
+            mDebugFingerprints = fingerprints.getAllFingerprints();
         }
         Log.d(TAG, "done!");
     }
@@ -300,7 +316,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         for (final Iterator<String> i = jo.keys(); i.hasNext(); ) {
             final String unit = i.next();
             final String description = jo.optString(unit);
-            final String fprint = getFingerprint(unit);
+            final String fprint = computeFingerprint(unit);
             cv.put(ClassificationEntry._FACTOR_FPRINT, fprint);
             cv.put(ClassificationEntry._DESCRIPTION, description);
             db.insert(DB_CLASSIFICATION_TABLE, null, cv);
@@ -579,7 +595,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
             final ContentValues cv = new ContentValues();
             cv.put(UsageEntry._UNIT, unit);
             cv.put(UsageEntry._USE_COUNT, 1);
-            cv.put(UsageEntry._FACTOR_FPRINT, getFingerprint(unit));
+            cv.put(UsageEntry._FACTOR_FPRINT, computeFingerprint(unit));
             cr.insert(UsageEntry.CONTENT_URI, cv);
         }
         c.close();

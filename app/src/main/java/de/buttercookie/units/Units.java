@@ -921,7 +921,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
                 dialog.setTitle(mDialogUnitCategoryUnit);
 
                 final String[] projection = {UsageEntry._ID, UsageEntry._UNIT, UsageEntry._FACTOR_FPRINT};
-                final Cursor c = managedQuery(UsageEntry.getEntriesMatchingFprint(UnitUsageDBHelper.getFingerprint(mDialogUnitCategoryUnit)),
+                final Cursor c = managedQuery(UsageEntry.getEntriesMatchingFprint(UnitUsageDBHelper.computeFingerprint(mDialogUnitCategoryUnit)),
                         projection, null, null, UnitUsageDBHelper.USAGE_SORT);
                 stopManagingCursor(dialogUnitCategoryList.getCursor());
                 dialogUnitCategoryList.changeCursor(c);
