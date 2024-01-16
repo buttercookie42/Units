@@ -659,8 +659,6 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
     public static final String UNIT_REGEX_PATTERN = "(\\p{Alpha}[\\w\\p{Sc}]+)";
     private static final Pattern UNIT_REGEX = Pattern.compile(UNIT_REGEX_PATTERN);
     private static final Pattern UNIT_EXTRACT_REGEX = Pattern.compile(".*?" + UNIT_REGEX_PATTERN);
-    private static final Pattern UNIT_EXPONENTIAL_REGEX = Pattern.compile("[eE]");
-
 
     private final static String[] INCREMENT_QUERY_PROJECTION = {UsageEntry._ID, UsageEntry._USE_COUNT, UsageEntry._UNIT};
 
