@@ -253,9 +253,11 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         final HashMap<String, Integer> allUnitWeights =
                 new HashMap<>(Unit.table.keySet().size());
         Log.d(TAG, "adding all known weights…");
+        final Pattern currencySymbol = Pattern.compile("\\p{Sc}");
         for (final String unitName : Unit.table.keySet()) {
-            // don't add all uppercase names
-            if (!unitName.toUpperCase().equals(unitName)) {
+            // don't add all uppercase names, but allow currency symbols
+            if (!unitName.toUpperCase().equals(unitName) ||
+                    currencySymbol.matcher(unitName).matches()) {
                 allUnitWeights.put(unitName, 0);
             }
         }
@@ -654,7 +656,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public static final String UNIT_REGEX_PATTERN = "([a-zA-Z]\\w+)";
+    public static final String UNIT_REGEX_PATTERN = "([a-zA-Z][\\w\\p{Sc}]+)";
     private static final Pattern UNIT_REGEX = Pattern.compile(UNIT_REGEX_PATTERN);
     private static final Pattern UNIT_EXTRACT_REGEX = Pattern.compile(".*?" + UNIT_REGEX_PATTERN);
     private static final Pattern UNIT_EXPONENTIAL_REGEX = Pattern.compile("[eE]");
