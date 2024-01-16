@@ -3276,6 +3276,7 @@ megalerg                megaerg    # 'L' added to make it pronounceable [18].
 #
 
 $                       dollar
+usdollar                dollar
 mark                    germanymark
 bolivar                 venezuelabolivar
 bolivarfuerte           bolivar        # The currency was revalued by 
