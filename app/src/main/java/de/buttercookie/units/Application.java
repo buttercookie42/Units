@@ -57,7 +57,7 @@ public class Application extends android.app.Application {
         Env.filenames = new Vector<>();
         Env.filenames.add("units.dat");
 
-        Env.locale = Locale.getDefault().toString();
+        Env.locale = getCurrentLocale(this);
         Env.quiet = true;
         Env.oneline = true;
 
@@ -93,13 +93,18 @@ public class Application extends android.app.Application {
         Tables.build();
     }
 
-    public static Locale getCurrentLocale(Context context) {
+    public static String getCurrentLocale(Context context) {
         final Configuration config = context.getResources().getConfiguration();
+        Locale locale;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return config.getLocales().get(0);
+            locale = config.getLocales().get(0);
         } else {
             //noinspection deprecation
-            return config.locale;
+            locale = config.locale;
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            locale = locale.stripExtensions();
+        }
+        return locale.toString();
     }
 }

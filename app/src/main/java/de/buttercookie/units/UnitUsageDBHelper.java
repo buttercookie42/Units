@@ -457,7 +457,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         String storedLocale = prefs.getString(PREF_LAST_CLASSIFICATION_LOCALE, null);
         int storedVersion = prefs.getInt(PREF_LAST_CLASSIFICATION_VERSION_CODE, 0);
 
-        return getCurrentLocale(context).toString().equals(storedLocale) &&
+        return getCurrentLocale(context).equals(storedLocale) &&
                 BuildConfig.VERSION_CODE == storedVersion;
     }
 
@@ -465,12 +465,10 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
     // apply() not available in old SDK, plus we're running in a AsyncTask anyway
     private void storeLocaleAndVersion() {
         final SharedPreferences.Editor editor = SharedPrefs.getAppPrefs(context).edit();
-        Locale curLocale = getCurrentLocale(context);
-        editor.putString(PREF_LAST_CLASSIFICATION_LOCALE, curLocale.toString());
+        editor.putString(PREF_LAST_CLASSIFICATION_LOCALE, getCurrentLocale(context));
         editor.putInt(PREF_LAST_CLASSIFICATION_VERSION_CODE, BuildConfig.VERSION_CODE);
         editor.commit();
     }
-
 
     public final static String USAGE_SORT = UsageEntry._USE_COUNT + " DESC, " + UsageEntry._UNIT + " ASC";
     private static final String CONFORMING_SELECTION = UsageEntry._FACTOR_FPRINT + " = ?";
