@@ -29,13 +29,6 @@
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
 
-            <!-- Used when picking a result from the search bar's autocomplete list. -->
-            <intent-filter>
-                <action android:name="de.buttercookie.units.ACTION_USE_UNIT" />
-                <data android:mimeType="vnd.android.cursor.item/vnd.de.buttercookie.units.unit_usage" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
