@@ -44,7 +44,7 @@
 
             <com.android.calculator2.ColorButton
                 android:id="@+id/backspace"
-                android:hint="@string/del"
+                android:hint="@string/backspace_description"
                 android:background="@drawable/backspace"
                 android:layerType="software"
                 style="@style/button_style"

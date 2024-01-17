@@ -26,6 +26,7 @@
     <string name="dialog_loading_units">Lade Datenbank für Einheiten-Nutzungshäufigkeit…</string>
     <string name="err_no_conform">Diese Einheiten können nicht ineinander umgewandelt werden.</string>
     <string name="reciprocal_conversion">reziproke Konvertierung</string>
+    <string name="backspace_description">Rücktaste</string>
     <string name="unit_entry">Einheit</string>
     <string name="keypad_length">Länge…</string>
     <string name="keypad_mass">Masse…</string>

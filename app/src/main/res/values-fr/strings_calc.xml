@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="error">Error</string>
-    <string name="del">SUPPRIMER</string>
-    <string name="clear">EFFACER</string>
-    <string name="basic">Console de base</string>
-    <string name="advanced">Console avancée</string>
-    <string name="clear_history">Nettoyer l\'historique</string>
-</resources>

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="error">"Помилка"</string>
-    <string name="del">"ВИДАЛИТИ"</string>
-    <string name="clear">"ОЧИСТИТИ"</string>
-    <string name="basic">"Проста панель"</string>
-    <string name="advanced">"Розширена панель"</string>
-    <string name="clear_history">"Очистити історію"</string>
-</resources>

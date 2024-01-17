@@ -40,6 +40,73 @@
     <string name="err_no_load_about">Error: could not load about page.</string>
     <string name="reciprocal_conversion">reciprocal conversion</string>
 
+    <!-- Keypad buttons -->
+
+    <!-- Displayed numbers for the digit buttons -->
+    <string name="digit0" translatable="false">0</string>
+    <!-- Displayed numbers for the digit buttons -->
+    <string name="digit1" translatable="false">1</string>
+    <!-- Displayed numbers for the digit buttons -->
+    <string name="digit2" translatable="false">2</string>
+    <!-- Displayed numbers for the digit buttons -->
+    <string name="digit3" translatable="false">3</string>
+    <!-- Displayed numbers for the digit buttons -->
+    <string name="digit4" translatable="false">4</string>
+    <!-- Displayed numbers for the digit buttons -->
+    <string name="digit5" translatable="false">5</string>
+    <!-- Displayed numbers for the digit buttons -->
+    <string name="digit6" translatable="false">6</string>
+    <!-- Displayed numbers for the digit buttons -->
+    <string name="digit7" translatable="false">7</string>
+    <!-- Displayed numbers for the digit buttons -->
+    <string name="digit8" translatable="false">8</string>
+    <!-- Displayed numbers for the digit buttons -->
+    <string name="digit9" translatable="false">9</string>
+    <!-- Do not translate. Unicode division sign; don't translate. Displayed as button on screen. -->
+    <string name="div" translatable="false">\u00f7</string>
+    <!-- Do not translate. Unicode multiplication sign; don't translate. Displayed as button on screen. -->
+    <string name="mul" translatable="false">\u00d7</string>
+    <!-- Do not translate. Plus sign, displayed as button on screen -->
+    <string name="plus" translatable="false">+</string>
+    <!-- Do not translate. Unicode minus sign; don't translate. Displayed as button on screen. -->
+    <string name="minus" translatable="false">\u2212</string>
+    <!-- Do not translate. Decimal point; don't translate. Displayed as button on screen. -->
+    <string name="dot" translatable="false">.</string>
+    <!-- Do not translate. Equal sign; don't translate. Displayed as button on screen. -->
+    <string name="equal" translatable="false">=</string>
+    <!-- Displayed on buttons on screen for the sin function. -->
+    <string name="sin" translatable="false">sin</string>
+    <!-- Displayed on buttons on screen for the cos function. -->
+    <string name="cos" translatable="false">cos</string>
+    <!-- Displayed on buttons on screen for the tan function. -->
+    <string name="tan" translatable="false">tan</string>
+    <!-- Displayed on buttons on screen for the atan function. -->
+    <string name="atan" translatable="false">atan</string>
+    <!-- Displayed on buttons on screen for the log function. -->
+    <string name="log" translatable="false">log</string>
+    <!-- Do not translate. Unicode pi sign; don't translate. Displayed as button on screen. -->
+    <string name="pi" translatable="false">\u03c0</string>
+    <!-- Displayed on buttons on screen for the ln function. -->
+    <string name="ln" translatable="false">ln</string>
+    <!-- Displayed on buttons on screen for a left parenthesis. -->
+    <string name="leftParen" translatable="false">(</string>
+    <!-- Displayed on buttons on screen for a right parenthesis. -->
+    <string name="rightParen" translatable="false">)</string>
+    <!-- Do not translate. Unicode square root sign; don't translate. Displayed on button on screen. -->
+    <string name="sqrt" translatable="false">\u221a(</string>
+    <!-- Do not translate. Displayed on buttons on screen. -->
+    <string name="power" translatable="false">^</string>
+    <string name="percent" translatable="false">%</string>
+    <!-- Do not translate. Displayed on buttons on screen for entering the exponent in the E notation. -->
+    <string name="exponent" translatable="false">E</string>
+    <!-- Do not translate. Displayed on buttons on screen for entering a fraction. -->
+    <string name="fraction" translatable="false">|</string>
+    <!-- Do not translate. Displayed on buttons on screen for entering a semicolon. -->
+    <string name="semicolon" translatable="false">;</string>
+    <!-- Displayed on buttons on screen for accessing the menu panel. Use a short text due to limited space. -->
+    <string name="menu_button">MENU</string>
+    <!-- Accessible description for the backspace button -->
+    <string name="backspace_description">backspace</string>
 
     <!-- unit entry button -->
     <string name="unit_entry">unit</string>
