@@ -99,7 +99,6 @@ public class Application extends android.app.Application {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             locale = config.getLocales().get(0);
         } else {
-            //noinspection deprecation
             locale = config.locale;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
