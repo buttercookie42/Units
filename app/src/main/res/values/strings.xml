@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?><!-- English -->
 <resources>
-    <!-- Application name -->
+    <!-- Application name. Feel free to translate this. -->
     <string name="app_name">Units</string>
 
     <string name="have_hint">you have</string>
@@ -34,6 +34,9 @@
     <string name="history_button_close" translatable="false">↑</string>
 
     <!-- user-facing alerts -->
+
+    <!-- If this string gets too long-winded in translation, you can also translate it as just
+    "Loading units database…" or even just "Loading database…" -->
     <string name="dialog_loading_units">Loading unit usage database…</string>
     <string name="err_have_empty">What do you want to convert from?</string>
     <string name="err_no_conform">Could not convert to this unit.</string>
@@ -103,31 +106,37 @@
     <string name="fraction" translatable="false">|</string>
     <!-- Do not translate. Displayed on buttons on screen for entering a semicolon. -->
     <string name="semicolon" translatable="false">;</string>
-    <!-- Displayed on buttons on screen for accessing the menu panel. Use a short text due to limited space. -->
+    <!-- Displayed on buttons on screen for accessing the menu panel. Use a short text due to
+    limited space. Prefer all caps. -->
     <string name="menu_button">MENU</string>
     <!-- Accessible description for the backspace button -->
     <string name="backspace_description">backspace</string>
 
     <!-- unit entry button -->
     <string name="unit_entry">unit</string>
+
     <!-- These buttons are for commonly-used categories -->
+
     <string name="keypad_length">length…</string>
     <string name="keypad_mass">mass…</string>
     <string name="keypad_time">time…</string>
 
     <!-- functions -->
+
     <string name="keypad_square" translatable="false">x²</string>
     <string name="keypad_cube" translatable="false">x³</string>
 
     <!-- unit prefixes -->
+
     <string name="keypad_prefix_milli" translatable="false">milli-</string>
     <string name="keypad_prefix_kilo" translatable="false">kilo-</string>
     <string name="keypad_prefix_centi" translatable="false">centi-</string>
 
     <!-- constants -->
+
     <string name="const_light" translatable="false">light</string>
     <string name="const_energy" translatable="false">energy</string>
-    <!-- Default currency. This should be the default unit for the given locale. -->
+    <!-- Default currency. This should be the default currency unit for the given locale. -->
     <string name="currency">$</string>
 
     <!-- Rounding strings -->
