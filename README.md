@@ -1,9 +1,9 @@
-# Android Units
+# Units
 
 ![App logo](app/src/main/res/mipmap-mdpi/ic_launcher.png)
 
-Android Units is a powerful unit-aware calculator that can also easily perform simple unit
-conversions. It's inspired by GNU Units.
+Units is a powerful unit-aware calculator that can perform a variety of unit conversions
+and also doubles as a simple scientific calculator. It's inspired by GNU Units.
 
 This edition is a continuation of [Steve Pomeroy's original app](https://github.com/xxv/Units).
 
@@ -21,8 +21,8 @@ This edition is a continuation of [Steve Pomeroy's original app](https://github.
 | --- |
 | Anything that is shown within a box can be entered into Units. Eg. `m³÷hr` |
 
-Place the value and the unit you want to convert from in the "you have" box (eg. `4.9inches`) and
-the unit you wish to convert to in the "you want" box (eg. `cm`). To enter units, either press the
+Place the value and the unit you want to convert from in the "you have" box (e.g. `4.9inches`) and
+the unit you wish to convert to in the "you want" box (e.g. `cm`). To enter units, either press the
 "unit" button and select from the list, or tap on the input box a second time and an on-screen
 keyboard should pop up.
 
