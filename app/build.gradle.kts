@@ -21,6 +21,10 @@ android {
         versionName = "1.2a1"
     }
 
+    androidResources {
+        generateLocaleConfig = true;
+    }
+
     buildFeatures {
         buildConfig = true
     }
