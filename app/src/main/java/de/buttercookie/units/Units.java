@@ -1191,6 +1191,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
 
         @Override
         protected Void doInBackground(Void... params) {
+            ((Application) mActivity.getApplication()).updateUnitsLocaleIfRequired();
             mActivity.unitUsageDBHelper.updateUnitUsage();
             mActivity.unitUsageDBHelper.loadUnitClassifications();
 

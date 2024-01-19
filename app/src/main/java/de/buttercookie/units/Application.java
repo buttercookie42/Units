@@ -26,6 +26,8 @@ import android.os.Build;
 import android.os.StrictMode;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import net.sourceforge.unitsinjava.Env;
 import net.sourceforge.unitsinjava.Tables;
 import net.sourceforge.unitsinjava.UnitsFile;
@@ -38,6 +40,8 @@ import java.util.Vector;
 public class Application extends android.app.Application {
     private final static String TAG = "Units";
     private final static String UIJ_TAG = "UnitsCore";
+
+    private boolean mUnitsLocaleUpdateRequired = false;
 
     @Override
     public void onCreate() {
@@ -56,6 +60,15 @@ public class Application extends android.app.Application {
 
         super.onCreate();
         initUnits();
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        if (localeChanged(this)) {
+            mUnitsLocaleUpdateRequired = true;
+        }
+
+        super.onConfigurationChanged(newConfig);
     }
 
     private void initUnits() {
@@ -96,6 +109,24 @@ public class Application extends android.app.Application {
         };
 
         Tables.build();
+    }
+
+    public void updateUnitsLocaleIfRequired() {
+        if (!mUnitsLocaleUpdateRequired) {
+            return;
+        }
+        mUnitsLocaleUpdateRequired = false;
+
+        Log.d(TAG, "Re-reading units after locale change");
+        Env.locale = getCurrentLocale(this);
+        Tables.clean();
+        Tables.build();
+    }
+
+    private static boolean localeChanged(Context context) {
+        final SharedPreferences prefs = SharedPrefs.getAppPrefs(context);
+        String storedLocale = prefs.getString(PREF_LAST_CLASSIFICATION_LOCALE, null);
+        return !getCurrentLocale(context).equals(storedLocale);
     }
 
     static boolean localeAndVersionUnchanged(Context context) {
