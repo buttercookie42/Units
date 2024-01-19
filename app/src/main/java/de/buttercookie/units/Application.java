@@ -15,7 +15,12 @@
 
 package de.buttercookie.units;
 
+import static de.buttercookie.units.SharedPrefs.PREF_LAST_CLASSIFICATION_LOCALE;
+import static de.buttercookie.units.SharedPrefs.PREF_LAST_CLASSIFICATION_VERSION_CODE;
+
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.StrictMode;
@@ -91,6 +96,24 @@ public class Application extends android.app.Application {
         };
 
         Tables.build();
+    }
+
+    static boolean localeAndVersionUnchanged(Context context) {
+        final SharedPreferences prefs = SharedPrefs.getAppPrefs(context);
+        String storedLocale = prefs.getString(PREF_LAST_CLASSIFICATION_LOCALE, null);
+        int storedVersion = prefs.getInt(PREF_LAST_CLASSIFICATION_VERSION_CODE, 0);
+
+        return getCurrentLocale(context).equals(storedLocale) &&
+                BuildConfig.VERSION_CODE == storedVersion;
+    }
+
+    @SuppressLint("ApplySharedPref")
+    // apply() not available in old SDK
+    static void storeLocaleAndVersion(Context context) {
+        final SharedPreferences.Editor editor = SharedPrefs.getAppPrefs(context).edit();
+        editor.putString(PREF_LAST_CLASSIFICATION_LOCALE, getCurrentLocale(context));
+        editor.putInt(PREF_LAST_CLASSIFICATION_VERSION_CODE, BuildConfig.VERSION_CODE);
+        editor.commit();
     }
 
     public static String getCurrentLocale(Context context) {

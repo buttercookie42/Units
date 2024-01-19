@@ -18,17 +18,11 @@
 
 package de.buttercookie.units;
 
-import static de.buttercookie.units.Application.getCurrentLocale;
-import static de.buttercookie.units.SharedPrefs.PREF_LAST_CLASSIFICATION_LOCALE;
-import static de.buttercookie.units.SharedPrefs.PREF_LAST_CLASSIFICATION_VERSION_CODE;
-
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -234,7 +228,8 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
 
     public void updateUnitUsage() {
         final SQLiteDatabase db = getWritableDatabase();
-        if (!BuildConfig.DEBUG && getUnitUsageDbCount(db) > 0 && localeAndVersionUnchanged()) {
+        if (!BuildConfig.DEBUG && getUnitUsageDbCount(db) > 0 &&
+                Application.localeAndVersionUnchanged(context)) {
             Log.d(TAG, "Unit weights still valid, skipping update");
             db.close();
             return;
@@ -373,7 +368,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
     }
 
     public void loadUnitClassifications() {
-        if (!BuildConfig.DEBUG && localeAndVersionUnchanged()) {
+        if (!BuildConfig.DEBUG && Application.localeAndVersionUnchanged(context)) {
             Log.d(TAG, "Unit classifications still valid, skipping update.");
             return;
         }
@@ -397,7 +392,7 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
         db.close();
         Log.d(TAG, "Successfully added " + jo.length() + " classification entries.");
 
-        storeLocaleAndVersion();
+        Application.storeLocaleAndVersion(context);
     }
 
     private void addAll(JSONObject unitWeights, HashMap<String, Integer> allWeights) {
@@ -449,24 +444,6 @@ public class UnitUsageDBHelper extends SQLiteOpenHelper {
             jsonString.append(isReader.readLine());
         }
         return new JSONObject(jsonString.toString());
-    }
-
-    private boolean localeAndVersionUnchanged() {
-        final SharedPreferences prefs = SharedPrefs.getAppPrefs(context);
-        String storedLocale = prefs.getString(PREF_LAST_CLASSIFICATION_LOCALE, null);
-        int storedVersion = prefs.getInt(PREF_LAST_CLASSIFICATION_VERSION_CODE, 0);
-
-        return getCurrentLocale(context).equals(storedLocale) &&
-                BuildConfig.VERSION_CODE == storedVersion;
-    }
-
-    @SuppressLint("ApplySharedPref")
-    // apply() not available in old SDK, plus we're running in a AsyncTask anyway
-    private void storeLocaleAndVersion() {
-        final SharedPreferences.Editor editor = SharedPrefs.getAppPrefs(context).edit();
-        editor.putString(PREF_LAST_CLASSIFICATION_LOCALE, getCurrentLocale(context));
-        editor.putInt(PREF_LAST_CLASSIFICATION_VERSION_CODE, BuildConfig.VERSION_CODE);
-        editor.commit();
     }
 
     public final static String USAGE_SORT = UsageEntry._USE_COUNT + " DESC, " + UsageEntry._UNIT + " ASC";
