@@ -147,8 +147,9 @@ volume↔mass conversion (which can be found under "density"), such as `flour_sc
 
 ## Changelog
 
-* TBD, 2024: 1.2 – Ability to convert into lists of units. Use US units by default for English units
-                   outside of the UK.
+* 20 January, 2024: 1.2 – Ability to convert into lists of units. Support for Android 13's
+                          per-app language preferences. Use US units by default for English units
+                          outside of the UK.
 * 05 January, 2024: 1.1 – Improved compatibility with modern Android versions. Adds German and
                           Spanish translations. Various improvements and fixes.
 * 15 September, 2011: 1.0 – Added advanced keypad and improved keypad UI. Adds Russian translations.
