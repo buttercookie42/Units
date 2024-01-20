@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId = "de.buttercookie.units"
-        minSdk = 4
+        minSdk = 9
         targetSdk = 34
         versionCode = 13
         versionName = "1.3a1"
@@ -66,7 +66,7 @@ android {
 }
 
 dependencies {
-    compileOnly("androidx.annotation:annotation:1.7.1")
+    implementation("com.android.support:support-v4:25.4.0")
     implementation(files("libs/andro-views.jar"))
 }
 

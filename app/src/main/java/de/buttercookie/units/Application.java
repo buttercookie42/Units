@@ -24,9 +24,8 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
 import android.util.Log;
-
-import androidx.annotation.NonNull;
 
 import net.sourceforge.unitsinjava.Env;
 import net.sourceforge.unitsinjava.Tables;
