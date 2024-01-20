@@ -124,7 +124,7 @@ public class UnitListActivity extends ListActivity implements OnClickListener {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         final Cursor c = (Cursor) adapter.getItem(position);
-        final String unitName = c.getString(c.getColumnIndex(UsageEntry._UNIT));
+        final String unitName = c.getString(c.getColumnIndexOrThrow(UsageEntry._UNIT));
 
         final Intent intent = getIntent();
         if (Intent.ACTION_PICK.equals(intent.getAction())) {
@@ -173,7 +173,7 @@ public class UnitListActivity extends ListActivity implements OnClickListener {
         final Uri data = ContentUris.withAppendedId(UsageEntry.CONTENT_URI, info.id);
 
         final Cursor c = (Cursor) adapter.getItem(info.position);
-        final String unitName = c.getString(c.getColumnIndex(UsageEntry._UNIT));
+        final String unitName = c.getString(c.getColumnIndexOrThrow(UsageEntry._UNIT));
 
         switch (item.getItemId()) {
             case MENU_PICK_UNIT:

@@ -383,7 +383,8 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
     private void setCurrentEntry(Uri entry) {
         final Cursor c = getContentResolver().query(entry, PROJECTION_LOAD_FROM_HISTORY, null, null, null);
         if (c.moveToFirst()) {
-            setCurrentEntry(c.getString(c.getColumnIndex(HistoryEntry._HAVE)), c.getString(c.getColumnIndex(HistoryEntry._WANT)));
+            setCurrentEntry(c.getString(c.getColumnIndexOrThrow(HistoryEntry._HAVE)),
+                    c.getString(c.getColumnIndexOrThrow(HistoryEntry._WANT)));
         }
         c.close();
     }
@@ -642,7 +643,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
                 if (c.moveToFirst()) {
                     final int resultCol = c.getColumnIndex(HistoryEntry._RESULT);
                     setCurrentEntry((c.isNull(resultCol) ? "" : (c.getDouble(resultCol)
-                            + " ")) + c.getString(c.getColumnIndex(HistoryEntry._WANT)), "");
+                            + " ")) + c.getString(c.getColumnIndexOrThrow(HistoryEntry._WANT)), "");
                     setHistoryVisible(false);
                 }
                 c.close();
@@ -789,7 +790,7 @@ public class Units extends Activity implements OnClickListener, OnEditorActionLi
         final String[] projection = {UsageEntry._ID, UsageEntry._UNIT};
         final Cursor c = getContentResolver().query(unit, projection, null, null, null);
         if (c.moveToFirst()) {
-            sendTextAsSoftKeyboard(c.getString(c.getColumnIndex(UsageEntry._UNIT)) + " ");
+            sendTextAsSoftKeyboard(c.getString(c.getColumnIndexOrThrow(UsageEntry._UNIT)) + " ");
         }
         c.close();
     }

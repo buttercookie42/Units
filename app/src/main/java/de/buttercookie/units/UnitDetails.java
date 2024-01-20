@@ -30,8 +30,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
-import de.buttercookie.units.R;
-
 public class UnitDetails extends Activity {
     final String[] usageEntryProjection = {UsageEntry._ID, UsageEntry._UNIT, UsageEntry._FACTOR_FPRINT};
 
@@ -58,12 +56,12 @@ public class UnitDetails extends Activity {
     }
 
     private void loadFromCursor(Cursor c) {
-        final String unitName = c.getString(c.getColumnIndex(UsageEntry._UNIT));
-        final String factorFprint = c.getString(c.getColumnIndex(UsageEntry._FACTOR_FPRINT));
+        final String unitName = c.getString(c.getColumnIndexOrThrow(UsageEntry._UNIT));
+        final String factorFprint = c.getString(c.getColumnIndexOrThrow(UsageEntry._FACTOR_FPRINT));
 
         final Cursor classification = managedQuery(ClassificationEntry.getFprintUri(factorFprint), ClassificationEntry.PROJECTION, null, null, null);
         if (classification.moveToFirst()) {
-            final String classificationName = classification.getString(classification.getColumnIndex(ClassificationEntry._DESCRIPTION));
+            final String classificationName = classification.getString(classification.getColumnIndexOrThrow(ClassificationEntry._DESCRIPTION));
             setTitle(classificationName + ": " + unitName);
         } else {
             setTitle("Unit: " + unitName);
