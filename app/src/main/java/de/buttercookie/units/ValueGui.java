@@ -193,23 +193,21 @@ public class ValueGui extends Value {
             throw new ConversionException();
         } else {
             StringBuilder sb = new StringBuilder();
-            boolean gotNonZero = false;
+            boolean printedSomething = false;
             String sep = "";
             for (int i = 0; i < ul.n; i++) {
-                if (ul.result[i] != 0) {
+                if (ul.result[i] != 0 ||
+                        // If everything's zero, always print the last partial result, even if that
+                        // might be zero, too.
+                        i == ul.n - 1 && !printedSomething && ul.roundMode != SEPARATED_FRACTION) {
                     sb.append(sep);
                     sb.append(UnitList.showUnit(ul.result[i], ul.unit[i]));
                     sep = " + ";
-                    gotNonZero = true;
-                } else if (i == ul.n - 1 && !gotNonZero && ul.roundMode != SEPARATED_FRACTION) {
-                    // If everything's zero, always print the last partial result, even if that
-                    // might be zero, too.
-                    sb.append(sep);
-                    sb.append(UnitList.showUnit(ul.result[i], ul.unit[i]));
-                    sep = " + ";
+                    printedSomething = true;
                 }
             }
-            if (ul.roundMode == SEPARATED_FRACTION && ul.rounded != 0) {
+            if (ul.roundMode == SEPARATED_FRACTION &&
+                    (ul.rounded != 0 || !printedSomething)) {
                 sb.append(sep);
                 sb.append(UnitList.showUnit(ul.rounded, ul.unit[ul.n - 1]));
             } else if (ul.roundMode == INTEGER && ul.roundAmount != 0) {
