@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">" Unități"</string>
+    <string name="app_name">Unități</string>
     <string name="have_hint">aveți</string>
     <string name="want_hint">vreți</string>
     <string name="dialog_loading_units">Se încarcă baza de date a unităților…</string>
