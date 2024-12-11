@@ -1,0 +1,3 @@
+* Ability to convert into lists of units
+* Support for Android 13's per-app language preferences
+* Use US units by default for English units outside of the UK

@@ -1,0 +1,3 @@
+* Improve compatibility with modern Android versions
+* Add German and Spanish translations
+* Various improvements and fixes

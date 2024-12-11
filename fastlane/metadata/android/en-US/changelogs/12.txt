@@ -1,0 +1,1 @@
+Fix bug where rounding zero in "integer + decimal part" rounding mode wouldn't display any result at all
